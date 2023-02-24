@@ -50,6 +50,7 @@ class _MyHomePageState extends State<MyHomePage> {
             child: FutureBuilder(
                 future: extractCoverImage('/home/petar/bigboy/Manga/One Piece'),
                 builder: bookBuilder))
+
         // This trailing comma makes auto-formatting nicer for build methods.
         );
   }
