@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:mangakolekt/screens/lib.dart';
+import 'package:mangakolekt/screens/training/TrainingPage.dart';
 
 void main() {
   runApp(const MyApp());
@@ -13,11 +14,10 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Flutter Demo',
       theme: ThemeData(
-        primarySwatch: Colors.blue,
+        primarySwatch: Colors.grey,
       ),
       routes: {
-        '/': (context) => const MyHomePage(),
-        // '/reader': (context) =>
+        '/': (context) => TrainingPage(),
       },
     );
   }
