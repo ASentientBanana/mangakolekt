@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:mangakolekt/models/Book.dart';
 import 'package:mangakolekt/util/files.dart';
 import '../util/archive.dart';
 import 'package:path_provider/path_provider.dart';
@@ -14,16 +15,30 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   List<Image> images = [];
 
-  Future<void> testPath() async {
-    final d = await getTemporaryDirectory();
-  }
+  Future<List<Book>> getBooks() async {
+    var contents = Directory("/home/petar/bigboy/Manga/OnePiece");
+    List<Book> books = [];
+    try {
+      if (await contents.exists()) {
+        final contentList = await contents.list().toList();
+        for (var i = 0; i < contentList.length - 1; i++) {
+          // if (i > 4) break;
+          final entity = contentList[i];
+          if ((await entity.stat()).type == FileSystemEntityType.file) {
+            final book = await getBookFromArchive(entity.path);
+            if (book.name != 'none') {
+              books.add(book);
+            }
+          }
+        }
+      }
 
-  @override
-  void initState() {
-    //TOOD: get all volumes from folder
-    // getFilesFromLib();
-    testPath();
-    super.initState();
+      return books;
+    } catch (e) {
+      print("ERR");
+      print(e);
+      return [];
+    }
   }
 
   Widget pageBuilder(BuildContext context, int index) {
@@ -31,11 +46,12 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   Widget bookBuilder(BuildContext context, AsyncSnapshot<List<Book>> snapshot) {
+    print(snapshot.data);
     return Wrap(
         children: snapshot.hasData
             ? snapshot.data!.map((e) {
                 return Column(
-                  children: [Image.file(File(e.path)), Text(e.title)],
+                  children: [e.image, Text(e.name)],
                 );
               }).toList()
             : []);
@@ -46,10 +62,17 @@ class _MyHomePageState extends State<MyHomePage> {
         appBar: AppBar(
           title: const Text('Lib'),
         ),
-        body: Center(
-            child: FutureBuilder(
-                future: extractCoverImage('/home/petar/bigboy/Manga/One Piece'),
-                builder: bookBuilder))
+        body: ListView(
+          children: [
+            Padding(
+              padding: const EdgeInsets.only(top: 30, left: 60),
+              child: FutureBuilder(
+                builder: bookBuilder,
+                future: getBooks(),
+              ),
+            )
+          ],
+        )
         // This trailing comma makes auto-formatting nicer for build methods.
         );
   }
