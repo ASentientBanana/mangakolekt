@@ -1,9 +1,7 @@
-import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:mangakolekt/bloc/library.dart';
 import 'package:mangakolekt/models/Book.dart';
-import 'package:mangakolekt/util/files.dart';
-import '../util/archive.dart';
-import 'package:path_provider/path_provider.dart';
+import 'package:mangakolekt/widgets/libList.dart';
 
 class MyHomePage extends StatefulWidget {
   const MyHomePage({super.key});
@@ -15,38 +13,9 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   List<Image> images = [];
 
-  Future<List<Book>> getBooks() async {
-    var contents = Directory("/home/petar/bigboy/Manga/OnePiece");
-    List<Book> books = [];
-    try {
-      if (await contents.exists()) {
-        final contentList = await contents.list().toList();
-        for (var i = 0; i < contentList.length - 1; i++) {
-          // if (i > 4) break;
-          final entity = contentList[i];
-          if ((await entity.stat()).type == FileSystemEntityType.file) {
-            final book = await getBookFromArchive(entity.path);
-            if (book.name != 'none') {
-              books.add(book);
-            }
-          }
-        }
-      }
-
-      return books;
-    } catch (e) {
-      print("ERR");
-      print(e);
-      return [];
-    }
-  }
-
-  Widget pageBuilder(BuildContext context, int index) {
-    return images[index];
-  }
+  final libBloc = LibraryBloc();
 
   Widget bookBuilder(BuildContext context, AsyncSnapshot<List<Book>> snapshot) {
-    print(snapshot.data);
     return Wrap(
         children: snapshot.hasData
             ? snapshot.data!.map((e) {
@@ -57,23 +26,38 @@ class _MyHomePageState extends State<MyHomePage> {
             : []);
   }
 
+  @override
+  void dispose() {
+    // TODO: implement dispose
+    libBloc.cleanup();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(
-          title: const Text('Lib'),
-        ),
-        body: ListView(
+      appBar: AppBar(title: const Text('Select Library you want to read')),
+      body: Container(
+        padding: const EdgeInsets.all(4),
+        child: Row(
           children: [
-            Padding(
-              padding: const EdgeInsets.only(top: 30, left: 60),
-              child: FutureBuilder(
-                builder: bookBuilder,
-                future: getBooks(),
-              ),
-            )
+            Flexible(
+              flex: 1,
+              child: LibList(),
+            ),
+            Flexible(
+                flex: 3,
+                child: Container(
+                  color: Colors.orange,
+                )),
           ],
-        )
-        // This trailing comma makes auto-formatting nicer for build methods.
-        );
+        ),
+      ),
+      floatingActionButton: FloatingActionButton(
+          child: Icon(Icons.add),
+          onPressed: () {
+            libBloc.libSink.add("Some string");
+          }),
+    );
   }
 }

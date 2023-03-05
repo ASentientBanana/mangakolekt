@@ -18,11 +18,11 @@ Future<void> initTmpDir() async {
   var tmpBooks = Directory("${tempDir.path}/$tmpDirName/books");
   var tmpBook = Directory("${tempDir.path}/$tmpDirName/book");
 
-  print("creating base dir");
+  // Create base tmp dir
   await tmp.create();
-  print("creating book dir");
+  // create book dir
   await tmpBook.create();
-  print("creating books dir");
+  // create books dir ( dir for storing tmp book covers )
   await tmpBooks.create();
 }
 
