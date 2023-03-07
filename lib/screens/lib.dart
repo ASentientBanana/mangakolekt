@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:mangakolekt/bloc/library.dart';
 import 'package:mangakolekt/models/Book.dart';
+import 'package:mangakolekt/widgets/libGrid.dart';
 import 'package:mangakolekt/widgets/libList.dart';
 
 class MyHomePage extends StatefulWidget {
@@ -46,10 +47,9 @@ class _MyHomePageState extends State<MyHomePage> {
               child: LibList(),
             ),
             Flexible(
-                flex: 3,
-                child: Container(
-                  color: Colors.orange,
-                )),
+              flex: 3,
+              child: LibGrid(),
+            ),
           ],
         ),
       ),

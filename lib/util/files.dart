@@ -10,3 +10,13 @@ Future<List<File>> getFileListFromDir() async {
     return File(elem.path);
   }).toList();
 }
+
+Future<void> createLibFolder(String path) async {
+  //scan dir
+  var dir = Directory(path);
+  var list = dir.list();
+  list.forEach((element) {
+    print(element);
+  });
+// check if
+}

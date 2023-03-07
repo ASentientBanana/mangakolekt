@@ -36,7 +36,7 @@ Future<Book?> getCoverFromArchive(String path) async {
     return null;
   }
 
-  // Extract the contents of the Zip archive to disk.
+// Extract the contents of the Zip archive to disk.
   final coverArchive = archive.files.where((e) => e.isFile).first;
 
   final out =
