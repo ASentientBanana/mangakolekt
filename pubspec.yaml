@@ -39,6 +39,7 @@ dependencies:
   archive: ^3.3.6
   path_provider: ^2.0.12
   yaml: ^3.1.1
+  file_picker: ^5.2.6
 
 dev_dependencies:
   flutter_test:

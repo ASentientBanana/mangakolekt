@@ -1,6 +1,8 @@
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:mangakolekt/bloc/library.dart';
 import 'package:mangakolekt/models/Book.dart';
+import 'package:mangakolekt/util/files.dart';
 import 'package:mangakolekt/widgets/libGrid.dart';
 import 'package:mangakolekt/widgets/libList.dart';
 
@@ -25,6 +27,12 @@ class _MyHomePageState extends State<MyHomePage> {
                 );
               }).toList()
             : []);
+  }
+
+  Future<void> pickDirHandler() async {
+    final dir = await pickDirectory();
+    if (dir == null) return;
+    await createLibFolder(dir);
   }
 
   @override
@@ -56,7 +64,7 @@ class _MyHomePageState extends State<MyHomePage> {
       floatingActionButton: FloatingActionButton(
           child: Icon(Icons.add),
           onPressed: () {
-            libBloc.libSink.add("Some string");
+            pickDirHandler();
           }),
     );
   }

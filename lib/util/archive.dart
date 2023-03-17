@@ -8,16 +8,6 @@ import '../constants.dart';
 const String libFolderName = '.mangaKolektLib';
 const String libCoverFolderName = '.mangaKolektLib';
 
-Future<void> createLib(String path) async {
-  //scan dir
-  var dir = Directory(path);
-  var list = dir.list();
-  list.forEach((element) {
-    print(element);
-  });
-// check if
-}
-
 Future<Book?> getCoverFromArchive(String path) async {
   // final book = await File(path).readAsBytes();
 
@@ -116,6 +106,7 @@ Future<List<Book>> getBooks(String path) async {
     if (await contents.exists()) {
       final contentList = await contents.list().toList();
       for (var i = 0; i < contentList.length - 1; i++) {
+        //For testing. Need to make this more user friendly
         if (i > 6) break;
         final entity = contentList[i];
         if ((await entity.stat()).type == FileSystemEntityType.file) {
