@@ -1,8 +1,17 @@
-import 'dart:ffi';
-
 import 'package:flutter/material.dart';
 
 enum BookReadStatus { read, unread }
+
+abstract class DbBookEntety {
+  late String name;
+  late String path;
+}
+
+class BookCover {
+  final String name;
+  final String path;
+  BookCover({required this.name, required this.path});
+}
 
 class Book {
   String name;

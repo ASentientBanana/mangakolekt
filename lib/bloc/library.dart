@@ -4,7 +4,7 @@ import 'dart:async';
 
 class LibraryBloc {
   String selectedLib = '';
-  final _blocCounterControler = StreamController<String>();
+  final _blocCounterControler = StreamController<String>.broadcast();
 
   StreamSink<String> get libSink => _blocCounterControler.sink;
   Stream<String> get libStream => _blocCounterControler.stream;
@@ -14,7 +14,9 @@ class LibraryBloc {
   // Stream<LibraryEvents> get libEventStream => _eventStreamControler.stream;
 
   LibraryBloc() {
+    print("Created bloc");
     libStream.listen((event) {
+      print("Listening to::");
       print(event);
     });
 
@@ -26,8 +28,10 @@ class LibraryBloc {
     //   });
   }
 
-  void cleanup() {
+  void dispose() {
     // counterSink.
+    libSink.close();
+
     _blocCounterControler.close();
     // _eventStreamControler.close();
   }

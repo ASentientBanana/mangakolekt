@@ -1,14 +1,14 @@
 import 'dart:io';
 import 'package:archive/archive_io.dart';
 import 'package:flutter/material.dart';
-import 'package:mangakolekt/models/Book.dart';
+import 'package:mangakolekt/models/book.dart';
 import 'package:path_provider/path_provider.dart';
 import '../constants.dart';
 
 const String libFolderName = '.mangaKolektLib';
 const String libCoverFolderName = '.mangaKolektLib';
 
-Future<Book?> getCoverFromArchive(String path) async {
+Future<BookCover?> getCoverFromArchive(String path, target) async {
   // final book = await File(path).readAsBytes();
 
   final bookName = path.split('/').last;
@@ -29,23 +29,14 @@ Future<Book?> getCoverFromArchive(String path) async {
 // Extract the contents of the Zip archive to disk.
   final coverArchive = archive.files.where((e) => e.isFile).first;
 
-  final out =
-      '${tempDir.path}/$tmpBooks/${coverArchive.name.replaceAll('/', '-')}';
+  final out = '${tempDir.path}/$libFolderName/$libCoverFolderName/${bookName}';
 
   final data = coverArchive.content as List<int>;
 
   final f = await File(out).create(recursive: true);
   await f.writeAsBytes(data, flush: true);
 
-  return Book(
-      name: bookName,
-      image: Image.file(
-        File(f.path),
-        height: 180,
-        width: 160,
-      ),
-      status: BookReadStatus.unread,
-      read: 23);
+  return BookCover(name: bookName, path: out);
 }
 
 Future<Book?> getBookFromArchive(String path) async {
@@ -99,18 +90,23 @@ Future<Book?> getBookFromArchive(String path) async {
   return null;
 }
 
-Future<List<Book>> getBooks(String path) async {
-  var contents = Directory(path);
-  List<Book> books = [];
+Future<List<BookCover>> getBooks(String path) async {
+  // TODO: Add a target path for dumping images, read mapper file return Cover
+  final contents = Directory("$path/$libFolderName/$libCoverFolderName");
+  // Target here
+  List<BookCover> books = [];
   try {
     if (await contents.exists()) {
       final contentList = await contents.list().toList();
-      for (var i = 0; i < contentList.length - 1; i++) {
+      for (var i = 0; i < contentList.length; i++) {
         //For testing. Need to make this more user friendly
         if (i > 6) break;
         final entity = contentList[i];
         if ((await entity.stat()).type == FileSystemEntityType.file) {
-          final book = await getCoverFromArchive(entity.path);
+          final book = await getCoverFromArchive(
+              //TODO: add target instead of empty string
+              entity.path,
+              '');
           if (book != null) books.add(book);
         }
       }

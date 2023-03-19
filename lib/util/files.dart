@@ -1,5 +1,8 @@
+import 'dart:convert';
+import 'dart:ffi';
 import 'dart:io';
 import 'package:file_picker/file_picker.dart';
+import 'package:path_provider/path_provider.dart';
 
 import '../constants.dart';
 import './archive.dart';
@@ -22,6 +25,24 @@ Future<String?> pickDirectory() async {
   return await FilePicker.platform.getDirectoryPath();
 }
 
+Future<void> createAppDB() async {
+  // on linux its '/home/petar/Documents'
+  final appDocumentDir = await getApplicationDocumentsDirectory();
+  final mapFile = File("${appDocumentDir.path}/mangakolekt/$appMapFile");
+
+  if (!(await mapFile.exists())) {
+    await mapFile.create(recursive: true);
+  }
+}
+
+Future<List<String>> readAppDB() async {
+  // on linux its '/home/petar/Documents'
+  final appDocumentDir = await getApplicationDocumentsDirectory();
+  final mapFile = File("${appDocumentDir.path}/mangakolekt/$appMapFile");
+  final mapContents = await mapFile.readAsString();
+  return mapContents.split('\n').where((element) => element != '').toList();
+}
+
 Future<void> createLibFolder(String path) async {
   //scan dir
   final dir = Directory("$path/$libFolederName");
@@ -40,6 +61,12 @@ Future<void> createLibFolder(String path) async {
   await mapFile.create();
 
   //maper format is filename;path
-  final books = getBooks(path);
-  print(books);
+  final books = await getBooks(path);
+  books.forEach((element) {
+    print(element.name);
+  });
+}
+
+Future<void> readFromLib(path) async {
+  return;
 }
