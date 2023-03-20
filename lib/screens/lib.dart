@@ -28,13 +28,14 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   Future<void> pickDirHandler() async {
+    print("PICKER");
     setState(() {
       isPickingFile = true;
     });
-    pickDirHandler().then((value) => null);
     final dir = await pickDirectory();
     if (dir == null) return;
     await createLibFolder(dir);
+    await addToAppDB(dir);
     setState(() {
       isPickingFile = false;
     });
@@ -61,11 +62,7 @@ class _MyHomePageState extends State<MyHomePage> {
       ),
       floatingActionButton: FloatingActionButton(
           child: const Icon(Icons.add),
-          onPressed: isPickingFile
-              ? () {
-                  print("CANT");
-                }
-              : pickDirHandler),
+          onPressed: isPickingFile ? null : pickDirHandler),
     );
   }
 }

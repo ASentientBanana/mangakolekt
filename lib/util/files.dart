@@ -1,5 +1,3 @@
-import 'dart:convert';
-import 'dart:ffi';
 import 'dart:io';
 import 'package:file_picker/file_picker.dart';
 import 'package:path_provider/path_provider.dart';
@@ -43,12 +41,23 @@ Future<List<String>> readAppDB() async {
   return mapContents.split('\n').where((element) => element != '').toList();
 }
 
+Future<void> addToAppDB(String path) async {
+  // on linux its '/home/petar/Documents'
+  final appDocumentDir = await getApplicationDocumentsDirectory();
+  final mapFile = File("${appDocumentDir.path}/mangakolekt/$appMapFile");
+  final mapContents = await mapFile.readAsString();
+  final newMap =
+      mapContents.split('\n').where((element) => element != '').toList();
+  newMap.add(path);
+  final fileContents = newMap.join('\n');
+  await mapFile.writeAsString(fileContents);
+}
+
 Future<void> createLibFolder(String path) async {
   //scan dir
-  final dir = Directory("$path/$libFolederName");
-  final coversDir =
-      Directory("$path/$libFolederName/$libFolderCoverFolderName");
-  final mapFile = File("$path/$libFolederName/$libFolderMapFile");
+  final dir = Directory("$path/$libFolderName");
+  final coversDir = Directory("$path/$libFolderName/$libFolderCoverFolderName");
+  final mapFile = File("$path/$libFolderName/$libFolderMapFile");
   final libFilderExists = await dir.exists();
   if (libFilderExists) {
     print("Folder exists");
@@ -61,12 +70,22 @@ Future<void> createLibFolder(String path) async {
   await mapFile.create();
 
   //maper format is filename;path
+  print("Start map::");
   final books = await getBooks(path);
   books.forEach((element) {
     print(element.name);
+    print(element.name);
   });
+  print("End map::");
 }
 
 Future<void> readFromLib(path) async {
-  return;
+  final dir = Directory("$path/$libFolderName");
+  final coversDir = Directory("$path/$libFolderName/$libFolderCoverFolderName");
+  final mapFile = File("$path/$libFolderName/$libFolderMapFile");
+  final libFilderExists = await dir.exists();
+
+  if (!libFilderExists) return;
 }
+
+Future<void> registerBookToLib(String libPath, bookPath) async {}

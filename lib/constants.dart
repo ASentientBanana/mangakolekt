@@ -7,7 +7,7 @@ const tmpBook = "$tmpDirName/book";
 
 const appMapFile = "map.txt";
 
-const libFolederName = ".mangakolektlib";
+const libFolderName = ".mangakolektLib";
 const libFolderCoverFolderName = "covers";
 const libFolderMapFile = ".mangakolektion";
 

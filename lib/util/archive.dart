@@ -5,15 +5,10 @@ import 'package:mangakolekt/models/book.dart';
 import 'package:path_provider/path_provider.dart';
 import '../constants.dart';
 
-const String libFolderName = '.mangaKolektLib';
-const String libCoverFolderName = '.mangaKolektLib';
-
 Future<BookCover?> getCoverFromArchive(String path, target) async {
   // final book = await File(path).readAsBytes();
 
   final bookName = path.split('/').last;
-
-  Directory tempDir = await getTemporaryDirectory();
 
   final bytes = await File(path).readAsBytes();
   // Decode the Zip file
@@ -29,8 +24,12 @@ Future<BookCover?> getCoverFromArchive(String path, target) async {
 // Extract the contents of the Zip archive to disk.
   final coverArchive = archive.files.where((e) => e.isFile).first;
 
-  final out = '${tempDir.path}/$libFolderName/$libCoverFolderName/${bookName}';
+  //TODO: I need to change the name of the covers
+  final coverName = coverArchive.name.split('/').last;
 
+  final out = '${target}/$libFolderName/$libFolderCoverFolderName/$coverName';
+
+  print("SAVE TO $out");
   final data = coverArchive.content as List<int>;
 
   final f = await File(out).create(recursive: true);
@@ -92,7 +91,9 @@ Future<Book?> getBookFromArchive(String path) async {
 
 Future<List<BookCover>> getBooks(String path) async {
   // TODO: Add a target path for dumping images, read mapper file return Cover
-  final contents = Directory("$path/$libFolderName/$libCoverFolderName");
+  print("GETTING FROM");
+  print(path);
+  final contents = Directory(path);
   // Target here
   List<BookCover> books = [];
   try {
@@ -106,7 +107,7 @@ Future<List<BookCover>> getBooks(String path) async {
           final book = await getCoverFromArchive(
               //TODO: add target instead of empty string
               entity.path,
-              '');
+              path);
           if (book != null) books.add(book);
         }
       }

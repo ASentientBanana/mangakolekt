@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:mangakolekt/util/files.dart';
+import 'package:mangakolekt/widgets/lib_list_item.dart';
 
 class LibList extends StatefulWidget {
   const LibList({super.key});
@@ -26,7 +27,7 @@ class _LibListState extends State<LibList> {
               ?.map(
                 (e) => Padding(
                   padding: EdgeInsets.all(10),
-                  child: ElevatedButton(onPressed: () {}, child: Text(e)),
+                  child: LibListItem(item: e),
                 ),
               )
               .toList();
