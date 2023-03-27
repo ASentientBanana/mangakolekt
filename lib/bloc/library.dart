@@ -1,12 +1,15 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:mangakolekt/models/book.dart';
+import 'package:mangakolekt/models/store.dart';
 
-class LibBloc extends Cubit<String> {
-  LibBloc() : super('');
+class LibBloc extends Cubit<MangaStore> {
+  LibBloc() : super(MangaStore.initial());
 
-  void setPath(String path) {
-    print(path);
-    return emit(path);
+  void setPath(BookCover libBook) {
+    return emit(MangaStore(cover: libBook, list: state.libList));
   }
 
-  // void decrement() => emit(state - 1);
+  void setLibList(List<BookCover> libList) {
+    return emit(MangaStore(cover: state.cover, list: libList));
+  }
 }

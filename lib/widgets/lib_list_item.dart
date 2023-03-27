@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:mangakolekt/bloc/library.dart';
+import 'package:mangakolekt/models/book.dart';
 
 class LibListItem extends StatefulWidget {
-  final String item;
+  final BookCover item;
 
   LibListItem({Key? key, required this.item}) : super(key: key);
 
@@ -12,7 +13,7 @@ class LibListItem extends StatefulWidget {
 }
 
 class _LibListItemState extends State<LibListItem> {
-  final String item;
+  final BookCover item;
 
   _LibListItemState({required this.item});
 
@@ -30,22 +31,24 @@ class _LibListItemState extends State<LibListItem> {
             onPressed: () {
               context.read<LibBloc>().setPath(item);
             },
-            child: Text(item)),
+            child: Text(item.name)),
+        // '${item.name.length <= 15 ? item.name : item.name.substring(0, 10)}...')),
         PopupMenuButton(
             itemBuilder: (context) => [
                   PopupMenuItem<String>(
                     value: "test",
                     child: const Text('Edit'),
-                    onTap: () {
-                      print("test");
-                    },
+                    onTap: () {},
+                  ),
+                  PopupMenuItem<String>(
+                    value: "test",
+                    child: const Text('Refresh'),
+                    onTap: () {},
                   ),
                   PopupMenuItem<String>(
                     value: "test",
                     child: const Text('Delete'),
-                    onTap: () {
-                      print("test");
-                    },
+                    onTap: () {},
                   )
                 ])
       ],

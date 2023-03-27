@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:mangakolekt/bloc/library.dart';
+import 'package:mangakolekt/models/store.dart';
 import 'package:mangakolekt/util/files.dart';
 import 'package:mangakolekt/widgets/lib_list_item.dart';
 
@@ -11,31 +14,34 @@ class LibList extends StatefulWidget {
 
 class _LibListState extends State<LibList> {
   @override
-  void initState() {
-    // TODO: implement initState
-    super.initState();
-  }
-
-  @override
   Widget build(BuildContext context) {
     return Container(
       color: Colors.blue,
-      padding: EdgeInsets.all(30),
-      child: FutureBuilder(
+      padding: const EdgeInsets.all(30),
+      child: BlocBuilder<LibBloc, MangaStore>(
         builder: (context, snapshot) {
-          final list = snapshot.data
-              ?.map(
-                (e) => Padding(
-                  padding: EdgeInsets.all(10),
-                  child: LibListItem(item: e),
+          return FutureBuilder(
+            builder: (context, snapshot) {
+              print(snapshot.data);
+              final list = snapshot.data
+                  ?.map(
+                    (e) => Padding(
+                      padding: const EdgeInsets.all(10),
+                      child: LibListItem(item: e),
+                    ),
+                  )
+                  .toList();
+              return SizedBox(
+                width: 200,
+                child: Column(
+                  children: list ??
+                      [const Flexible(child: Text("No libraries added"))],
                 ),
-              )
-              .toList();
-          return Column(
-            children: list ?? [],
+              );
+            },
+            future: readAppDB(),
           );
         },
-        future: readAppDB(),
       ),
     );
   }
