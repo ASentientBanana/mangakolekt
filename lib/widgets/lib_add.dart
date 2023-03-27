@@ -1,5 +1,4 @@
 import 'dart:ui';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:mangakolekt/bloc/library.dart';
@@ -81,28 +80,10 @@ class AddToLibraryModalState extends State<AddToLibraryModal> {
           ),
           ElevatedButton(
             onPressed: handleSubmit,
-            child: const Text('Submit'),
+            child: const Text('Add'),
           ),
         ],
       ),
     );
   }
 }
-
-// import 'package:flutter/material.dart';
-
-// class PopupModal extends StatelessWidget {
-
-//   @override
-//   Widget build(BuildContext context) {
-//     return GestureDetector(
-//       onTap: () => FocusScope.of(context).unfocus(),
-//       child: Material(
-//         color: Colors.transparent,
-//         child: Center(
-//           child:
-//         ),
-//       ),
-//     );
-//   }
-// }
