@@ -15,8 +15,13 @@ class BookCover {
   BookCover({required this.name, required this.path, required this.bookPath});
 }
 
-class Book {
+class PageEntry {
   final String name;
-  final String path;
-  Book({required this.name, required this.path});
+  final Image image;
+  PageEntry({required this.name, required this.image});
+}
+
+class Book {
+  int pageNumber = 0;
+  List<PageEntry> pages = [];
 }
