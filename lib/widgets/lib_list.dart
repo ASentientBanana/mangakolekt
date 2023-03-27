@@ -22,7 +22,6 @@ class _LibListState extends State<LibList> {
         builder: (context, snapshot) {
           return FutureBuilder(
             builder: (context, snapshot) {
-              print(snapshot.data);
               final list = snapshot.data
                   ?.map(
                     (e) => Padding(

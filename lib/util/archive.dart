@@ -58,8 +58,12 @@ Future<Book?> getBookFromArchive(String path) async {
     final entry = archive.files[i];
     if (entry.isFile) {
       pageCount++;
-      final originalImage = book.pages
-          .add(PageEntry(name: entry.name, image: Image.memory(entry.content)));
+      final originalImage = book.pages.add(PageEntry(
+          name: entry.name,
+          image: Image.memory(
+            entry.content,
+            fit: BoxFit.fitWidth,
+          )));
     }
   }
   return book;

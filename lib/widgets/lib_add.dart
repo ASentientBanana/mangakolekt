@@ -29,19 +29,16 @@ class AddToLibraryModalState extends State<AddToLibraryModal> {
   }
 
   void handleSubmit() async {
-    final _numberOfFiles = await getNumberOfFiles(widget.selectedDir);
+    final numberOfFiles = await getNumberOfFiles(widget.selectedDir);
     setState(() {
-      maxNumberOfFiles = _numberOfFiles.toDouble();
+      maxNumberOfFiles = numberOfFiles.toDouble();
     });
     await createLibFolder(widget.selectedDir, cb: incrementProgress);
     String enteredText = textEditingController.text;
-    if (widget.selectedDir != null) {
-      await addToAppDB(enteredText, widget.selectedDir).then((libList) {
-        // Fluter doesn't like using context and async/await
-        context.read<LibBloc>().setLibList(libList);
-      });
-      // context.read()
-    }
+    await addToAppDB(enteredText, widget.selectedDir).then((libList) {
+      // Fluter doesn't like using context and async/await
+      context.read<LibBloc>().setLibList(libList);
+    });
     widget.confirmCallback!();
   }
 

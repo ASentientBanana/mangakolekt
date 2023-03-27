@@ -5,6 +5,7 @@ import 'package:mangakolekt/models/book.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:mangakolekt/models/store.dart';
 import 'package:mangakolekt/util/files.dart';
+import 'package:mangakolekt/widgets/lib_grid_item.dart';
 
 class LibGrid extends StatefulWidget {
   const LibGrid({super.key});
@@ -31,23 +32,17 @@ class _LibGridState extends State<LibGrid> {
                 builder: (context, snapshot) {
                   if (snapshot.hasData) {
                     return GridView.count(
-                        padding: const EdgeInsets.all(20),
+
+                        // padding: const EdgeInsets.all(20),
                         primary: false,
                         crossAxisCount: 2,
+                        mainAxisSpacing: 100,
                         crossAxisSpacing: 10,
-                        mainAxisSpacing: 10,
                         children: snapshot.data!
-                            .map((e) => InkWell(
-                                  onTap: () {
-                                    Navigator.pushNamed(context, '/reader',
-                                        //TODO: i need to get the path of the clicked book
-                                        arguments: e.bookPath);
-                                  },
-                                  child: Image.file(File(e.path)),
-                                ))
+                            .map((e) => GridItem(item: e))
                             .toList());
                   } else {
-                    return const Text('loading...');
+                    return const CircularProgressIndicator();
                   }
                 },
                 future: loadTitles(state.cover));

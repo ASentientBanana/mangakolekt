@@ -2,7 +2,7 @@ import 'dart:io';
 import 'package:file_picker/file_picker.dart';
 import 'package:mangakolekt/models/book.dart';
 import 'package:path_provider/path_provider.dart';
-
+import './util.dart';
 import '../constants.dart';
 import './archive.dart';
 
@@ -110,8 +110,10 @@ Future<List<BookCover>> readFromLib(BookCover liBook) async {
       .where((element) => element.isNotEmpty)
       .map((e) => BookCover(name: e[0], path: e[1], bookPath: e[2]))
       .toList();
-  covers.sort((a, b) => a.name.compareTo(b.name));
-  return covers;
+
+  print("${covers.map((e) => e.name).toList()}");
+  // covers.sort(sortCovers);
+  return sortCoversNumeric(covers.toList());
 }
 
 Future<void> registerBookToLib(String libPath, bookPath) async {}
