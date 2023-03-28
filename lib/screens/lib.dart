@@ -36,7 +36,11 @@ class _MyHomePageState extends State<MyHomePage> {
       isPickingFile = true;
     });
     final dir = await pickDirectory();
-    if (dir == null) return;
+    print("picked: $dir");
+    if (dir == null) {
+      closeDialogHandler();
+      return;
+    }
     setState(() {
       showDialog = true;
       selectedDir = dir;
@@ -47,13 +51,19 @@ class _MyHomePageState extends State<MyHomePage> {
     setState(() {
       showDialog = false;
       isPickingFile = false;
+      selectedDir = '';
     });
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Select Library you want to read')),
+      appBar: AppBar(
+        title: const Text(
+          'Select Library you want to read',
+        ),
+        automaticallyImplyLeading: false,
+      ),
       body: Container(
         padding: const EdgeInsets.all(4),
         child: Stack(

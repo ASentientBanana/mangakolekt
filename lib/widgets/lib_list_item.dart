@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:mangakolekt/bloc/library.dart';
 import 'package:mangakolekt/models/book.dart';
+import '../util/files.dart';
 
 class LibListItem extends StatefulWidget {
   final BookCover item;
@@ -23,6 +24,17 @@ class _LibListItemState extends State<LibListItem> {
     super.dispose();
   }
 
+  void handleDelete(BuildContext context) async {
+    final isDeleted = await deleteLib(item.mapString);
+    final dbList = await readAppDB();
+    if (isDeleted) {
+      // ignore: use_build_context_synchronously
+      context.read<LibBloc>().setLibList(dbList);
+      // ignore: use_build_context_synchronously
+      context.read<LibBloc>().resetPath();
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Row(
@@ -38,7 +50,9 @@ class _LibListItemState extends State<LibListItem> {
                   PopupMenuItem<String>(
                     value: "test",
                     child: const Text('Edit'),
-                    onTap: () {},
+                    onTap: () {
+                      print(item.mapString);
+                    },
                   ),
                   PopupMenuItem<String>(
                     value: "test",
@@ -48,7 +62,7 @@ class _LibListItemState extends State<LibListItem> {
                   PopupMenuItem<String>(
                     value: "test",
                     child: const Text('Delete'),
-                    onTap: () {},
+                    onTap: () => handleDelete(context),
                   )
                 ])
       ],

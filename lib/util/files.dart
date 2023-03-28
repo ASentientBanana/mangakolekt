@@ -111,7 +111,6 @@ Future<List<BookCover>> readFromLib(BookCover liBook) async {
       .map((e) => BookCover(name: e[0], path: e[1], bookPath: e[2]))
       .toList();
 
-  print("${covers.map((e) => e.name).toList()}");
   // covers.sort(sortCovers);
   return sortCoversNumeric(covers.toList());
 }
@@ -130,4 +129,34 @@ Future<int> getNumberOfFiles(String path) async {
     }
   }
   return filesCount;
+}
+
+Future<bool> deleteLib(String libString) async {
+  //template name;path;bookPath
+  //check if app mapFile and lib mapFile exist;
+  final appDocumentDir = await getApplicationDocumentsDirectory();
+  final mapFile = File("${appDocumentDir.path}/mangakolekt/$appMapFile");
+  final splitLibString = libString.split(';')[1];
+  String path = splitLibString;
+  if (await mapFile.exists()) {
+    final contents = await mapFile.readAsString();
+    //This may be a problem if user wants same lib as multiple entries
+    final splitContents = contents.split('\n');
+    final len = splitContents.length;
+    for (var i = 0; i < len; i++) {
+      final element = splitContents[i];
+      if ("$element;".compareTo(libString) == 0) {
+        splitContents.removeAt(i);
+        break;
+      }
+    }
+    await mapFile.writeAsString(splitContents.join('\n'));
+  }
+  final libDir = Directory("$path/$libFolderName");
+  print(libDir.path);
+  if (await libDir.exists()) {
+    await libDir.delete(recursive: true);
+    print("removed map from $path");
+  }
+  return true;
 }

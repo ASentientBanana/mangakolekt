@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:mangakolekt/bloc/library.dart';
 import 'package:mangakolekt/util/files.dart';
+import 'dart:isolate';
 
 class AddToLibraryModal extends StatefulWidget {
   final void Function()? confirmCallback;
@@ -15,11 +16,16 @@ class AddToLibraryModal extends StatefulWidget {
   AddToLibraryModalState createState() => AddToLibraryModalState();
 }
 
+void getNumberOfPages(SendPort send) async {
+  print("PARALEL");
+}
+
 class AddToLibraryModalState extends State<AddToLibraryModal> {
   final TextEditingController textEditingController = TextEditingController();
 
   double numberOfFiles = 0;
   double maxNumberOfFiles = 1;
+  bool isSubmitDisabled = false;
 
   void incrementProgress() {
     setState(() {
@@ -27,18 +33,42 @@ class AddToLibraryModalState extends State<AddToLibraryModal> {
     });
   }
 
-  void handleSubmit() async {
+  void getMaxNumber() async {
     final numberOfFiles = await getNumberOfFiles(widget.selectedDir);
     setState(() {
       maxNumberOfFiles = numberOfFiles.toDouble();
     });
+  }
+
+  @override
+  void initState() {
+    getMaxNumber();
+    super.initState();
+  }
+
+  void handleSubmit() async {
+    setState(() {
+      isSubmitDisabled = true;
+    });
+    // ReceivePort receivePortPageNumber = ReceivePort();
+    // Isolate isolatePageNumber =
+    //     await Isolate.spawn(getNumberOfPages, receivePortPageNumber.sendPort);
     await createLibFolder(widget.selectedDir, cb: incrementProgress);
     String enteredText = textEditingController.text;
     await addToAppDB(enteredText, widget.selectedDir).then((libList) {
       // Fluter doesn't like using context and async/await
       context.read<LibBloc>().setLibList(libList);
     });
+    setState(() {
+      isSubmitDisabled = false;
+    });
     widget.confirmCallback!();
+  }
+
+  void handleCancel() {
+    if (widget.confirmCallback != null) {
+      widget.confirmCallback!();
+    }
   }
 
   @override
@@ -79,8 +109,12 @@ class AddToLibraryModalState extends State<AddToLibraryModal> {
                 ),
           ),
           ElevatedButton(
-            onPressed: handleSubmit,
+            onPressed: isSubmitDisabled ? null : handleSubmit,
             child: const Text('Add'),
+          ),
+          ElevatedButton(
+            onPressed: isSubmitDisabled ? null : handleCancel,
+            child: const Text('Cancel'),
           ),
         ],
       ),

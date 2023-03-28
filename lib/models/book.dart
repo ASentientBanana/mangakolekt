@@ -13,6 +13,7 @@ class BookCover {
   final String path;
   final String bookPath;
   BookCover({required this.name, required this.path, required this.bookPath});
+  String get mapString => "$name;$path;$bookPath";
 }
 
 class PageEntry {

@@ -12,4 +12,10 @@ class LibBloc extends Cubit<MangaStore> {
   void setLibList(List<BookCover> libList) {
     return emit(MangaStore(cover: state.cover, list: libList));
   }
+
+  void resetPath() {
+    return emit(MangaStore(
+        cover: BookCover(name: '', path: '', bookPath: ''),
+        list: state.libList));
+  }
 }
