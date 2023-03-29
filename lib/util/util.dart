@@ -20,3 +20,9 @@ List<BookCover> sortCoversNumeric(List<BookCover> list) {
       return a.name.compareTo(b.name);
     });
 }
+
+void swap(List list, int i, int j) {
+  var temp = list[i];
+  list[i] = list[j];
+  list[j] = temp;
+}

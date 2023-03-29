@@ -61,7 +61,7 @@ Future<Book?> getBookFromArchive(String path) async {
           name: entry.name,
           image: Image.memory(
             entry.content,
-            fit: BoxFit.fitWidth,
+            fit: BoxFit.contain,
           )));
     }
   }

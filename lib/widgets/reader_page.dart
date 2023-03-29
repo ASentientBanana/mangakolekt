@@ -5,17 +5,21 @@ import 'package:mangakolekt/models/book.dart';
 
 class ReaderPage extends StatelessWidget {
   final PageEntry item;
+  final bool isGridView;
 
-  const ReaderPage({Key? key, required this.item}) : super(key: key);
+  const ReaderPage({Key? key, required this.item, required this.isGridView})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     final Size screenSize = MediaQuery.of(context).size;
-    return SizedBox(
-      width: screenSize.width,
-      child: Column(
-        children: [item.image],
+    return GridTile(
+        child: FractionallySizedBox(
+      heightFactor: 1,
+      // height: 100,
+      child: Center(
+        child: item.image,
       ),
-    );
+    ));
   }
 }
