@@ -41,8 +41,6 @@ Future<BookCover?> getCoverFromArchive(String path, target) async {
 Future<Book?> getBookFromArchive(String path) async {
   // final book = await File(path).readAsBytes();
 
-  final book = Book();
-
   final bytes = await File(path).readAsBytes();
   // Decode the Zip file
   final bookName = path.split('/').last;
@@ -53,12 +51,13 @@ Future<Book?> getBookFromArchive(String path) async {
     return null;
   }
   final len = archive.files.length;
-  int pageCount = 0;
+  int pageNumber = 0;
+  List<PageEntry> pages = [];
   for (var i = 0; i < len; i++) {
     final entry = archive.files[i];
     if (entry.isFile) {
-      pageCount++;
-      final originalImage = book.pages.add(PageEntry(
+      pageNumber++;
+      pages.add(PageEntry(
           name: entry.name,
           image: Image.memory(
             entry.content,
@@ -66,7 +65,8 @@ Future<Book?> getBookFromArchive(String path) async {
           )));
     }
   }
-  return book;
+
+  return Book(pages: pages, pageNumber: pageNumber, name: bookName);
   // Extract the contents of the Zip archive to disk.
   // for (final file in archive) {
   //   final out = '${tempDir.path}/$tmpBooks/$bookName/${file.name}';

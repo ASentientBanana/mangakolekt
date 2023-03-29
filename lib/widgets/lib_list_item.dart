@@ -18,12 +18,6 @@ class _LibListItemState extends State<LibListItem> {
 
   _LibListItemState({required this.item});
 
-  @override
-  void dispose() {
-    // TODO: implement dispose
-    super.dispose();
-  }
-
   void handleDelete(BuildContext context) async {
     final isDeleted = await deleteLib(item.mapString);
     final dbList = await readAppDB();

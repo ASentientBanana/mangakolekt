@@ -23,6 +23,8 @@ class PageEntry {
 }
 
 class Book {
-  int pageNumber = 0;
-  List<PageEntry> pages = [];
+  final int pageNumber;
+  final String name;
+  final List<PageEntry> pages;
+  Book({required this.name, required this.pageNumber, required this.pages});
 }
