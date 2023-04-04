@@ -16,7 +16,7 @@ class _LibListState extends State<LibList> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      color: Colors.blue,
+      color: Theme.of(context).colorScheme.tertiary,
       padding: const EdgeInsets.all(30),
       child: BlocBuilder<LibBloc, MangaStore>(
         builder: (context, snapshot) {

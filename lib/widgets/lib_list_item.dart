@@ -34,6 +34,9 @@ class _LibListItemState extends State<LibListItem> {
     return Row(
       children: [
         ElevatedButton(
+            style: ButtonStyle(
+                backgroundColor: MaterialStateProperty.all(
+                    Theme.of(context).colorScheme.secondary)),
             onPressed: () {
               context.read<LibBloc>().setPath(item);
             },

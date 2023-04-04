@@ -16,12 +16,38 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    const primaryColor = Color(0xFFEAC57D);
+    const accentColor = Color(0xFF7B7C81);
+    const backgroundColor = Color(0xFF1D0F0F);
+    const primaryDark = Color(0xFF7B586B);
+    const tertiary = Color(0xFF453C41);
     return BlocProvider(
       create: (context) => LibBloc(),
       child: MaterialApp(
         title: 'MangaKolekt',
         theme: ThemeData(
-          primarySwatch: Colors.blue,
+          primaryColor: primaryColor,
+          brightness: Brightness.dark,
+          scaffoldBackgroundColor: backgroundColor,
+          textTheme: const TextTheme(
+            displayLarge: TextStyle(
+              fontSize: 24,
+              fontWeight: FontWeight.bold,
+              color: Colors.black,
+            ),
+          ),
+          appBarTheme: const AppBarTheme(
+            backgroundColor: primaryDark,
+            foregroundColor: Colors.white,
+            iconTheme: IconThemeData(
+              color: Colors.white,
+            ),
+          ),
+          colorScheme: ColorScheme.fromSwatch().copyWith(
+              primary: primaryColor,
+              secondary: accentColor,
+              tertiary: tertiary,
+              brightness: Brightness.dark),
         ),
         routes: {
           '/': (context) => const SplashScreen(),

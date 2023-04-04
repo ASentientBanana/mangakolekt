@@ -43,6 +43,7 @@ class AddToLibraryModalState extends State<AddToLibraryModal> {
   @override
   void initState() {
     getMaxNumber();
+    textEditingController.text = widget.selectedDir.split('/').last;
     super.initState();
   }
 
@@ -79,7 +80,7 @@ class AddToLibraryModalState extends State<AddToLibraryModal> {
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(10),
-        color: Colors.white,
+        color: Theme.of(context).colorScheme.secondary,
       ),
       child: Column(
         mainAxisSize: MainAxisSize.min,
@@ -108,14 +109,24 @@ class AddToLibraryModalState extends State<AddToLibraryModal> {
                     maxNumberOfFiles // Clamps the value between 0 and 232 and squeezes it between 0 and 1
                 ),
           ),
-          ElevatedButton(
-            onPressed: isSubmitDisabled ? null : handleSubmit,
-            child: const Text('Add'),
-          ),
-          ElevatedButton(
-            onPressed: isSubmitDisabled ? null : handleCancel,
-            child: const Text('Cancel'),
-          ),
+          Center(
+            child: Row(
+              children: [
+                Expanded(
+                    child: ElevatedButton(
+                  onPressed: isSubmitDisabled ? null : handleSubmit,
+                  child: const Text('Add'),
+                )),
+                const Padding(padding: EdgeInsets.all(20)),
+                Expanded(
+                  child: ElevatedButton(
+                    onPressed: isSubmitDisabled ? null : handleCancel,
+                    child: const Text('Cancel'),
+                  ),
+                )
+              ],
+            ),
+          )
         ],
       ),
     );

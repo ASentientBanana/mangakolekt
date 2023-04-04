@@ -5,6 +5,7 @@ import 'package:mangakolekt/widgets/reader_appbar.dart';
 import 'package:mangakolekt/widgets/reader_page.dart';
 
 import '../util/archive.dart';
+import '../widgets/reader_grid.dart';
 
 class MangaReader extends StatefulWidget {
   MangaReader({Key? key}) : super(key: key);
@@ -14,9 +15,6 @@ class MangaReader extends StatefulWidget {
 }
 
 class _MangaReaderState extends State<MangaReader> {
-  int numberOfPages = 0;
-  bool isDoublePageView = false;
-  bool isRightToLeftMode = false;
   //TODO: Add init state to scan for open manga
   @override
   void initState() {
@@ -29,71 +27,13 @@ class _MangaReaderState extends State<MangaReader> {
     return book;
   }
 
-  List<Widget> createDoubleView(List<PageEntry> list) {
-    if (!isRightToLeftMode) {
-      return list
-          .map((e) => ReaderPage(
-                item: e,
-                isGridView: true,
-              ))
-          .toList();
-    } else {
-      final len = list.length;
-      for (var i = 0; i < len; i++) {
-        if (i + 1 < len && i % 2 == 0) {
-          swap(list, i, i + 1);
-        }
-      }
-      return list
-          .map((e) => ReaderPage(
-                item: e,
-                isGridView: true,
-              ))
-          .toList();
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     return FutureBuilder(
       builder: (context, snapshot) {
         if (snapshot.hasData) {
           // numberOfPages = snapshot.data!.pageNumber;
-          return Scaffold(
-              appBar: AppBar(
-                title: Text(snapshot.data!.name),
-                actions: [
-                  TextButton(
-                      onPressed: () {
-                        setState(() {
-                          isDoublePageView = !isDoublePageView;
-                        });
-                      },
-                      child: const Text(
-                        "Double page",
-                        style: TextStyle(color: Colors.white),
-                      )),
-                  TextButton(
-                      onPressed: isDoublePageView
-                          ? () {
-                              setState(() {
-                                isRightToLeftMode = !isRightToLeftMode;
-                              });
-                            }
-                          : null,
-                      child: const Text(
-                        "Right to left",
-                        style: TextStyle(color: Colors.white),
-                      )),
-                ],
-              ),
-              body: Center(
-                child: GridView.count(
-                  crossAxisCount: isDoublePageView ? 2 : 1,
-                  primary: false,
-                  children: createDoubleView(snapshot.data!.pages),
-                ),
-              ));
+          return ReaderGrid(book: snapshot.data!);
         } else {
           return const Center(
             child: CircularProgressIndicator(),
