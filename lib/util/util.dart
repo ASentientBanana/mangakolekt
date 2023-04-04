@@ -1,4 +1,5 @@
 import 'package:mangakolekt/models/book.dart';
+import 'package:mangakolekt/util/files.dart';
 
 List<BookCover> sortCoversNumeric(List<BookCover> list) {
   final regex = RegExp(r'\d+');
@@ -25,4 +26,14 @@ void swap(List list, int i, int j) {
   var temp = list[i];
   list[i] = list[j];
   list[j] = temp;
+}
+
+void switchReadingDirection(list) {
+  final len = list.length;
+
+  for (var i = 0; i < len; i++) {
+    if (i + 1 < len && i % 2 == 0) {
+      swap(list, i, i + 1);
+    }
+  }
 }

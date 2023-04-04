@@ -3,6 +3,7 @@ import 'package:mangakolekt/models/book.dart';
 import 'package:mangakolekt/util/util.dart';
 import 'package:mangakolekt/widgets/reader_appbar.dart';
 import 'package:mangakolekt/widgets/reader_page.dart';
+import 'package:mangakolekt/widgets/reader_single.dart';
 
 import '../util/archive.dart';
 import '../widgets/reader_grid.dart';
@@ -33,7 +34,8 @@ class _MangaReaderState extends State<MangaReader> {
       builder: (context, snapshot) {
         if (snapshot.hasData) {
           // numberOfPages = snapshot.data!.pageNumber;
-          return ReaderGrid(book: snapshot.data!);
+          // return ReaderGrid(book: snapshot.data!);
+          return ReaderSingle(book: snapshot.data!);
         } else {
           return const Center(
             child: CircularProgressIndicator(),

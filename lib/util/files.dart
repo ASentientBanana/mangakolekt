@@ -160,3 +160,9 @@ Future<bool> deleteLib(String libString) async {
   }
   return true;
 }
+
+Future<List<BookCover>> loadTitles(BookCover? libBook) async {
+  if (libBook?.path == '' || libBook == null) return [];
+  final lib = await readFromLib(libBook);
+  return lib;
+}

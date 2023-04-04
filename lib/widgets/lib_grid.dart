@@ -5,6 +5,7 @@ import 'package:mangakolekt/models/book.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:mangakolekt/models/store.dart';
 import 'package:mangakolekt/util/files.dart';
+import 'package:mangakolekt/util/files.dart';
 import 'package:mangakolekt/widgets/lib_grid_item.dart';
 
 class LibGrid extends StatefulWidget {
@@ -15,12 +16,6 @@ class LibGrid extends StatefulWidget {
 }
 
 class _LibGridState extends State<LibGrid> {
-  Future<List<BookCover>> loadTitles(BookCover? libBook) async {
-    if (libBook?.path == '' || libBook == null) return [];
-    final lib = await readFromLib(libBook);
-    return lib;
-  }
-
   @override
   Widget build(BuildContext context) {
     return Container(
