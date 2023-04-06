@@ -1,4 +1,3 @@
-import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:mangakolekt/bloc/library.dart';
@@ -16,9 +15,7 @@ class AddToLibraryModal extends StatefulWidget {
   AddToLibraryModalState createState() => AddToLibraryModalState();
 }
 
-void getNumberOfPages(SendPort send) async {
-  print("PARALEL");
-}
+void getNumberOfPages(SendPort send) async {}
 
 class AddToLibraryModalState extends State<AddToLibraryModal> {
   final TextEditingController textEditingController = TextEditingController();
@@ -86,7 +83,7 @@ class AddToLibraryModalState extends State<AddToLibraryModal> {
         mainAxisSize: MainAxisSize.min,
         children: [
           Text(
-            'Enter a name for the lib located at: ${widget.selectedDir ?? " No dir selected"}',
+            'Enter a name for the lib located at: ${widget.selectedDir}',
             style: const TextStyle(
               fontWeight: FontWeight.bold,
               fontSize: 20,

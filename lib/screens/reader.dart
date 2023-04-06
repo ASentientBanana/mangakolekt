@@ -1,12 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:mangakolekt/models/book.dart';
-import 'package:mangakolekt/util/util.dart';
-import 'package:mangakolekt/widgets/reader_appbar.dart';
-import 'package:mangakolekt/widgets/reader_page.dart';
 import 'package:mangakolekt/widgets/reader_single.dart';
-
 import '../util/archive.dart';
-import '../widgets/reader_grid.dart';
 
 class MangaReader extends StatefulWidget {
   MangaReader({Key? key}) : super(key: key);
@@ -42,7 +37,6 @@ class _MangaReaderState extends State<MangaReader> {
           );
         }
       },
-      //TODO: complete the future
       future: getBook(context),
     );
     // return

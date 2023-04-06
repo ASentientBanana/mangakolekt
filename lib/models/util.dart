@@ -1,0 +1,1 @@
+enum ScaleTo { width, height }

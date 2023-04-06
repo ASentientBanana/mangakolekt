@@ -9,8 +9,6 @@ void main() {
   runApp(const MyApp());
 }
 
-// TODO: Posibly move this to a init state later? It may be called too much.
-
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 

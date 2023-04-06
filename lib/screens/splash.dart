@@ -1,13 +1,5 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
-import 'package:path_provider/path_provider.dart';
 import 'package:mangakolekt/util/files.dart';
-import 'dart:io';
-
-import 'package:path_provider/path_provider.dart';
-
-import '../constants.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({Key? key}) : super(key: key);
