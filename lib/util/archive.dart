@@ -1,11 +1,15 @@
+import 'dart:async';
 import 'dart:io';
+import 'dart:isolate';
 import 'package:archive/archive_io.dart';
 import 'package:flutter/material.dart';
+import 'package:isolate_pool_2/isolate_pool_2.dart' as isoPool;
 import 'package:mangakolekt/models/book.dart';
 import 'package:path_provider/path_provider.dart';
 import '../constants.dart';
 
-Future<BookCover?> getCoverFromArchive(String path, target) async {
+Future<BookCover?> getCoverFromArchive(
+    String path, target, Callback? cb) async {
   // final book = await File(path).readAsBytes();
 
   final bookName = path.split('/').last;
@@ -34,7 +38,7 @@ Future<BookCover?> getCoverFromArchive(String path, target) async {
 
   final f = await File(out).create(recursive: true);
   await f.writeAsBytes(data, flush: true);
-
+  if (cb != null) cb();
   return BookCover(name: bookName, path: out, bookPath: path);
 }
 
@@ -91,6 +95,74 @@ Future<Book?> getBookFromArchive(String path) async {
 
 typedef void Callback();
 
+// Future<Book>
+
+class CoverGenerator extends isoPool.PooledInstance {
+  @override
+  Future init() {
+    // TODO: implement init
+    throw UnimplementedError();
+  }
+
+  @override
+  Future receiveRemoteCall(isoPool.Action action) {
+    // TODO: implement receiveRemoteCall
+    throw UnimplementedError();
+  }
+}
+
+Future<List<BookCover>> getBooksForSlice(
+    List<String> contentList, Callback? cb, String target) async {
+  final List<BookCover> books = [];
+  for (var i = 0; i < contentList.length; i++) {
+    //For testing. Need to make this more user friendly
+    // if (i > 6) break;
+    final entity = contentList[i];
+    final book = await getCoverFromArchive(entity, target, null);
+    if (cb != null && book != null) {
+      books.add(book);
+      cb();
+    }
+  }
+  print("Done");
+  return books;
+}
+
+Future<List<BookCover>> getBooksV2(String path, {Callback? cb}) async {
+  // TODO: Add a target path for dumping images, read mapper file return Cover
+  final contents = Directory(path);
+  // Target here
+  List<BookCover> books = [];
+  final List<Future<BookCover?>> jobs = [];
+  try {
+    if (await contents.exists()) {
+      final contentList = await contents.list().toList();
+      for (var i = 0; i < contentList.length; i++) {
+        //For testing. Need to make this more user friendly
+        // if (i > 6) break;
+        final entity = contentList[i];
+        if ((await entity.stat()).type == FileSystemEntityType.file) {
+          jobs.add(getCoverFromArchive(
+              //TODO: add target instead of empty string
+              entity.path,
+              path,
+              cb));
+          // if (book != null) books.add(book);
+        }
+      }
+    }
+    final b = await Future.wait(jobs);
+    for (var i = 0; i < b.length; i++) {
+      if (b[i] != null) {
+        books.add(b[i]!);
+      }
+    }
+    return books;
+  } catch (e) {
+    return [];
+  }
+}
+
 Future<List<BookCover>> getBooks(String path, {Callback? cb}) async {
   // TODO: Add a target path for dumping images, read mapper file return Cover
   final contents = Directory(path);
@@ -107,7 +179,8 @@ Future<List<BookCover>> getBooks(String path, {Callback? cb}) async {
           final book = await getCoverFromArchive(
               //TODO: add target instead of empty string
               entity.path,
-              path);
+              path,
+              null);
           if (cb != null) {
             cb();
           }

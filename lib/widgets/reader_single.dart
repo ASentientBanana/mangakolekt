@@ -1,13 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:mangakolekt/models/util.dart';
 import 'package:mangakolekt/widgets/reader_page.dart';
+import 'package:mangakolekt/widgets/reader_single_image.dart';
 import '../models/book.dart';
 import '../util/util.dart';
 import 'package:flutter/services.dart';
 
 class ReaderSingle extends StatefulWidget {
   final Book book;
-  ReaderSingle({Key? key, required this.book}) : super(key: key);
+  const ReaderSingle({Key? key, required this.book}) : super(key: key);
   @override
   _ReaderGridState createState() => _ReaderGridState();
 }
@@ -23,7 +24,7 @@ class _ReaderGridState extends State<ReaderSingle> {
   bool isDoublePageView = false;
   bool isRightToLeftMode = false;
   List<_Page> pages = [];
-  _Page? currentPage;
+  List<_Page> currentPages = [];
   final _focusNode = FocusNode();
   bool _keyPressed = false;
   ScaleTo scaleTo = ScaleTo.height;
@@ -37,15 +38,8 @@ class _ReaderGridState extends State<ReaderSingle> {
     keyMap[LogicalKeyboardKey.space] = nextPage;
     keyMap[LogicalKeyboardKey.arrowRight] = nextPage;
     keyMap[LogicalKeyboardKey.arrowLeft] = prevPage;
-    // keyMap[LogicalKeyboardKey.arrowDown] = nextPage;
-    // keyMap[LogicalKeyboardKey.arrowUp] = prevPage;
-  }
-
-  void switchDirection() {
-    setState(() {
-      isRightToLeftMode = !isRightToLeftMode;
-      switchReadingDirection(pages);
-    });
+    keyMap[LogicalKeyboardKey.arrowDown] = nextPage;
+    keyMap[LogicalKeyboardKey.arrowUp] = prevPage;
   }
 
   void handleScrollAnimation(double index) {
@@ -54,14 +48,65 @@ class _ReaderGridState extends State<ReaderSingle> {
         duration: const Duration(milliseconds: 1), curve: Curves.linear);
   }
 
+  void setPagesDouble() {
+    setState(() {
+      if (currentPages[0].index < pages.length - 2) {
+        currentPages.add(pages[currentPages[0].index + 1]);
+      } else {
+        _Page p = currentPages[0];
+        currentPages[0] = pages[p.index - 1];
+        currentPages[1] = p;
+      }
+      isDoublePageView = true;
+    });
+  }
+
+  void setPagesSingle() {
+    setState(() {
+      currentPages.removeAt(1);
+      isDoublePageView = false;
+    });
+  }
+
+  void swapReadingOrientation() {
+    setState(() {
+      final _p = currentPages[0];
+      currentPages[0] = currentPages[1];
+      currentPages[1] = _p;
+    });
+    // if (isDoublePageView) {
+    // }
+  }
+
+  void switchDirection() {
+    setState(() {
+      isRightToLeftMode = !isRightToLeftMode;
+    });
+  }
+
   void nextPage(RawKeyEvent event) {
     if (event is RawKeyDownEvent && !_keyPressed) {
+      if (currentPages.last.index == pages.last.index) return;
       setState(() {
         _keyPressed = true;
-        if (currentPage != null && currentPage!.index < pages.length - 1) {
-          currentPage = pages[currentPage!.index + 1];
-          handleScrollAnimation(currentPage!.index.toDouble());
+        if (isDoublePageView) {
+          if (currentPages[1].index < pages.length - 2) {
+            currentPages.replaceRange(0, 2, [
+              pages[currentPages[0].index + 2],
+              pages[currentPages[1].index + 2]
+            ]);
+          } else {
+            currentPages.replaceRange(0, 2, [
+              pages[currentPages[0].index + 1],
+              pages[currentPages[1].index + 1]
+            ]);
+          }
+        } else {
+          if (currentPages[0].index < pages.length - 1) {
+            currentPages[0] = pages[currentPages[0].index + 1];
+          }
         }
+        handleScrollAnimation(currentPages[0].index.toDouble());
       });
     }
     if (event is RawKeyUpEvent && _keyPressed) {
@@ -73,12 +118,27 @@ class _ReaderGridState extends State<ReaderSingle> {
 
   void prevPage(RawKeyEvent event) {
     if (event is RawKeyDownEvent && !_keyPressed) {
+      if (currentPages.first.index == 0) return;
       setState(() {
         _keyPressed = true;
-        if (currentPage != null && currentPage!.index > 0) {
-          currentPage = pages[currentPage!.index - 1];
-          handleScrollAnimation(currentPage!.index.toDouble());
+        if (isDoublePageView) {
+          if (currentPages[1].index > 2) {
+            currentPages.replaceRange(0, 2, [
+              pages[currentPages[0].index - 2],
+              pages[currentPages[1].index - 2]
+            ]);
+          } else {
+            currentPages.replaceRange(0, 2, [
+              pages[currentPages[0].index - 1],
+              pages[currentPages[1].index - 1]
+            ]);
+          }
+        } else {
+          if (currentPages[0].index > 0) {
+            currentPages[0] = pages[currentPages[0].index - 1];
+          }
         }
+        handleScrollAnimation(currentPages[0].index.toDouble());
       });
     }
     if (event is RawKeyUpEvent && _keyPressed) {
@@ -106,7 +166,16 @@ class _ReaderGridState extends State<ReaderSingle> {
       return _Page(entry: e, index: i - 1);
     }).toList();
     if (widget.book.pages.isNotEmpty) {
-      currentPage = pages[0];
+      if (!isDoublePageView)
+        currentPages.add(pages[0]);
+      else {
+        if (pages.length >= 2) {
+          currentPages[0] = pages[0];
+          currentPages[1] = pages[1];
+        } else {
+          currentPages[0] = pages[0];
+        }
+      }
     }
     super.initState();
   }
@@ -149,11 +218,11 @@ class _ReaderGridState extends State<ReaderSingle> {
             TextButton(
               onPressed: () {
                 setState(() {
-                  if (isRightToLeftMode) {
-                    isRightToLeftMode = false;
-                    switchReadingDirection(pages);
+                  if (isDoublePageView) {
+                    setPagesSingle();
+                  } else {
+                    setPagesDouble();
                   }
-                  isDoublePageView = !isDoublePageView;
                 });
               },
               child: const Text(
@@ -169,7 +238,7 @@ class _ReaderGridState extends State<ReaderSingle> {
               ),
             ),
             TextButton(
-              onPressed: toggleImageScaling,
+              onPressed: isDoublePageView ? null : toggleImageScaling,
               child: Text(
                 scaleTo == ScaleTo.height ? "Scale to height" : "Scale to with",
                 style: const TextStyle(color: Colors.white),
@@ -206,13 +275,15 @@ class _ReaderGridState extends State<ReaderSingle> {
                                     child: InkWell(
                                       onTap: () {
                                         setState(() {
-                                          currentPage = e;
+                                          // currentPage = e;
                                         });
                                       },
                                       child: Container(
                                           decoration: BoxDecoration(
-                                              border: e.index ==
-                                                      currentPage!.index
+                                              border: currentPages.any(
+                                                      (element) =>
+                                                          element.index ==
+                                                          e.index)
                                                   ? Border.all(
                                                       color: Colors.red,
                                                       width: 5,
@@ -227,20 +298,30 @@ class _ReaderGridState extends State<ReaderSingle> {
                         .toList(),
                   ),
                 ),
-                Expanded(
-                  flex: 1,
-                  child: Container(
-                    child: currentPage != null
-                        ? scaleTo == ScaleTo.width
-                            ? SingleChildScrollView(
-                                child: Image(
-                                image: currentPage!.entry.image.image,
-                                fit: BoxFit.cover,
-                              ))
-                            : currentPage?.entry.image
-                        : const Text(""),
-                  ),
-                ),
+                ...isRightToLeftMode
+                    ? currentPages
+                        .map(
+                          (e) => Expanded(
+                              flex: 1,
+                              child: SingleImage(
+                                  image: e.entry.image,
+                                  scaleTo: isDoublePageView
+                                      ? ScaleTo.height
+                                      : scaleTo)),
+                        )
+                        .toList()
+                        .reversed
+                    : currentPages
+                        .map(
+                          (e) => Expanded(
+                              flex: 1,
+                              child: SingleImage(
+                                  image: e.entry.image,
+                                  scaleTo: isDoublePageView
+                                      ? ScaleTo.height
+                                      : scaleTo)),
+                        )
+                        .toList()
               ],
             )));
   }

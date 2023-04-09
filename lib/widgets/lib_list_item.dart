@@ -33,14 +33,17 @@ class _LibListItemState extends State<LibListItem> {
   Widget build(BuildContext context) {
     return Row(
       children: [
-        ElevatedButton(
-            style: ButtonStyle(
-                backgroundColor: MaterialStateProperty.all(
-                    Theme.of(context).colorScheme.secondary)),
-            onPressed: () {
-              context.read<LibBloc>().setPath(item);
-            },
-            child: Text(item.name)),
+        Container(
+          constraints: BoxConstraints(maxWidth: 140),
+          child: ElevatedButton(
+              style: ButtonStyle(
+                  backgroundColor: MaterialStateProperty.all(
+                      Theme.of(context).colorScheme.secondary)),
+              onPressed: () {
+                context.read<LibBloc>().setPath(item);
+              },
+              child: Text(item.name, overflow: TextOverflow.ellipsis)),
+        ),
         // '${item.name.length <= 15 ? item.name : item.name.substring(0, 10)}...')),
         PopupMenuButton(
             itemBuilder: (context) => [

@@ -84,7 +84,9 @@ Future<void> createLibFolder(String path, {Callback? cb}) async {
   await mapFile.create();
 
   //maper format is filename;path
-  final books = await getBooks(path, cb: cb);
+  print("Getting books");
+  // final books = await getBooks(path, cb: cb);
+  final books = await getBooksV2(path, cb: cb);
   final covers = books.map((element) {
     return "${element.name};${element.path};${element.bookPath}";
   }).toList();
