@@ -85,15 +85,14 @@ Future<void> createLibFolder(String path, {Callback? cb}) async {
 
   //maper format is filename;path
   final start = DateTime.now().millisecondsSinceEpoch;
-  final books = await getBooksV2(path);
-  // final books = await getBooks(path, cb: cb);
+  // final books = await getBooksV2(path);
+  final books = await getBooks(path, cb: cb);
   final end = DateTime.now().millisecondsSinceEpoch;
-  // print("${(end-start) / 1000} seconds");
+  print("${(end-start) / 1000} seconds");
   // final covers = books.map((element) {
   //   return "${element.name};${element.path};${element.bookPath}";
   // }).toList();
   final s= books.join('\n');
-  print(s);
   await mapFile.writeAsString(books.join('\n'));
 }
 
@@ -159,7 +158,6 @@ Future<bool> deleteLib(String libString) async {
     await mapFile.writeAsString(splitContents.join('\n'));
   }
   final libDir = Directory("$path/$libFolderName");
-  print(libDir.path);
   if (await libDir.exists()) {
     await libDir.delete(recursive: true);
     print("removed map from $path");

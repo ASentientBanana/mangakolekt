@@ -8,7 +8,7 @@ import 'package:path_provider/path_provider.dart';
 import 'package:uuid/uuid.dart';
 import '../constants.dart';
 
-Future<BookCover?> getCoverFromArchive(String path, target) async {
+Future<String?> getCoverFromArchive(String path, target) async {
   // final book = await File(path).readAsBytes();
 
   final bookName = path.split('/').last;
@@ -37,8 +37,8 @@ Future<BookCover?> getCoverFromArchive(String path, target) async {
 
   final f = await File(out).create(recursive: true);
   await f.writeAsBytes(data, flush: true);
-
-  return BookCover(name: bookName, path: out, bookPath: path);
+  return "$bookName;$out;$path";
+  // return BookCover(name: bookName, path: out, bookPath: path);
 }
 
 Future<Book?> getBookFromArchive(String path) async {
@@ -91,7 +91,6 @@ Future<String> unzipFiles(List<File> files, String outputPath) async {
           [chunks[i], receivePorts[i].sendPort, outputPath]));
   await Future.wait(isolateFutures);
   for (final port in receivePorts) {
-    print('1');
     await for (final message in port) {
       if (message is String) {
         coverString.add(message);
@@ -126,10 +125,8 @@ void _unzipFilesInIsolate(List<dynamic> args) async {
         '$outputPath/$libFolderName/$libFolderCoverFolderName/$filename';
     await File(out).create(recursive: true);
     await File(out).writeAsBytes(data, flush: true);
-    // print(object)
     // name;coverPath;bookPath;
     // return BookCover(name: bookName, path: out, bookPath: path);
-    print(out);
     booksString +=
         "$coverName;$out;${file.path}&";
   }
@@ -153,15 +150,14 @@ Future<List<String>> getBooksV2(String path, {Callback? cb}) async {
   // final files = (await dir.list().toList()).map((e) => File(e.path)).toList();  
   final coverString = await unzipFiles(files, path);
   final bookCovers = coverString.split('&').where((element) => element != '');
-  print(coverString);
   return bookCovers.toList();
 }
 
-Future<List<BookCover>> getBooks(String path, {Callback? cb}) async {
+Future<List<String>> getBooks(String path, {Callback? cb}) async {
   // TODO: Add a target path for dumping images, read mapper file return Cover
   final contents = Directory(path);
   // Target here
-  List<BookCover> books = [];
+  List<String> books = [];
   try {
     if (await contents.exists()) {
       final contentList = await contents.list().toList();
