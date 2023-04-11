@@ -74,21 +74,27 @@ Future<void> createLibFolder(String path, {Callback? cb}) async {
   final coversDir = Directory("$path/$libFolderName/$libFolderCoverFolderName");
   final mapFile = File("$path/$libFolderName/$libFolderMapFile");
   final libFilderExists = await dir.exists();
-  if (libFilderExists) {
-    return;
-  }
+  // if (libFilderExists) {
+  //   return;
+  // }
 
-  // Create expected dirs
+  // // Create expected dirs
   await dir.create();
   await coversDir.create();
   await mapFile.create();
 
   //maper format is filename;path
-  final books = await getBooks(path, cb: cb);
-  final covers = books.map((element) {
-    return "${element.name};${element.path};${element.bookPath}";
-  }).toList();
-  await mapFile.writeAsString(covers.join('\n'));
+  final start = DateTime.now().millisecondsSinceEpoch;
+  final books = await getBooksV2(path);
+  // final books = await getBooks(path, cb: cb);
+  final end = DateTime.now().millisecondsSinceEpoch;
+  // print("${(end-start) / 1000} seconds");
+  // final covers = books.map((element) {
+  //   return "${element.name};${element.path};${element.bookPath}";
+  // }).toList();
+  final s= books.join('\n');
+  print(s);
+  await mapFile.writeAsString(books.join('\n'));
 }
 
 Future<List<BookCover>> readFromLib(BookCover liBook) async {

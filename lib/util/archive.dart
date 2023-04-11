@@ -1,8 +1,11 @@
 import 'dart:io';
+import 'dart:math';
+import 'dart:isolate';
 import 'package:archive/archive_io.dart';
 import 'package:flutter/material.dart';
 import 'package:mangakolekt/models/book.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:uuid/uuid.dart';
 import '../constants.dart';
 
 Future<BookCover?> getCoverFromArchive(String path, target) async {
@@ -67,29 +70,92 @@ Future<Book?> getBookFromArchive(String path) async {
   }
 
   return Book(pages: pages, pageNumber: pageNumber, name: bookName);
-  // Extract the contents of the Zip archive to disk.
-  // for (final file in archive) {
-  //   final out = '${tempDir.path}/$tmpBooks/$bookName/${file.name}';
-  //   final Directory d;
-
-  //   if (!file.isFile) {
-  //     d = await Directory(out).create(recursive: true);
-  //   } else {
-  //     d = Directory('');
-  //     final data = file.content as List<int>;
-  //     final f = await File(out).create(recursive: true);
-  //     await f.writeAsBytes(data, flush: true);
-  //   }
-
-  //   if (!(await d.exists())) break;
-  //   final l = await d.list().toList();
-  //   final len = l.length;
-
-  // }
-  return null;
 }
 
 typedef void Callback();
+
+Future<String> unzipFiles(List<File> files, String outputPath) async {
+  final chunkSize = (files.length / 3).ceil();
+  final chunks = [
+    files.sublist(0, chunkSize),
+    files.sublist(chunkSize, chunkSize * 2),
+    files.sublist(chunkSize * 2),
+  ];
+
+  List<String> coverString = [];
+  final receivePorts = List<ReceivePort>.generate(3, (_) => ReceivePort());
+
+  final isolateFutures = List<Future>.generate(
+      3,
+      (i) => Isolate.spawn(_unzipFilesInIsolate,
+          [chunks[i], receivePorts[i].sendPort, outputPath]));
+  await Future.wait(isolateFutures);
+  for (final port in receivePorts) {
+    print('1');
+    await for (final message in port) {
+      if (message is String) {
+        coverString.add(message);
+        port.close();
+      } else {
+        break;
+      }
+    }
+    port.close();
+  }
+  return coverString.join('');
+}
+
+void _unzipFilesInIsolate(List<dynamic> args) async {
+    var uuid = Uuid();
+  final files = args[0] as List<File>;
+  final sendPort = args[1] as SendPort;
+  final outputPath = args[2] as String;
+  var booksString = '';
+  try {
+    for (final file in files) {
+    final bytes = await file.readAsBytes();
+    final archive = ZipDecoder().decodeBytes(bytes);
+    final coverArchive = archive.files.where((e) => e.isFile).first;
+
+    final data = coverArchive.content as List<int>;
+    final coverName = coverArchive.name.split('/').last;
+    final coverExtension = coverArchive.name.split('/').last.split('.').last;
+    final id = uuid.v4();
+    final filename = "$id.$coverExtension";
+    final out =
+        '$outputPath/$libFolderName/$libFolderCoverFolderName/$filename';
+    await File(out).create(recursive: true);
+    await File(out).writeAsBytes(data, flush: true);
+    // print(object)
+    // name;coverPath;bookPath;
+    // return BookCover(name: bookName, path: out, bookPath: path);
+    print(out);
+    booksString +=
+        "$coverName;$out;${file.path}&";
+  }
+  sendPort.send(booksString);
+   return;
+  } catch (e) {
+    return;
+  }
+}
+
+Future<List<String>> getBooksV2(String path, {Callback? cb}) async {
+  final dir = Directory(path);
+  if (!(await dir.exists())) return [];
+  final dirContents = await dir.list().toList();
+  final List<File> files = [];
+  for (var element in dirContents) {
+    if((await element.stat()).type == FileSystemEntityType.file){
+      files.add(File(element.path));
+    }
+  }
+  // final files = (await dir.list().toList()).map((e) => File(e.path)).toList();  
+  final coverString = await unzipFiles(files, path);
+  final bookCovers = coverString.split('&').where((element) => element != '');
+  print(coverString);
+  return bookCovers.toList();
+}
 
 Future<List<BookCover>> getBooks(String path, {Callback? cb}) async {
   // TODO: Add a target path for dumping images, read mapper file return Cover
