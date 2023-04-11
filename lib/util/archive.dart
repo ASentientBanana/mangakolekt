@@ -74,21 +74,44 @@ Future<Book?> getBookFromArchive(String path) async {
 
 typedef void Callback();
 
+List<List<File>> genChunks(List<File> list, int chunkCount, int chunkSize) {
+  final List<List<File>> chunks = [];
+  final bound = list.length / chunkSize;
+  for (var i = 0; i < bound; i++) {
+    final start = i * chunkSize;
+    print("$start-${start + chunkSize}");
+  }
+
+  return chunks;
+}
+
 Future<String> unzipFiles(List<File> files, String outputPath) async {
-  final chunkSize = (files.length / 3).ceil();
-  final chunks = [
-    files.sublist(0, chunkSize),
-    files.sublist(chunkSize, chunkSize * 2),
-    files.sublist(chunkSize * 2),
-  ];
+  // int isolateCount = 3;
+  // int numberOfItems = files.length;
+
+  // if (numberOfItems < isolateCount) {
+  //   isolateCount = numberOfItems;
+  // }
+  // final chunkSize = (files.length / isolateCount).ceil();
+  // print("ISO::: $numberOfItems :: $chunkSize :: $isolateCount");
+
+  // final chunks = genChunks(files, isolateCount, chunkSize);
+  final coreCount = (Platform.numberOfProcessors - 2);
+  final chunkSize = (files.length / coreCount).ceil();
+  final chunks = List<List<File>>.generate(coreCount, (i) {
+    print("${i * chunkSize} :: ${(i + 1) * chunkSize.clamp(0, files.length)}");
+    return files.sublist(i * chunkSize,
+        ((i + 1) * chunkSize.clamp(0, files.length)) + chunkSize);
+  });
 
   List<String> coverString = [];
-  final receivePorts = List<ReceivePort>.generate(3, (_) => ReceivePort());
-
+  final n = chunks.length;
+  final receivePorts = List<ReceivePort>.generate(n, (_) => ReceivePort());
   final isolateFutures = List<Future>.generate(
-      3,
+      n,
       (i) => Isolate.spawn(_unzipFilesInIsolate,
           [chunks[i], receivePorts[i].sendPort, outputPath]));
+
   await Future.wait(isolateFutures);
   for (final port in receivePorts) {
     await for (final message in port) {
@@ -105,33 +128,32 @@ Future<String> unzipFiles(List<File> files, String outputPath) async {
 }
 
 void _unzipFilesInIsolate(List<dynamic> args) async {
-    var uuid = Uuid();
+  var uuid = Uuid();
   final files = args[0] as List<File>;
   final sendPort = args[1] as SendPort;
   final outputPath = args[2] as String;
   var booksString = '';
   try {
     for (final file in files) {
-    final bytes = await file.readAsBytes();
-    final archive = ZipDecoder().decodeBytes(bytes);
-    final coverArchive = archive.files.where((e) => e.isFile).first;
-
-    final data = coverArchive.content as List<int>;
-    final coverName = coverArchive.name.split('/').last;
-    final coverExtension = coverArchive.name.split('/').last.split('.').last;
-    final id = uuid.v4();
-    final filename = "$id.$coverExtension";
-    final out =
-        '$outputPath/$libFolderName/$libFolderCoverFolderName/$filename';
-    await File(out).create(recursive: true);
-    await File(out).writeAsBytes(data, flush: true);
-    // name;coverPath;bookPath;
-    // return BookCover(name: bookName, path: out, bookPath: path);
-    booksString +=
-        "$coverName;$out;${file.path}&";
-  }
-  sendPort.send(booksString);
-   return;
+      final bytes = await file.readAsBytes();
+      final archive = ZipDecoder().decodeBytes(bytes);
+      final coverArchive = archive.files.where((e) => e.isFile).first;
+      print("File:: ${file.path}");
+      final data = coverArchive.content as List<int>;
+      final coverName = coverArchive.name.split('/').last;
+      final coverExtension = coverArchive.name.split('/').last.split('.').last;
+      final id = uuid.v4();
+      final filename = "$id.$coverExtension";
+      final out =
+          '$outputPath/$libFolderName/$libFolderCoverFolderName/$filename';
+      await File(out).create(recursive: true);
+      await File(out).writeAsBytes(data, flush: true);
+      // name;coverPath;bookPath;
+      // return BookCover(name: bookName, path: out, bookPath: path);
+      booksString += "$coverName;$out;${file.path}&";
+    }
+    sendPort.send(booksString);
+    return;
   } catch (e) {
     return;
   }
@@ -143,11 +165,11 @@ Future<List<String>> getBooksV2(String path, {Callback? cb}) async {
   final dirContents = await dir.list().toList();
   final List<File> files = [];
   for (var element in dirContents) {
-    if((await element.stat()).type == FileSystemEntityType.file){
+    if ((await element.stat()).type == FileSystemEntityType.file) {
       files.add(File(element.path));
     }
   }
-  // final files = (await dir.list().toList()).map((e) => File(e.path)).toList();  
+  // final files = (await dir.list().toList()).map((e) => File(e.path)).toList();
   final coverString = await unzipFiles(files, path);
   final bookCovers = coverString.split('&').where((element) => element != '');
   return bookCovers.toList();
