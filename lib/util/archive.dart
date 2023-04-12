@@ -86,23 +86,33 @@ List<List<File>> genChunks(List<File> list, int chunkCount, int chunkSize) {
 }
 
 Future<String> unzipFiles(List<File> files, String outputPath) async {
-  // int isolateCount = 3;
-  // int numberOfItems = files.length;
+  int isolateCount = Platform.numberOfProcessors - 2;
+  int numberOfItems = files.length;
 
-  // if (numberOfItems < isolateCount) {
-  //   isolateCount = numberOfItems;
-  // }
+  if (numberOfItems < isolateCount) {
+    isolateCount = numberOfItems;
+  }
   // final chunkSize = (files.length / isolateCount).ceil();
   // print("ISO::: $numberOfItems :: $chunkSize :: $isolateCount");
 
   // final chunks = genChunks(files, isolateCount, chunkSize);
-  final coreCount = (Platform.numberOfProcessors - 2);
-  final chunkSize = (files.length / coreCount).ceil();
-  final chunks = List<List<File>>.generate(coreCount, (i) {
-    print("${i * chunkSize} :: ${(i + 1) * chunkSize.clamp(0, files.length)}");
-    return files.sublist(i * chunkSize,
-        ((i + 1) * chunkSize.clamp(0, files.length)) + chunkSize);
-  });
+  final coreCount =
+      Platform.numberOfProcessors > 2 ? (Platform.numberOfProcessors - 2) : 1;
+  final chunkSize = (numberOfItems / coreCount).floor();
+  final numberOfChunks = (numberOfItems / chunkSize).floor();
+  final chunks = List.generate(
+    numberOfChunks,
+    (i) {
+      try {
+        return files.sublist(
+            i * chunkSize, (i + 1) * chunkSize.clamp(0, numberOfItems));
+      } catch (e) {
+        return [];
+      }
+    },
+  ).where((element) => element.isNotEmpty).toList();
+  chunks[numberOfChunks - 1] = files.sublist((numberOfChunks - 1) * chunkSize,
+      (numberOfChunks * chunkSize).clamp(0, numberOfItems));
 
   List<String> coverString = [];
   final n = chunks.length;
@@ -133,6 +143,7 @@ void _unzipFilesInIsolate(List<dynamic> args) async {
   final sendPort = args[1] as SendPort;
   final outputPath = args[2] as String;
   var booksString = '';
+  print(Platform.numberOfProcessors);
   try {
     for (final file in files) {
       final bytes = await file.readAsBytes();
@@ -140,7 +151,7 @@ void _unzipFilesInIsolate(List<dynamic> args) async {
       final coverArchive = archive.files.where((e) => e.isFile).first;
       print("File:: ${file.path}");
       final data = coverArchive.content as List<int>;
-      final coverName = coverArchive.name.split('/').last;
+      final coverName = file.path.split('/').last;
       final coverExtension = coverArchive.name.split('/').last.split('.').last;
       final id = uuid.v4();
       final filename = "$id.$coverExtension";
@@ -148,8 +159,6 @@ void _unzipFilesInIsolate(List<dynamic> args) async {
           '$outputPath/$libFolderName/$libFolderCoverFolderName/$filename';
       await File(out).create(recursive: true);
       await File(out).writeAsBytes(data, flush: true);
-      // name;coverPath;bookPath;
-      // return BookCover(name: bookName, path: out, bookPath: path);
       booksString += "$coverName;$out;${file.path}&";
     }
     sendPort.send(booksString);
