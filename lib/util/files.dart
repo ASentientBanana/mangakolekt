@@ -74,23 +74,25 @@ Future<void> createLibFolder(String path, {Callback? cb}) async {
   final coversDir = Directory("$path/$libFolderName/$libFolderCoverFolderName");
   final mapFile = File("$path/$libFolderName/$libFolderMapFile");
   final libFilderExists = await dir.exists();
-  if (libFilderExists) {
-    return;
-  }
 
-  // Create expected dirs
+  // // Create expected dirs
   await dir.create();
   await coversDir.create();
   await mapFile.create();
 
   //maper format is filename;path
-  print("Getting books");
+  final start = DateTime.now().millisecondsSinceEpoch;
+  final books = await getBooksV2(path);
   // final books = await getBooks(path, cb: cb);
-  final books = await getBooksV2(path, cb: cb);
-  final covers = books.map((element) {
-    return "${element.name};${element.path};${element.bookPath}";
-  }).toList();
-  await mapFile.writeAsString(covers.join('\n'));
+  final end = DateTime.now().millisecondsSinceEpoch;
+
+  final folderName = path.split('/').last;
+
+  await log("$folderName: ${(end - start) / 1000} seconds");
+  // final covers = books.map((element) {
+  //   return "${element.name};${element.path};${element.bookPath}";
+  // }).toList();
+  await mapFile.writeAsString(books.join('\n'));
 }
 
 Future<List<BookCover>> readFromLib(BookCover liBook) async {
@@ -155,7 +157,6 @@ Future<bool> deleteLib(String libString) async {
     await mapFile.writeAsString(splitContents.join('\n'));
   }
   final libDir = Directory("$path/$libFolderName");
-  print(libDir.path);
   if (await libDir.exists()) {
     await libDir.delete(recursive: true);
     print("removed map from $path");
@@ -167,4 +168,22 @@ Future<List<BookCover>> loadTitles(BookCover? libBook) async {
   if (libBook?.path == '' || libBook == null) return [];
   final lib = await readFromLib(libBook);
   return lib;
+}
+
+Future<void> createLogFile() async {
+  final dirPath = await getApplicationDocumentsDirectory();
+  final f = File("${dirPath.path}/$logFilePath");
+  if (!(await f.exists())) {
+    await f.create();
+  }
+}
+
+Future<void> log(String msg) async {
+  final dirPath = await getApplicationDocumentsDirectory();
+
+  final f = File("${dirPath.path}/$logFilePath");
+  if (await f.exists()) {
+    final contents = await f.readAsString();
+    await f.writeAsString("$contents\n$msg");
+  }
 }
