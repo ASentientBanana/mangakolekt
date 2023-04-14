@@ -8,21 +8,20 @@ abstract class DbBookEntety {
 }
 
 class BookCover {
-  String name ='';
+  String name = '';
   String path = '';
   String bookPath = '';
   BookCover({required this.name, required this.path, required this.bookPath});
-  
-  String get mapString => "$name;$path;$bookPath";
-    // return BookCover(name: bookName, path: out, bookPath: path);
 
-  BookCover.formString(String s){
+  String get mapString => "$name;$path;$bookPath";
+  // return BookCover(name: bookName, path: out, bookPath: path);
+
+  BookCover.formString(String s) {
     final stringArr = s.split(';');
     name = stringArr[0];
     path = stringArr[1];
     bookPath = stringArr[2];
   }
-
 }
 
 class PageEntry {

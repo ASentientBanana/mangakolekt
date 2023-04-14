@@ -45,14 +45,17 @@ Future<Book?> getBookFromArchive(String path) async {
   // final book = await File(path).readAsBytes();
 
   final bytes = await File(path).readAsBytes();
+
   // Decode the Zip file
   final bookName = path.split('/').last;
+
   final Archive archive;
   try {
     archive = ZipDecoder().decodeBytes(bytes, verify: true);
   } catch (e) {
     return null;
   }
+
   final len = archive.files.length;
   int pageNumber = 0;
   List<PageEntry> pages = [];
@@ -79,7 +82,6 @@ List<List<File>> genChunks(List<File> list, int chunkCount, int chunkSize) {
   final bound = list.length / chunkSize;
   for (var i = 0; i < bound; i++) {
     final start = i * chunkSize;
-    print("$start-${start + chunkSize}");
   }
 
   return chunks;
@@ -100,6 +102,9 @@ Future<String> unzipFiles(List<File> files, String outputPath) async {
       Platform.numberOfProcessors > 2 ? (Platform.numberOfProcessors - 2) : 1;
   final chunkSize = (numberOfItems / coreCount).floor();
   final numberOfChunks = (numberOfItems / chunkSize).floor();
+
+  print(numberOfChunks);
+
   final chunks = List.generate(
     numberOfChunks,
     (i) {
@@ -113,7 +118,6 @@ Future<String> unzipFiles(List<File> files, String outputPath) async {
   ).where((element) => element.isNotEmpty).toList();
   chunks[numberOfChunks - 1] = files.sublist((numberOfChunks - 1) * chunkSize,
       (numberOfChunks * chunkSize).clamp(0, numberOfItems));
-
   List<String> coverString = [];
   final n = chunks.length;
   final receivePorts = List<ReceivePort>.generate(n, (_) => ReceivePort());
@@ -123,33 +127,22 @@ Future<String> unzipFiles(List<File> files, String outputPath) async {
           [chunks[i], receivePorts[i].sendPort, outputPath]));
 
   await Future.wait(isolateFutures);
-  for (final port in receivePorts) {
-    await for (final message in port) {
-      if (message is String) {
-        coverString.add(message);
-        port.close();
-      } else {
-        break;
-      }
-    }
-    port.close();
-  }
-  return coverString.join('');
+  final futures = receivePorts.map((port) => port.first).toList();
+  final results = await Future.wait(futures);
+  return results.join('');
 }
 
 void _unzipFilesInIsolate(List<dynamic> args) async {
-  var uuid = Uuid();
+  const uuid = Uuid();
   final files = args[0] as List<File>;
   final sendPort = args[1] as SendPort;
   final outputPath = args[2] as String;
   var booksString = '';
-  print(Platform.numberOfProcessors);
   try {
     for (final file in files) {
       final bytes = await file.readAsBytes();
       final archive = ZipDecoder().decodeBytes(bytes);
       final coverArchive = archive.files.where((e) => e.isFile).first;
-      print("File:: ${file.path}");
       final data = coverArchive.content as List<int>;
       final coverName = file.path.split('/').last;
       final coverExtension = coverArchive.name.split('/').last.split('.').last;

@@ -74,9 +74,6 @@ Future<void> createLibFolder(String path, {Callback? cb}) async {
   final coversDir = Directory("$path/$libFolderName/$libFolderCoverFolderName");
   final mapFile = File("$path/$libFolderName/$libFolderMapFile");
   final libFilderExists = await dir.exists();
-  // if (libFilderExists) {
-  //   return;
-  // }
 
   // // Create expected dirs
   await dir.create();
@@ -88,7 +85,10 @@ Future<void> createLibFolder(String path, {Callback? cb}) async {
   final books = await getBooksV2(path);
   // final books = await getBooks(path, cb: cb);
   final end = DateTime.now().millisecondsSinceEpoch;
-  print("${(end - start) / 1000} seconds");
+
+  final folderName = path.split('/').last;
+
+  await log("$folderName: ${(end - start) / 1000} seconds");
   // final covers = books.map((element) {
   //   return "${element.name};${element.path};${element.bookPath}";
   // }).toList();
@@ -168,4 +168,22 @@ Future<List<BookCover>> loadTitles(BookCover? libBook) async {
   if (libBook?.path == '' || libBook == null) return [];
   final lib = await readFromLib(libBook);
   return lib;
+}
+
+Future<void> createLogFile() async {
+  final dirPath = await getApplicationDocumentsDirectory();
+  final f = File("${dirPath.path}/$logFilePath");
+  if (!(await f.exists())) {
+    await f.create();
+  }
+}
+
+Future<void> log(String msg) async {
+  final dirPath = await getApplicationDocumentsDirectory();
+
+  final f = File("${dirPath.path}/$logFilePath");
+  if (await f.exists()) {
+    final contents = await f.readAsString();
+    await f.writeAsString("$contents\n$msg");
+  }
 }
