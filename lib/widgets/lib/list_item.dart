@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:mangakolekt/bloc/library.dart';
 import 'package:mangakolekt/models/book.dart';
-import '../util/files.dart';
+import '../../util/files.dart';
 
 class LibListItem extends StatefulWidget {
   final BookCover item;
@@ -34,7 +34,7 @@ class _LibListItemState extends State<LibListItem> {
     return Row(
       children: [
         Container(
-          constraints: BoxConstraints(maxWidth: 140),
+          constraints: const BoxConstraints(maxWidth: 140),
           child: ElevatedButton(
               style: ButtonStyle(
                   backgroundColor: MaterialStateProperty.all(

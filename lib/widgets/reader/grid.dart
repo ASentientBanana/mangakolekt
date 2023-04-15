@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:mangakolekt/widgets/reader_page.dart';
+import 'package:mangakolekt/widgets/reader/double_page_veiw.dart';
 
-import '../models/book.dart';
-import '../util/util.dart';
+import '../../models/book.dart';
+import '../../util/util.dart';
 
 class ReaderGrid extends StatefulWidget {
   final Book book;
@@ -39,7 +39,7 @@ class _ReaderGridState extends State<ReaderGrid> {
       return list
           .map((e) => ReaderPage(
                 item: e,
-                isGridView: true,
+                isDoublePageView: true,
               ))
           .toList();
     } else {
@@ -47,7 +47,7 @@ class _ReaderGridState extends State<ReaderGrid> {
       return list
           .map((e) => ReaderPage(
                 item: e,
-                isGridView: true,
+                isDoublePageView: true,
               ))
           .toList();
     }
@@ -88,13 +88,11 @@ class _ReaderGridState extends State<ReaderGrid> {
                 )),
           ],
         ),
-        body: Container(
-          child: Center(
-            child: GridView.count(
-              crossAxisCount: isDoublePageView ? 2 : 1,
-              primary: false,
-              children: createDoubleView(pages),
-            ),
+        body: Center(
+          child: GridView.count(
+            crossAxisCount: isDoublePageView ? 2 : 1,
+            primary: false,
+            children: createDoubleView(pages),
           ),
         ));
   }

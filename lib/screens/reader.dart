@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:mangakolekt/models/book.dart';
-import 'package:mangakolekt/widgets/reader_single.dart';
+import 'package:mangakolekt/widgets/reader/single.dart';
 import '../util/archive.dart';
 
 class MangaReader extends StatefulWidget {

@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:mangakolekt/models/util.dart';
-import 'package:mangakolekt/widgets/reader_page.dart';
-import 'package:mangakolekt/widgets/reader_single_image.dart';
-import '../models/book.dart';
-import '../util/util.dart';
+import 'package:mangakolekt/widgets/reader/double_page_veiw.dart';
+import 'package:mangakolekt/widgets/reader/list_preview.dart';
+import 'package:mangakolekt/widgets/reader/single_image.dart';
+import '../../models/book.dart';
+// import '../../util/util.dart';
 import 'package:flutter/services.dart';
 
 class ReaderSingle extends StatefulWidget {
@@ -13,18 +14,12 @@ class ReaderSingle extends StatefulWidget {
   _ReaderGridState createState() => _ReaderGridState();
 }
 
-class _Page {
-  PageEntry entry;
-  int index;
-  _Page({required this.entry, required this.index});
-}
-
 class _ReaderGridState extends State<ReaderSingle> {
   int numberOfPages = 0;
   bool isDoublePageView = false;
   bool isRightToLeftMode = false;
-  List<_Page> pages = [];
-  List<_Page> currentPages = [];
+  List<BookPage> pages = [];
+  List<BookPage> currentPages = [];
   final _focusNode = FocusNode();
   bool _keyPressed = false;
   ScaleTo scaleTo = ScaleTo.height;
@@ -53,7 +48,7 @@ class _ReaderGridState extends State<ReaderSingle> {
       if (currentPages[0].index < pages.length - 2) {
         currentPages.add(pages[currentPages[0].index + 1]);
       } else {
-        _Page p = currentPages[0];
+        BookPage p = currentPages[0];
         currentPages[0] = pages[p.index - 1];
         currentPages[1] = p;
       }
@@ -70,12 +65,10 @@ class _ReaderGridState extends State<ReaderSingle> {
 
   void swapReadingOrientation() {
     setState(() {
-      final _p = currentPages[0];
+      final p = currentPages[0];
       currentPages[0] = currentPages[1];
-      currentPages[1] = _p;
+      currentPages[1] = p;
     });
-    // if (isDoublePageView) {
-    // }
   }
 
   void switchDirection() {
@@ -163,12 +156,12 @@ class _ReaderGridState extends State<ReaderSingle> {
     int i = 0;
     pages = widget.book.pages.map((e) {
       i++;
-      return _Page(entry: e, index: i - 1);
+      return BookPage(entry: e, index: i - 1);
     }).toList();
     if (widget.book.pages.isNotEmpty) {
-      if (!isDoublePageView)
+      if (!isDoublePageView) {
         currentPages.add(pages[0]);
-      else {
+      } else {
         if (pages.length >= 2) {
           currentPages[0] = pages[0];
           currentPages[1] = pages[1];
@@ -185,7 +178,7 @@ class _ReaderGridState extends State<ReaderSingle> {
       return list
           .map((e) => ReaderPage(
                 item: e,
-                isGridView: true,
+                isDoublePageView: true,
               ))
           .toList();
     } else {
@@ -193,7 +186,7 @@ class _ReaderGridState extends State<ReaderSingle> {
       return list
           .map((e) => ReaderPage(
                 item: e,
-                isGridView: true,
+                isDoublePageView: true,
               ))
           .toList();
     }
@@ -257,46 +250,14 @@ class _ReaderGridState extends State<ReaderSingle> {
             focusNode: _focusNode,
             child: Row(
               children: [
+                //TODO: add list here
                 SizedBox(
                   width: 100,
-                  child: ListView(
-                    controller: _scrollController,
-                    children: pages
-                        .map(
-                          (e) => Padding(
-                              padding: const EdgeInsets.only(bottom: 10),
-                              child: SizedBox(
-                                width: 100,
-                                height: 100,
-                                child: FractionallySizedBox(
-                                  heightFactor: 1,
-                                  // height: 100,
-                                  child: Center(
-                                    child: InkWell(
-                                      onTap: () {
-                                        setState(() {
-                                          // currentPage = e;
-                                        });
-                                      },
-                                      child: Container(
-                                          decoration: BoxDecoration(
-                                              border: currentPages.any(
-                                                      (element) =>
-                                                          element.index ==
-                                                          e.index)
-                                                  ? Border.all(
-                                                      color: Colors.red,
-                                                      width: 5,
-                                                      style: BorderStyle.solid)
-                                                  : null),
-                                          child: e.entry.image),
-                                    ),
-                                  ),
-                                ),
-                              )),
-                        )
-                        .toList(),
-                  ),
+                  child: ListPreview(
+                      pages: pages,
+                      scoreController: _scrollController,
+                      currentPages: currentPages,
+                      onTap: null),
                 ),
                 ...isRightToLeftMode
                     ? currentPages

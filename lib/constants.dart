@@ -1,5 +1,3 @@
-import 'package:path_provider/path_provider.dart';
-
 const tmpDirName = ".tmp_manga_kolekt";
 const tmpBooks = "$tmpDirName/books";
 const tmpBook = "$tmpDirName/book";
@@ -10,6 +8,7 @@ const libFolderName = ".mangakolektLib";
 const libFolderCoverFolderName = "covers";
 const libFolderMapFile = ".mangakolektion";
 
-const supportedTypes = ['.cbz'];
+const supportedBookTypes = ['cbz'];
+const supportedImageTypes = ['png', 'jpeg', 'jpg', 'bmp'];
 
 const logFilePath = ".mangalog.txt";

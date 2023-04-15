@@ -14,11 +14,11 @@ Future<List<File>> getFileListFromDir(String path) async {
   }).toList();
 }
 
-Future<bool> checkIfSuportedFile({String? path, String? name}) async {
-  if (name != null) return supportedTypes.contains(name.trim().split('.').last);
-  if (path != null) return supportedTypes.contains(path.trim().split('.').last);
-  return false;
-}
+// Future<bool> checkIfSuportedFile({String? path, String? name}) async {
+//   if (name != null) return supportedBookTypes.contains(name.trim().split('.').last);
+//   if (path != null) return supportedTypes.contains(path.trim().split('.').last);
+//   return false;
+// }
 
 Future<String?> pickDirectory() async {
   return await FilePicker.platform.getDirectoryPath();
@@ -183,7 +183,6 @@ Future<void> log(String msg) async {
 
   final f = File("${dirPath.path}/$logFilePath");
   if (await f.exists()) {
-    final contents = await f.readAsString();
-    await f.writeAsString("$contents\n$msg");
+    await f.writeAsString("$msg\n", mode: FileMode.append);
   }
 }

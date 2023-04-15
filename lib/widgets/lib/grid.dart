@@ -1,12 +1,9 @@
-import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:mangakolekt/bloc/library.dart';
-import 'package:mangakolekt/models/book.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:mangakolekt/models/store.dart';
 import 'package:mangakolekt/util/files.dart';
-import 'package:mangakolekt/util/files.dart';
-import 'package:mangakolekt/widgets/lib_grid_item.dart';
+import 'package:mangakolekt/widgets/lib/grid_item.dart';
 
 class LibGrid extends StatefulWidget {
   const LibGrid({super.key});

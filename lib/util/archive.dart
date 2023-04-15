@@ -1,18 +1,14 @@
 import 'dart:async';
 import 'dart:io';
-import 'dart:math';
 import 'dart:isolate';
 import 'package:archive/archive_io.dart';
 import 'package:flutter/material.dart';
-import 'package:isolate_pool_2/isolate_pool_2.dart' as isoPool;
 import 'package:mangakolekt/models/book.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:uuid/uuid.dart';
 import '../constants.dart';
 
 Future<String?> getCoverFromArchive(String path, target) async {
-  // final book = await File(path).readAsBytes();
-
   final bookName = path.split('/').last;
 
   final bytes = await File(path).readAsBytes();
@@ -29,11 +25,10 @@ Future<String?> getCoverFromArchive(String path, target) async {
 // Extract the contents of the Zip archive to disk.
   final coverArchive = archive.files.where((e) => e.isFile).first;
 
-  //TODO: I need to change the name of the covers
   final coverName = coverArchive.name.split('/').last.split('.').last;
 
   final out =
-      '${target}/$libFolderName/$libFolderCoverFolderName/${DateTime.now().millisecondsSinceEpoch}.$coverName';
+      '$target/$libFolderName/$libFolderCoverFolderName/${DateTime.now().millisecondsSinceEpoch}.$coverName';
 
   final data = coverArchive.content as List<int>;
 
@@ -77,35 +72,19 @@ Future<Book?> getBookFromArchive(String path) async {
   return Book(pages: pages, pageNumber: pageNumber, name: bookName);
 }
 
-typedef void Callback();
-
-List<List<File>> genChunks(List<File> list, int chunkCount, int chunkSize) {
-  final List<List<File>> chunks = [];
-  final bound = list.length / chunkSize;
-  for (var i = 0; i < bound; i++) {
-    final start = i * chunkSize;
-  }
-
-  return chunks;
-}
-
 Future<String> unzipFiles(List<File> files, String outputPath) async {
-  int isolateCount = Platform.numberOfProcessors - 2;
   int numberOfItems = files.length;
 
-  if (numberOfItems < isolateCount) {
-    isolateCount = numberOfItems;
-  }
   // final chunkSize = (files.length / isolateCount).ceil();
   // print("ISO::: $numberOfItems :: $chunkSize :: $isolateCount");
 
   // final chunks = genChunks(files, isolateCount, chunkSize);
-  final coreCount =
-      Platform.numberOfProcessors > 2 ? (Platform.numberOfProcessors - 2) : 1;
+
+  // TODO: this can be changed later to spawn isolates based on the core count.
+  print("${files.length}...$outputPath");
+  const coreCount = 3;
   final chunkSize = (numberOfItems / coreCount).floor();
   final numberOfChunks = (numberOfItems / chunkSize).floor();
-
-  print(numberOfChunks);
 
   final chunks = List.generate(
     numberOfChunks,
@@ -120,7 +99,6 @@ Future<String> unzipFiles(List<File> files, String outputPath) async {
   ).where((element) => element.isNotEmpty).toList();
   chunks[numberOfChunks - 1] = files.sublist((numberOfChunks - 1) * chunkSize,
       (numberOfChunks * chunkSize).clamp(0, numberOfItems));
-  List<String> coverString = [];
   final n = chunks.length;
   final receivePorts = List<ReceivePort>.generate(n, (_) => ReceivePort());
   final isolateFutures = List<Future>.generate(
@@ -163,13 +141,23 @@ void _unzipFilesInIsolate(List<dynamic> args) async {
   }
 }
 
-Future<List<String>> getBooksV2(String path, {Callback? cb}) async {
+bool checkIfPathIsFile(String path, String type) {
+  if (type == 'book') {
+    return supportedBookTypes.contains(path.split('.').last);
+  }
+  if (type == 'image') {
+    return supportedImageTypes.contains(path.split('.').last);
+  }
+  return false;
+}
+
+Future<List<String>> getBooksV2(String path, {void Function()? cb}) async {
   final dir = Directory(path);
   if (!(await dir.exists())) return [];
   final dirContents = await dir.list().toList();
   final List<File> files = [];
   for (var element in dirContents) {
-    if ((await element.stat()).type == FileSystemEntityType.file) {
+    if (checkIfPathIsFile(element.path, 'book')) {
       files.add(File(element.path));
     }
   }
@@ -179,7 +167,7 @@ Future<List<String>> getBooksV2(String path, {Callback? cb}) async {
   return bookCovers.toList();
 }
 
-Future<List<String>> getBooks(String path, {Callback? cb}) async {
+Future<List<String>> getBooks(String path, {void Function()? cb}) async {
   // TODO: Add a target path for dumping images, read mapper file return Cover
   final contents = Directory(path);
   // Target here
@@ -191,7 +179,7 @@ Future<List<String>> getBooks(String path, {Callback? cb}) async {
         //For testing. Need to make this more user friendly
         // if (i > 6) break;
         final entity = contentList[i];
-        if ((await entity.stat()).type == FileSystemEntityType.file) {
+        if (checkIfPathIsFile(entity.path, 'image')) {
           final book = await getCoverFromArchive(
             //TODO: add target instead of empty string
             entity.path,

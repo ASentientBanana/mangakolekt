@@ -1,11 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:mangakolekt/bloc/library.dart';
-import 'package:mangakolekt/models/book.dart';
 import 'package:mangakolekt/util/files.dart';
-import 'package:mangakolekt/widgets/lib_grid.dart';
-import 'package:mangakolekt/widgets/lib_list.dart';
-
-import '../widgets/lib_add.dart';
+import 'package:mangakolekt/widgets/lib/add.dart';
+import 'package:mangakolekt/widgets/lib/grid.dart';
+import 'package:mangakolekt/widgets/lib/list.dart';
 
 class MyHomePage extends StatefulWidget {
   const MyHomePage({super.key});

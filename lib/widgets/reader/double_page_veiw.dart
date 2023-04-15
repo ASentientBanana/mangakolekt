@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:mangakolekt/bloc/library.dart';
 import 'package:mangakolekt/models/book.dart';
 
 class ReaderPage extends StatelessWidget {

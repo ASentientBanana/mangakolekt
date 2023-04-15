@@ -36,3 +36,9 @@ class Book {
   final List<PageEntry> pages;
   Book({required this.name, required this.pageNumber, required this.pages});
 }
+
+class BookPage {
+  PageEntry entry;
+  int index;
+  BookPage({required this.entry, required this.index});
+}
