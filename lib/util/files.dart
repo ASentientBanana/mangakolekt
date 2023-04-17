@@ -135,6 +135,29 @@ Future<int> getNumberOfFiles(String path) async {
   return filesCount;
 }
 
+Future<bool> deleteLibbyIndex(String libString, int index) async {
+  //template name;path;bookPath
+  //check if app mapFile and lib mapFile exist;
+  final appDocumentDir = await getApplicationDocumentsDirectory();
+  final mapFile = File("${appDocumentDir.path}/mangakolekt/$appMapFile");
+
+  if (await mapFile.exists()) {
+    final contents = await mapFile.readAsString();
+    final contentList = contents.split('\n');
+    contentList.removeAt(index);
+    final newContents = contentList.join('\n');
+    await mapFile.writeAsString(newContents);
+  }
+
+  final libDir = Directory("${libString.split(';')[1]}/$libFolderName");
+  if (await libDir.exists()) {
+    await libDir.delete(
+      recursive: true,
+    );
+  }
+  return true;
+}
+
 Future<bool> deleteLib(String libString) async {
   //template name;path;bookPath
   //check if app mapFile and lib mapFile exist;
@@ -142,17 +165,16 @@ Future<bool> deleteLib(String libString) async {
   final mapFile = File("${appDocumentDir.path}/mangakolekt/$appMapFile");
   final splitLibString = libString.split(';')[1];
   String path = splitLibString;
-  if (await mapFile.exists()) {
-    final contents = await mapFile.readAsString();
-    //This may be a problem if user wants same lib as multiple entries
-    final splitContents = contents.split('\n');
-    final len = splitContents.length;
-    for (var i = 0; i < len; i++) {
-      final element = splitContents[i];
-      if ("$element;".compareTo(libString) == 0) {
-        splitContents.removeAt(i);
-        break;
-      }
+  if (!(await mapFile.exists())) return false;
+  final contents = await mapFile.readAsString();
+  //This may be a problem if user wants same lib as multiple entries
+  final splitContents = contents.split('\n');
+  final len = splitContents.length;
+  for (var i = 0; i < len; i++) {
+    final element = splitContents[i];
+    if ("$element;".compareTo(libString) == 0) {
+      splitContents.removeAt(i);
+      break;
     }
     await mapFile.writeAsString(splitContents.join('\n'));
   }

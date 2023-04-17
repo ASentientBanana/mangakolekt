@@ -6,20 +6,19 @@ import '../../util/files.dart';
 
 class LibListItem extends StatefulWidget {
   final BookCover item;
+  final int index;
 
-  LibListItem({Key? key, required this.item}) : super(key: key);
+  LibListItem({Key? key, required this.item, required this.index})
+      : super(key: key);
 
   @override
-  _LibListItemState createState() => _LibListItemState(item: item);
+  _LibListItemState createState() => _LibListItemState();
 }
 
 class _LibListItemState extends State<LibListItem> {
-  final BookCover item;
-
-  _LibListItemState({required this.item});
-
-  void handleDelete(BuildContext context) async {
-    final isDeleted = await deleteLib(item.mapString);
+  void handleDeleteFromLib(BuildContext context) async {
+    final isDeleted =
+        await deleteLibbyIndex(widget.item.mapString, widget.index);
     final dbList = await readAppDB();
     if (isDeleted) {
       // ignore: use_build_context_synchronously
@@ -40,9 +39,9 @@ class _LibListItemState extends State<LibListItem> {
                   backgroundColor: MaterialStateProperty.all(
                       Theme.of(context).colorScheme.secondary)),
               onPressed: () {
-                context.read<LibBloc>().setPath(item);
+                context.read<LibBloc>().setPath(widget.item);
               },
-              child: Text(item.name, overflow: TextOverflow.ellipsis)),
+              child: Text(widget.item.name, overflow: TextOverflow.ellipsis)),
         ),
         // '${item.name.length <= 15 ? item.name : item.name.substring(0, 10)}...')),
         PopupMenuButton(
@@ -51,7 +50,7 @@ class _LibListItemState extends State<LibListItem> {
                     value: "test",
                     child: const Text('Edit'),
                     onTap: () {
-                      print(item.mapString);
+                      // print(item.mapString);
                     },
                   ),
                   PopupMenuItem<String>(
@@ -62,7 +61,7 @@ class _LibListItemState extends State<LibListItem> {
                   PopupMenuItem<String>(
                     value: "test",
                     child: const Text('Delete'),
-                    onTap: () => handleDelete(context),
+                    onTap: () => handleDeleteFromLib(context),
                   )
                 ])
       ],

@@ -8,36 +8,6 @@ import 'package:path_provider/path_provider.dart';
 import 'package:uuid/uuid.dart';
 import '../constants.dart';
 
-Future<String?> getCoverFromArchive(String path, target) async {
-  final bookName = path.split('/').last;
-
-  final bytes = await File(path).readAsBytes();
-  // Decode the Zip file
-  final Archive archive;
-
-  // Check to see if file can be decoded or is corupted
-  try {
-    archive = ZipDecoder().decodeBytes(bytes, verify: true);
-  } catch (e) {
-    return null;
-  }
-
-// Extract the contents of the Zip archive to disk.
-  final coverArchive = archive.files.where((e) => e.isFile).first;
-
-  final coverName = coverArchive.name.split('/').last.split('.').last;
-
-  final out =
-      '$target/$libFolderName/$libFolderCoverFolderName/${DateTime.now().millisecondsSinceEpoch}.$coverName';
-
-  final data = coverArchive.content as List<int>;
-
-  final f = await File(out).create(recursive: true);
-  await f.writeAsBytes(data, flush: true);
-  return "$bookName;$out;$path";
-  // return BookCover(name: bookName, path: out, bookPath: path);
-}
-
 Future<Book?> getBookFromArchive(String path) async {
   // final book = await File(path).readAsBytes();
 
@@ -165,37 +135,6 @@ Future<List<String>> getBooksV2(String path, {void Function()? cb}) async {
   final coverString = await unzipFiles(files, path);
   final bookCovers = coverString.split('&').where((element) => element != '');
   return bookCovers.toList();
-}
-
-Future<List<String>> getBooks(String path, {void Function()? cb}) async {
-  // TODO: Add a target path for dumping images, read mapper file return Cover
-  final contents = Directory(path);
-  // Target here
-  List<String> books = [];
-  try {
-    if (await contents.exists()) {
-      final contentList = await contents.list().toList();
-      for (var i = 0; i < contentList.length; i++) {
-        //For testing. Need to make this more user friendly
-        // if (i > 6) break;
-        final entity = contentList[i];
-        if (checkIfPathIsFile(entity.path, 'image')) {
-          final book = await getCoverFromArchive(
-            //TODO: add target instead of empty string
-            entity.path,
-            path,
-          );
-          if (cb != null) {
-            cb();
-          }
-          if (book != null) books.add(book);
-        }
-      }
-    }
-    return books;
-  } catch (e) {
-    return [];
-  }
 }
 
 Future<List<BookCover>> getBookList({String path = ""}) async {

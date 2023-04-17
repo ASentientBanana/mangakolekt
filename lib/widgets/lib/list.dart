@@ -22,14 +22,13 @@ class _LibListState extends State<LibList> {
         builder: (context, snapshot) {
           return FutureBuilder(
             builder: (context, snapshot) {
-              final list = snapshot.data
-                  ?.map(
-                    (e) => Padding(
-                      padding: const EdgeInsets.all(10),
-                      child: LibListItem(item: e),
-                    ),
-                  )
-                  .toList();
+              int index = 0;
+              final list = snapshot.data?.map((e) {
+                return Padding(
+                  padding: const EdgeInsets.all(10),
+                  child: LibListItem(item: e, index: index),
+                );
+              }).toList();
               return SizedBox(
                 width: 200,
                 child: Column(

@@ -50,4 +50,3 @@ class ListPreview extends StatelessWidget {
     );
   }
 }
-
