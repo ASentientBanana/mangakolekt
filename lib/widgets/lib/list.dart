@@ -5,20 +5,15 @@ import 'package:mangakolekt/models/store.dart';
 import 'package:mangakolekt/util/files.dart';
 import 'package:mangakolekt/widgets/lib/list_item.dart';
 
-class LibList extends StatefulWidget {
+class LibList extends StatelessWidget {
   const LibList({super.key});
 
-  @override
-  State<LibList> createState() => _LibListState();
-}
-
-class _LibListState extends State<LibList> {
   @override
   Widget build(BuildContext context) {
     return Container(
       color: Theme.of(context).colorScheme.tertiary,
       padding: const EdgeInsets.all(30),
-      child: BlocBuilder<LibBloc, MangaStore>(
+      child: BlocBuilder<LibBloc, LibStore>(
         builder: (context, snapshot) {
           return FutureBuilder(
             builder: (context, snapshot) {

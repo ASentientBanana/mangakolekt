@@ -30,12 +30,16 @@ class _SingleImageState extends State<SingleImage> {
 
   @override
   Widget build(BuildContext context) {
+    final Widget img = widget.scaleTo == ScaleTo.height
+        ? widget.image
+        : SingleChildScrollView(
+            controller: _imageScrollController,
+            child: Image(image: widget.image.image, fit: BoxFit.cover),
+          );
     return Container(
-        child: widget.scaleTo == ScaleTo.height
-            ? widget.image
-            : SingleChildScrollView(
-                controller: _imageScrollController,
-                child: Image(image: widget.image.image, fit: BoxFit.cover),
-              ));
+        decoration: BoxDecoration(
+            border: Border.all(
+                color: Colors.red, style: BorderStyle.solid, width: 1)),
+        child: img);
   }
 }

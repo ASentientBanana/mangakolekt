@@ -17,7 +17,7 @@ class _MangaReaderState extends State<MangaReader> {
     super.initState();
   }
 
-  Future<Book?> getBook(BuildContext context) async {
+  Future<OldBook?> getBook(BuildContext context) async {
     final args = ModalRoute.of(context)!.settings.arguments as String;
     final book = await getBookFromArchive(args);
     return book;
@@ -25,20 +25,23 @@ class _MangaReaderState extends State<MangaReader> {
 
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder(
-      builder: (context, snapshot) {
-        if (snapshot.hasData) {
-          // numberOfPages = snapshot.data!.pageNumber;
-          // return ReaderGrid(book: snapshot.data!);
-          return ReaderSingle(book: snapshot.data!);
-        } else {
-          return const Center(
-            child: CircularProgressIndicator(),
-          );
-        }
-      },
-      future: getBook(context),
-    );
+    return Focus(
+        // This disables the default focus behaviour
+        canRequestFocus: false,
+        child: FutureBuilder(
+          builder: (context, snapshot) {
+            if (snapshot.hasData) {
+              // numberOfPages = snapshot.data!.pageNumber;
+              // return ReaderGrid(book: snapshot.data!);
+              return ReaderSingle(book: snapshot.data!);
+            } else {
+              return const Center(
+                child: CircularProgressIndicator(),
+              );
+            }
+          },
+          future: getBook(context),
+        ));
     // return
   }
 }

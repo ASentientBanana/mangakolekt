@@ -8,7 +8,7 @@ class LibListItem extends StatefulWidget {
   final BookCover item;
   final int index;
 
-  LibListItem({Key? key, required this.item, required this.index})
+  const LibListItem({Key? key, required this.item, required this.index})
       : super(key: key);
 
   @override
@@ -25,6 +25,8 @@ class _LibListItemState extends State<LibListItem> {
       context.read<LibBloc>().setLibList(dbList);
       // ignore: use_build_context_synchronously
       context.read<LibBloc>().resetPath();
+    } else {
+      print("file not deleted");
     }
   }
 

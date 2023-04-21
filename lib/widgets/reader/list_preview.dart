@@ -5,7 +5,7 @@ class ListPreview extends StatelessWidget {
   final List<BookPage> pages;
   final ScrollController scoreController;
   final List<BookPage> currentPages;
-  final void Function()? onTap;
+  final void Function(int index)? onTap;
 
   const ListPreview(
       {super.key,
@@ -30,7 +30,11 @@ class ListPreview extends StatelessWidget {
                     // height: 100,
                     child: Center(
                       child: InkWell(
-                        onTap: onTap,
+                        onTap: () {
+                          if (onTap != null) {
+                            onTap!(e.index);
+                          }
+                        },
                         child: Container(
                             decoration: BoxDecoration(
                                 border: currentPages.any(

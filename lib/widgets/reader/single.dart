@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:mangakolekt/bloc/reader/reader_bloc.dart';
+
 import 'package:mangakolekt/models/util.dart';
 import 'package:mangakolekt/widgets/reader/double_page_veiw.dart';
 import 'package:mangakolekt/widgets/reader/list_preview.dart';
@@ -8,7 +11,7 @@ import '../../models/book.dart';
 import 'package:flutter/services.dart';
 
 class ReaderSingle extends StatefulWidget {
-  final Book book;
+  final OldBook book;
   const ReaderSingle({Key? key, required this.book}) : super(key: key);
   @override
   _ReaderGridState createState() => _ReaderGridState();
@@ -26,7 +29,7 @@ class _ReaderGridState extends State<ReaderSingle> {
 
   final ScrollController _scrollController = ScrollController();
 
-  final Map<LogicalKeyboardKey, Function> keyMap = {};
+  Map<LogicalKeyboardKey, Function> keyMap = {};
 
   _ReaderGridState() {
     // load keymaps
@@ -34,6 +37,7 @@ class _ReaderGridState extends State<ReaderSingle> {
     keyMap[LogicalKeyboardKey.arrowRight] = nextPage;
     keyMap[LogicalKeyboardKey.arrowLeft] = prevPage;
     keyMap[LogicalKeyboardKey.arrowDown] = nextPage;
+    keyMap[LogicalKeyboardKey.arrowUp] = prevPage;
     keyMap[LogicalKeyboardKey.arrowUp] = prevPage;
   }
 
@@ -151,6 +155,22 @@ class _ReaderGridState extends State<ReaderSingle> {
     });
   }
 
+  void handlePreviewClick(int pageIndex) {
+    setState(() {
+      if (isDoublePageView) {
+        if (pageIndex == pages.length - 1) {
+          currentPages[0] = pages[pages.length - 2];
+          currentPages[1] = pages[pages.length - 1];
+        } else {
+          currentPages[0] = pages[pageIndex];
+          currentPages[1] = pages[pageIndex + 1];
+        }
+      } else {
+        currentPages[0] = pages[pageIndex];
+      }
+    });
+  }
+
   @override
   initState() {
     int i = 0;
@@ -204,6 +224,8 @@ class _ReaderGridState extends State<ReaderSingle> {
 
   @override
   Widget build(BuildContext context) {
+    // print(context.read<ReaderBloc>().state.copyWith());
+
     return Scaffold(
         appBar: AppBar(
           title: Text(widget.book.name),
@@ -249,15 +271,15 @@ class _ReaderGridState extends State<ReaderSingle> {
             },
             focusNode: _focusNode,
             child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                //TODO: add list here
                 SizedBox(
                   width: 100,
                   child: ListPreview(
                       pages: pages,
                       scoreController: _scrollController,
                       currentPages: currentPages,
-                      onTap: null),
+                      onTap: handlePreviewClick),
                 ),
                 ...isRightToLeftMode
                     ? currentPages

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mangakolekt/models/book.dart';
 import 'package:mangakolekt/util/files.dart';
 import 'package:mangakolekt/widgets/lib/add.dart';
 import 'package:mangakolekt/widgets/lib/grid.dart';
@@ -16,24 +17,13 @@ class _MyHomePageState extends State<MyHomePage> {
   bool isPickingFile = false;
   bool showDialog = false;
   String selectedDir = '';
-
-  // Widget bookBuilder(BuildContext context, AsyncSnapshot<List<Book>> snapshot) {
-  //   return Wrap(
-  //       children: snapshot.hasData
-  //           ? snapshot.data!.map((e) {
-  //               return Column(
-  //                 children: [e.image, Text(e.name)],
-  //               );
-  //             }).toList()
-  //           : []);
-  // }
+  BookCover? selectedCover;
 
   Future<void> pickDirHandler() async {
     setState(() {
       isPickingFile = true;
     });
     final dir = await pickDirectory();
-    print("picked: $dir");
     if (dir == null) {
       closeDialogHandler();
       return;
@@ -41,6 +31,12 @@ class _MyHomePageState extends State<MyHomePage> {
     setState(() {
       showDialog = true;
       selectedDir = dir;
+    });
+  }
+
+  void selectManga(BookCover cover) {
+    setState(() {
+      selectedCover = cover;
     });
   }
 

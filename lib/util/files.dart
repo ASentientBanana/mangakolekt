@@ -150,6 +150,7 @@ Future<bool> deleteLibbyIndex(String libString, int index) async {
   }
 
   final libDir = Directory("${libString.split(';')[1]}/$libFolderName");
+  print("Delet dir:: $libDir");
   if (await libDir.exists()) {
     await libDir.delete(
       recursive: true,

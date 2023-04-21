@@ -6,7 +6,7 @@ import '../../util/util.dart';
 
 class ReaderGrid extends StatefulWidget {
   final Book book;
-  ReaderGrid({Key? key, required this.book}) : super(key: key);
+  const ReaderGrid({Key? key, required this.book}) : super(key: key);
   @override
   _ReaderGridState createState() => _ReaderGridState();
 }
@@ -20,7 +20,6 @@ class _ReaderGridState extends State<ReaderGrid> {
   @override
   initState() {
     pages = widget.book.pages;
-
     super.initState();
   }
 
