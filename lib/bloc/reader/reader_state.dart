@@ -10,11 +10,11 @@ abstract class ReaderState extends Equatable {
 class ReaderInitial extends ReaderState {}
 
 class ReaderLoaded extends ReaderState {
-  final Book book;
-  const ReaderLoaded({required this.book});
+  final BookView bookView;
+  const ReaderLoaded({required this.bookView});
 
   @override
-  List<Object> get props => [book];
+  List<Object> get props => [bookView];
 }
 
 class ReaderLoading extends ReaderState {

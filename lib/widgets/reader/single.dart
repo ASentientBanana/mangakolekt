@@ -224,8 +224,6 @@ class _ReaderGridState extends State<ReaderSingle> {
 
   @override
   Widget build(BuildContext context) {
-    // print(context.read<ReaderBloc>().state.copyWith());
-
     return Scaffold(
         appBar: AppBar(
           title: Text(widget.book.name),
@@ -261,51 +259,55 @@ class _ReaderGridState extends State<ReaderSingle> {
             ),
           ],
         ),
-        body: RawKeyboardListener(
-            autofocus: true,
-            onKey: (event) {
-              final action = keyMap[event.logicalKey];
-              if (action != null) {
-                action(event);
-              }
-            },
-            focusNode: _focusNode,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                SizedBox(
-                  width: 100,
-                  child: ListPreview(
-                      pages: pages,
-                      scoreController: _scrollController,
-                      currentPages: currentPages,
-                      onTap: handlePreviewClick),
-                ),
-                ...isRightToLeftMode
-                    ? currentPages
-                        .map(
-                          (e) => Expanded(
-                              flex: 1,
-                              child: SingleImage(
-                                  image: e.entry.image,
-                                  scaleTo: isDoublePageView
-                                      ? ScaleTo.height
-                                      : scaleTo)),
-                        )
-                        .toList()
-                        .reversed
-                    : currentPages
-                        .map(
-                          (e) => Expanded(
-                              flex: 1,
-                              child: SingleImage(
-                                  image: e.entry.image,
-                                  scaleTo: isDoublePageView
-                                      ? ScaleTo.height
-                                      : scaleTo)),
-                        )
-                        .toList()
-              ],
-            )));
+        body: BlocBuilder<ReaderBloc, ReaderState>(
+          builder: (context, state) {
+            return RawKeyboardListener(
+                autofocus: true,
+                onKey: (event) {
+                  final action = keyMap[event.logicalKey];
+                  if (action != null) {
+                    action(event);
+                  }
+                },
+                focusNode: _focusNode,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    SizedBox(
+                      width: 100,
+                      child: ListPreview(
+                          pages: pages.toList(),
+                          scoreController: _scrollController,
+                          currentPages: currentPages,
+                          onTap: handlePreviewClick),
+                    ),
+                    ...isRightToLeftMode
+                        ? currentPages
+                            .map(
+                              (e) => Expanded(
+                                  flex: 1,
+                                  child: SingleImage(
+                                      image: e.entry.image,
+                                      scaleTo: isDoublePageView
+                                          ? ScaleTo.height
+                                          : scaleTo)),
+                            )
+                            .toList()
+                            .reversed
+                        : currentPages
+                            .map(
+                              (e) => Expanded(
+                                  flex: 1,
+                                  child: SingleImage(
+                                      image: e.entry.image,
+                                      scaleTo: isDoublePageView
+                                          ? ScaleTo.height
+                                          : scaleTo)),
+                            )
+                            .toList()
+                  ],
+                ));
+          },
+        ));
   }
 }

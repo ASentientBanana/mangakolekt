@@ -39,58 +39,43 @@ class OldBook {
   OldBook({required this.name, required this.pageNumber, required this.pages});
 }
 
-class Book {
-  final int pageNumber;
-  final String name;
-  final List<PageEntry> pages;
-
-  int? numberOfPages = 0;
+class BookView {
   bool? isDoublePageView = false;
   bool? isRightToLeftMode = false;
-  List<BookPage>? currentPages = [];
   final focusNode = FocusNode();
   bool keyPressed = false;
-  ScaleTo? scaleTo = ScaleTo.height;
+  ScaleTo scaleTo = ScaleTo.height;
+  ReaderView readerView = ReaderView.single;
 
-  Book({
-    required this.pageNumber,
-    required this.name,
-    required this.pages,
-    this.numberOfPages,
-    this.isDoublePageView,
-    this.isRightToLeftMode,
-    this.currentPages,
-    this.scaleTo,
+  BookView({
+    required this.isDoublePageView,
+    required this.isRightToLeftMode,
+    required this.scaleTo,
+    required this.readerView,
     required bool keyPressed,
   });
 
-  Book.init({
-    this.pageNumber = 1,
-    this.name = '',
-    this.pages = const [],
+  BookView.init({
+    isDoublePageView = false,
+    this.isRightToLeftMode = false,
+    this.scaleTo = ScaleTo.height,
+    this.readerView = ReaderView.single,
+    bool keyPressed = false,
   });
 
-  Book copyWith({
-    int? pageNumber,
-    String? name,
-    List<PageEntry>? pages,
-    int? numberOfPages,
+  BookView copyWith({
     bool? isDoublePageView,
     bool? isRightToLeftMode,
-    List<BookPage>? currentPages,
     bool? keyPressed,
     ScaleTo? scaleTo,
+    ReaderView? readerView,
   }) {
-    return Book(
-      pageNumber: pageNumber ?? this.pageNumber,
-      name: name ?? this.name,
-      pages: pages ?? this.pages,
-      numberOfPages: numberOfPages ?? this.numberOfPages,
+    return BookView(
       isDoublePageView: isDoublePageView ?? this.isDoublePageView,
       isRightToLeftMode: isRightToLeftMode ?? this.isRightToLeftMode,
-      currentPages: currentPages ?? this.currentPages,
       keyPressed: keyPressed ?? this.keyPressed,
       scaleTo: scaleTo ?? this.scaleTo,
+      readerView: readerView ?? this.readerView,
     );
   }
 }

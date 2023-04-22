@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:mangakolekt/bloc/reader/reader_bloc.dart';
 import 'package:mangakolekt/models/book.dart';
+import 'package:mangakolekt/models/util.dart';
+import 'package:mangakolekt/widgets/reader/grid.dart';
 import 'package:mangakolekt/widgets/reader/single.dart';
 import '../util/archive.dart';
 
@@ -11,37 +15,52 @@ class MangaReader extends StatefulWidget {
 }
 
 class _MangaReaderState extends State<MangaReader> {
-  //TODO: Add init state to scan for open manga
-  @override
-  void initState() {
-    super.initState();
-  }
-
   Future<OldBook?> getBook(BuildContext context) async {
     final args = ModalRoute.of(context)!.settings.arguments as String;
-    final book = await getBookFromArchive(args);
-    return book;
+    final oldBook = await getBookFromArchive(args);
+    return oldBook;
   }
 
   @override
   Widget build(BuildContext context) {
-    return Focus(
+    return Scaffold(
+      floatingActionButton: FloatingActionButton(
+        child: const Text('..'),
+        onPressed: () {
+          final readerBoc = context.read<ReaderBloc>();
+          if (readerBoc.state is ReaderLoaded) {
+            final readerView =
+                (readerBoc.state as ReaderLoaded).bookView.readerView;
+            readerBoc.add(ChangeReaderView(
+                readerView: readerView == ReaderView.single
+                    ? ReaderView.grid
+                    : ReaderView.single));
+          }
+        },
+      ),
+      body: Focus(
         // This disables the default focus behaviour
         canRequestFocus: false,
         child: FutureBuilder(
           builder: (context, snapshot) {
-            if (snapshot.hasData) {
-              // numberOfPages = snapshot.data!.pageNumber;
-              // return ReaderGrid(book: snapshot.data!);
-              return ReaderSingle(book: snapshot.data!);
-            } else {
-              return const Center(
-                child: CircularProgressIndicator(),
-              );
-            }
+            return BlocBuilder<ReaderBloc, ReaderState>(
+                builder: (context, state) {
+              if (state is ReaderLoaded && snapshot.hasData) {
+                final readerView = state.bookView.readerView;
+                if (readerView == ReaderView.single) {
+                  return ReaderSingle(book: snapshot.data!);
+                }
+                if (readerView == ReaderView.grid) {
+                  return ReaderGrid(book: snapshot.data!);
+                }
+              }
+              return const CircularProgressIndicator();
+            });
           },
           future: getBook(context),
-        ));
+        ),
+      ),
+    );
     // return
   }
 }

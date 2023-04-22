@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:mangakolekt/bloc/reader/reader_bloc.dart';
 import 'package:mangakolekt/models/book.dart';
 import 'package:mangakolekt/util/files.dart';
 import 'package:mangakolekt/widgets/lib/add.dart';
@@ -50,6 +52,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
+    context.read<ReaderBloc>().add(LoadBook(bookView: BookView.init()));
     return Scaffold(
       appBar: AppBar(
         title: const Text(

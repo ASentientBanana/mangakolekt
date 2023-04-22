@@ -8,20 +8,28 @@ abstract class ReaderEvent extends Equatable {
 }
 
 class LoadBook extends ReaderEvent {
-  const LoadBook();
+  final BookView bookView;
+
+  const LoadBook({required this.bookView});
 
   @override
   List<Object> get props => [];
 }
 
-class OpenBook extends ReaderEvent {}
+class ChangeReaderView extends ReaderEvent {
+  final ReaderView readerView;
 
-class NextPage extends ReaderEvent {}
+  const ChangeReaderView({required this.readerView});
 
-class PrevPage extends ReaderEvent {}
+  @override
+  List<Object> get props => [];
+}
 
-class ChangeReaderPageView extends ReaderEvent {}
+class ToggleDoublePageViewMode extends ReaderEvent {
+  // const ChangeReaderView ();
 
-// class PrevPage extends ReaderEvent{}
-// class PrevPage extends ReaderEvent{}
+  @override
+  List<Object> get props => [];
+}
+
 // class PrevPage extends ReaderEvent{}

@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:mangakolekt/bloc/reader/reader_bloc.dart';
 import 'package:mangakolekt/models/book.dart';
 import 'dart:io';
 
