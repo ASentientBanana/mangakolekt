@@ -11,7 +11,7 @@ MVP:
 - Basic UI styling.
 - Maybe a reader mode (2page view/ right to left reading).
 
-## TODO v1
+# V1- MVP
 
 - Add a parallelized process to downscale images
 
@@ -23,3 +23,17 @@ MVP:
   This is done for the list reading mode but single page mode is not jet implmented.
 
 - Basic polish (eg. swithcing pages, handeling keybord events etc.).
+
+# V2 - Current
+
+- dynamic theme
+- Settings page
+- Add refresh func to lib
+- Add edit func to lib element
+- Redo/update thae add lib modal
+- Add a local db to remember what is being red, where the user stoped etc..
+- Redo the reader image view (spacing, sizing)
+
+# V3 - TODO
+
+- Add more interactions like swapping page based on mouse click
