@@ -31,19 +31,13 @@ class _ReaderGridState extends State<ReaderSingle> {
   final ScrollController _scrollController = ScrollController();
 
 
-  void handleScrollAnimation(double index) {
-    int pageImageHeight = 110;
-    // Adding currentPages.length ~/ 2 to keep the scroll location
-    // int he middle of the scroll container
-    double offset = (index + currentPages.length ~/ 2);
+  void handleScrollAnimation(int index) {
+    const int pageImageHeight = 110;
+    // To allow the selected element to be roughly in the middle.
+    const int offset = 4;
 
-    if (isDoublePageView) {
-      // Lets not overdo it in double page view.
-      offset -= 1;
-    }
-
-    _scrollController.animateTo(offset * pageImageHeight,
-        duration: const Duration(milliseconds: 1), curve: Curves.linear);
+    _scrollController.animateTo(((index - offset) * pageImageHeight).toDouble(),
+        duration: const Duration(milliseconds: 100), curve: Curves.linear);
   }
 
   void handleChangePageView() {
@@ -75,6 +69,7 @@ class _ReaderGridState extends State<ReaderSingle> {
     });
   }
 
+  // TODO: remove(unused)
   void swapReadingOrientation() {
     setState(() {
       final p = currentPages[0];
@@ -141,7 +136,7 @@ class _ReaderGridState extends State<ReaderSingle> {
             currentPages[0] = pages[currentPages[0].index + 1];
           }
         }
-        handleScrollAnimation(currentPages[0].index.toDouble());
+        handleScrollAnimation(currentPages[0].index);
       });
   }
 
@@ -165,7 +160,7 @@ class _ReaderGridState extends State<ReaderSingle> {
             currentPages[0] = pages[currentPages[0].index - 1];
           }
         }
-        handleScrollAnimation(currentPages[0].index.toDouble());
+        handleScrollAnimation(currentPages[0].index);
       });
   }
 
@@ -222,6 +217,7 @@ class _ReaderGridState extends State<ReaderSingle> {
     ServicesBinding.instance.keyboard.addHandler(handleKeyPress);
   }
 
+  // TODO: remove(unused)
   List<Widget> createDoubleView(List<PageEntry> list) {
     if (!isRightToLeftMode) {
       return list
@@ -248,6 +244,7 @@ class _ReaderGridState extends State<ReaderSingle> {
     ServicesBinding.instance.keyboard.removeHandler(handleKeyPress);
   }
 
+  // TODO: remove(unused)
   Future<List<Image>> getPages() async {
     return [];
   }
