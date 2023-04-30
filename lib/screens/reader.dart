@@ -25,12 +25,14 @@ class _MangaReaderState extends State<MangaReader> {
   Widget build(BuildContext context) {
     return Scaffold(
       floatingActionButton: FloatingActionButton(
-        child: const Text('..'),
+        child: const Icon(Icons.pages),
         onPressed: () {
           final readerBoc = context.read<ReaderBloc>();
+
           if (readerBoc.state is ReaderLoaded) {
             final readerView =
                 (readerBoc.state as ReaderLoaded).bookView.readerView;
+
             readerBoc.add(ChangeReaderView(
                 readerView: readerView == ReaderView.single
                     ? ReaderView.grid

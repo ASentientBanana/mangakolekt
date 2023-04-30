@@ -11,6 +11,7 @@ class ReaderBloc extends Bloc<ReaderEvent, ReaderState> {
     on<LoadBook>(_onLoadBook);
     on<ChangeReaderView>(_changeReaderView);
     on<ToggleDoublePageViewMode>(_onToggleDoublePageViewMode);
+    on<ToggleIsRightToLeftMode>(_onToggleIsRightToLeftMode);
   }
 
   void _changeReaderView(ChangeReaderView event, Emitter<ReaderState> emit) {
@@ -18,6 +19,16 @@ class ReaderBloc extends Bloc<ReaderEvent, ReaderState> {
     if (state is ReaderLoaded) {
       emit(ReaderLoaded(
           bookView: state.bookView.copyWith(readerView: event.readerView)));
+    }
+  }
+
+  void _onToggleIsRightToLeftMode(
+      ToggleIsRightToLeftMode event, Emitter<ReaderState> emit) {
+    final state = this.state;
+    if (state is ReaderLoaded && state.bookView.isRightToLeftMode != null) {
+      emit(ReaderLoaded(
+          bookView: state.bookView.copyWith(
+              isRightToLeftMode: !state.bookView.isRightToLeftMode!)));
     }
   }
 
