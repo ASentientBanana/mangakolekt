@@ -23,7 +23,6 @@ class _ReaderGridState extends State<ReaderSingle> {
   List<BookPage> pages = [];
   List<BookPage> currentPages = [];
   final _focusNode = FocusNode();
-  ScaleTo scaleTo = ScaleTo.height;
 
   final ScrollController _scrollController = ScrollController();
 
@@ -147,16 +146,6 @@ class _ReaderGridState extends State<ReaderSingle> {
     });
   }
 
-  void toggleImageScaling() {
-    setState(() {
-      if (scaleTo == ScaleTo.height) {
-        scaleTo = ScaleTo.width;
-      } else {
-        scaleTo = ScaleTo.height;
-      }
-    });
-  }
-
   void handlePreviewClick(int pageIndex, bool isDoublePageView) {
     setState(() {
       if (isDoublePageView) {
@@ -213,6 +202,26 @@ class _ReaderGridState extends State<ReaderSingle> {
     return [];
   }
 
+  List<Widget> renderPages(bool isRightToLeftMode) {
+    final state = BlocProvider.of<ReaderBloc>(context).state;
+    if (state is! ReaderLoaded) return [];
+
+    print("render::");
+
+    final list = currentPages
+        .map(
+          (e) => Expanded(
+              flex: 1,
+              child: SingleImage(
+                  image: e.entry.image,
+                  scaleTo: state.bookView.isDoublePageView!
+                      ? ScaleTo.height
+                      : state.bookView.scaleTo)),
+        )
+        .toList();
+    return isRightToLeftMode ? list : list.reversed.toList();
+  }
+
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<ReaderBloc, ReaderState>(builder: (context, state) {
@@ -221,6 +230,7 @@ class _ReaderGridState extends State<ReaderSingle> {
       final isDoublePageView = bookView.isDoublePageView!;
       final isRightToLeftMode = bookView.isRightToLeftMode!;
       final scaleTo = bookView.scaleTo;
+      print("RtL: $isRightToLeftMode");
 
       return Scaffold(
         appBar: AppBar(
@@ -248,7 +258,9 @@ class _ReaderGridState extends State<ReaderSingle> {
               ),
             ),
             TextButton(
-              onPressed: isDoublePageView ? null : toggleImageScaling,
+              onPressed: isDoublePageView
+                  ? null
+                  : () => context.read<ReaderBloc>().add(ToggleScaleTo()),
               child: Text(
                 scaleTo == ScaleTo.height ? "Scale to height" : "Scale to with",
                 style: const TextStyle(color: Colors.white),
@@ -256,54 +268,26 @@ class _ReaderGridState extends State<ReaderSingle> {
             ),
           ],
         ),
-        body: BlocBuilder<ReaderBloc, ReaderState>(
-          builder: (context, state) {
-            return RawKeyboardListener(
-              autofocus: true,
-              focusNode: _focusNode,
-              child: Listener(
-                onPointerDown: handleMouseClick,
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    SizedBox(
-                      width: 100,
-                      child: ListPreview(
-                          pages: pages.toList(),
-                          scoreController: _scrollController,
-                          currentPages: currentPages,
-                          onTap: null),
-                    ),
-                    ...isRightToLeftMode
-                        ? currentPages
-                            .map(
-                              (e) => Expanded(
-                                flex: 1,
-                                child: SingleImage(
-                                    image: e.entry.image,
-                                    scaleTo: isDoublePageView
-                                        ? ScaleTo.height
-                                        : scaleTo),
-                              ),
-                            )
-                            .toList()
-                            .reversed
-                        : currentPages
-                            .map(
-                              (e) => Expanded(
-                                  flex: 1,
-                                  child: SingleImage(
-                                      image: e.entry.image,
-                                      scaleTo: isDoublePageView
-                                          ? ScaleTo.height
-                                          : scaleTo)),
-                            )
-                            .toList()
-                  ],
+        body: RawKeyboardListener(
+          autofocus: true,
+          focusNode: _focusNode,
+          child: Listener(
+            onPointerDown: handleMouseClick,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                SizedBox(
+                  width: 100,
+                  child: ListPreview(
+                      pages: pages.toList(),
+                      scoreController: _scrollController,
+                      currentPages: currentPages,
+                      onTap: null),
                 ),
-              ),
-            );
-          },
+                ...renderPages(isRightToLeftMode),
+              ],
+            ),
+          ),
         ),
       );
     });
