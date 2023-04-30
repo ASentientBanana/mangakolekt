@@ -1,14 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:mangakolekt/bloc/reader/reader_bloc.dart';
-
 import 'package:mangakolekt/models/util.dart';
 import 'package:mangakolekt/widgets/reader/double_page_veiw.dart';
 import 'package:mangakolekt/widgets/reader/list_preview.dart';
 import 'package:mangakolekt/widgets/reader/single_image.dart';
+
 import '../../models/book.dart';
-// import '../../util/util.dart';
-import 'package:flutter/services.dart';
 
 class ReaderSingle extends StatefulWidget {
   final OldBook book;
@@ -24,26 +23,16 @@ class _ReaderGridState extends State<ReaderSingle> {
   List<BookPage> pages = [];
   List<BookPage> currentPages = [];
   final _focusNode = FocusNode();
-  bool _keyPressed = false;
   ScaleTo scaleTo = ScaleTo.height;
 
   final ScrollController _scrollController = ScrollController();
 
-  Map<LogicalKeyboardKey, Function> keyMap = {};
-
-  _ReaderGridState() {
-    // load keymaps
-    keyMap[LogicalKeyboardKey.space] = nextPage;
-    keyMap[LogicalKeyboardKey.arrowRight] = nextPage;
-    keyMap[LogicalKeyboardKey.arrowLeft] = prevPage;
-    keyMap[LogicalKeyboardKey.arrowDown] = nextPage;
-    keyMap[LogicalKeyboardKey.arrowUp] = prevPage;
-    keyMap[LogicalKeyboardKey.arrowUp] = prevPage;
-  }
 
   void handleScrollAnimation(double index) {
-    // The 110 is image height and padding
-    _scrollController.animateTo(index * 110,
+    int pageImageHeight = 110;
+    // Adding currentPages.length ~/ 2 to keep the scroll location
+    // int he middle of the scroll container
+    _scrollController.animateTo((index + currentPages.length ~/ 2) * pageImageHeight,
         duration: const Duration(milliseconds: 1), curve: Curves.linear);
   }
 
@@ -81,11 +70,36 @@ class _ReaderGridState extends State<ReaderSingle> {
     });
   }
 
-  void nextPage(RawKeyEvent event) {
-    if (event is RawKeyDownEvent && !_keyPressed) {
+  void handleMouseClick(PointerEvent ev) {
+    int left = 1;
+    int right = 2;
+
+    if (ev.buttons == left) {
+      nextPage();
+    } else if (ev.buttons == right) {
+      prevPage();
+    }
+  }
+
+  bool handleKeyPress(KeyEvent ev) {
+    if (ev is KeyUpEvent) return false;
+
+    if ([LogicalKeyboardKey.arrowLeft, LogicalKeyboardKey.arrowUp]
+        .contains(ev.logicalKey)) {
+      prevPage();
+    } else if ([
+      LogicalKeyboardKey.arrowRight,
+      LogicalKeyboardKey.arrowDown,
+      LogicalKeyboardKey.space
+    ].contains(ev.logicalKey)) {
+      nextPage();
+    }
+    return false;
+  }
+
+  void nextPage() {
       if (currentPages.last.index == pages.last.index) return;
       setState(() {
-        _keyPressed = true;
         if (isDoublePageView) {
           if (currentPages[1].index < pages.length - 2) {
             currentPages.replaceRange(0, 2, [
@@ -105,19 +119,11 @@ class _ReaderGridState extends State<ReaderSingle> {
         }
         handleScrollAnimation(currentPages[0].index.toDouble());
       });
-    }
-    if (event is RawKeyUpEvent && _keyPressed) {
-      setState(() {
-        _keyPressed = false;
-      });
-    }
   }
 
-  void prevPage(RawKeyEvent event) {
-    if (event is RawKeyDownEvent && !_keyPressed) {
+  void prevPage() {
       if (currentPages.first.index == 0) return;
       setState(() {
-        _keyPressed = true;
         if (isDoublePageView) {
           if (currentPages[1].index > 2) {
             currentPages.replaceRange(0, 2, [
@@ -137,12 +143,6 @@ class _ReaderGridState extends State<ReaderSingle> {
         }
         handleScrollAnimation(currentPages[0].index.toDouble());
       });
-    }
-    if (event is RawKeyUpEvent && _keyPressed) {
-      setState(() {
-        _keyPressed = false;
-      });
-    }
   }
 
   void toggleImageScaling() {
@@ -191,6 +191,7 @@ class _ReaderGridState extends State<ReaderSingle> {
       }
     }
     super.initState();
+    ServicesBinding.instance.keyboard.addHandler(handleKeyPress);
   }
 
   List<Widget> createDoubleView(List<PageEntry> list) {
@@ -216,6 +217,7 @@ class _ReaderGridState extends State<ReaderSingle> {
   dispose() {
     _focusNode.dispose();
     super.dispose();
+    ServicesBinding.instance.keyboard.removeHandler(handleKeyPress);
   }
 
   Future<List<Image>> getPages() async {
@@ -263,14 +265,10 @@ class _ReaderGridState extends State<ReaderSingle> {
           builder: (context, state) {
             return RawKeyboardListener(
                 autofocus: true,
-                onKey: (event) {
-                  final action = keyMap[event.logicalKey];
-                  if (action != null) {
-                    action(event);
-                  }
-                },
                 focusNode: _focusNode,
-                child: Row(
+                child: Listener(
+                  onPointerDown: handleMouseClick,
+                    child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     SizedBox(
@@ -306,7 +304,7 @@ class _ReaderGridState extends State<ReaderSingle> {
                             )
                             .toList()
                   ],
-                ));
+                )));
           },
         ));
   }
