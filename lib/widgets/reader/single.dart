@@ -9,7 +9,12 @@ import 'package:mangakolekt/widgets/reader/single_image.dart';
 
 import '../../models/book.dart';
 
+
+const TextStyle TEXT_STYLE_NORMAL   = TextStyle(color: Colors.white);
+const TextStyle TEXT_STYLE_DISABLED = TextStyle(color: Colors.grey);
+
 typedef Toggle = void Function();
+
 
 class ReaderSingle extends StatefulWidget {
   final OldBook book;
@@ -26,15 +31,23 @@ class _ReaderGridState extends State<ReaderSingle> {
 
   final ScrollController _scrollController = ScrollController();
 
-  void handleScrollAnimation(double index) {
-    int pageImageHeight = 110;
-    // Adding currentPages.length ~/ 2 to keep the scroll location
-    // int he middle of the scroll container
-    _scrollController.animateTo(
-        (index + currentPages.length ~/ 2) * pageImageHeight,
-        duration: const Duration(milliseconds: 1),
-        curve: Curves.linear);
+
+  void handleScrollAnimation(int index) {
+    const int pageImageHeight = 110;
+    // To allow the selected element to be roughly in the middle.
+    const int offset = 4;
+
+    _scrollController.animateTo(((index - offset) * pageImageHeight).toDouble(),
+        duration: const Duration(milliseconds: 100), curve: Curves.linear);
   }
+
+  void handleChangePageView() {
+    if (isDoublePageView) {
+      setPagesSingle();
+    } else {
+      setPagesDouble();
+    }
+
 
   void setPagesDouble(bool isDoublePageView) {
     setState(() {
@@ -45,6 +58,10 @@ class _ReaderGridState extends State<ReaderSingle> {
         currentPages[0] = pages[p.index - 1];
         currentPages[1] = p;
       }
+
+      scaleTo = ScaleTo.height;
+      isDoublePageView = true;
+
     });
   }
 
@@ -54,6 +71,7 @@ class _ReaderGridState extends State<ReaderSingle> {
     });
   }
 
+  // TODO: remove(unused)
   void swapReadingOrientation() {
     setState(() {
       final p = currentPages[0];
@@ -63,9 +81,16 @@ class _ReaderGridState extends State<ReaderSingle> {
   }
 
   void switchDirection() {
-    final bloc = context.read<ReaderBloc>();
-    if (bloc.state is! ReaderLoaded) return;
-    bloc.add(ToggleIsRightToLeftMode());
+
+    // No point of viewing the single page reversed.
+    if (!isDoublePageView) {
+      return;
+    }
+
+    setState(() {
+      isRightToLeftMode = !isRightToLeftMode;
+    });
+
   }
 
   void handleMouseClick(PointerEvent ev) {
@@ -112,13 +137,10 @@ class _ReaderGridState extends State<ReaderSingle> {
             pages[currentPages[1].index + 1]
           ]);
         }
-      } else {
-        if (currentPages[0].index < pages.length - 1) {
-          currentPages[0] = pages[currentPages[0].index + 1];
-        }
-      }
-      handleScrollAnimation(currentPages[0].index.toDouble());
-    });
+
+        handleScrollAnimation(currentPages[0].index);
+      });
+
   }
 
   void prevPage() {
@@ -137,12 +159,23 @@ class _ReaderGridState extends State<ReaderSingle> {
             pages[currentPages[1].index - 1]
           ]);
         }
-      } else {
-        if (currentPages[0].index > 0) {
-          currentPages[0] = pages[currentPages[0].index - 1];
-        }
+
+        handleScrollAnimation(currentPages[0].index);
+      });
+  }
+
+  void toggleImageScaling() {
+    setState(() {
+      // Force height scale for double page view.
+      if (isDoublePageView) {
+        scaleTo = ScaleTo.height;
+        return;
       }
-      handleScrollAnimation(currentPages[0].index.toDouble());
+
+      scaleTo = scaleTo == ScaleTo.width
+          ? ScaleTo.height
+          : ScaleTo.width;
+
     });
   }
 
@@ -188,7 +221,26 @@ class _ReaderGridState extends State<ReaderSingle> {
       });
     });
 
-    super.initState();
+
+  // TODO: remove(unused)
+  List<Widget> createDoubleView(List<PageEntry> list) {
+    if (!isRightToLeftMode) {
+      return list
+          .map((e) => ReaderPage(
+                item: e,
+                isDoublePageView: true,
+              ))
+          .toList();
+    } else {
+      // switchReadingDirection(list);
+      return list
+          .map((e) => ReaderPage(
+                item: e,
+                isDoublePageView: true,
+              ))
+          .toList();
+    }
+
   }
 
   @override
@@ -198,28 +250,28 @@ class _ReaderGridState extends State<ReaderSingle> {
     ServicesBinding.instance.keyboard.removeHandler(handleKeyPress);
   }
 
+  // TODO: remove(unused)
   Future<List<Image>> getPages() async {
     return [];
   }
 
-  List<Widget> renderPages(bool isRightToLeftMode) {
-    final state = BlocProvider.of<ReaderBloc>(context).state;
-    if (state is! ReaderLoaded) return [];
-
-    print("render::");
-
-    final list = currentPages
-        .map(
-          (e) => Expanded(
-              flex: 1,
-              child: SingleImage(
-                  image: e.entry.image,
-                  scaleTo: state.bookView.isDoublePageView!
-                      ? ScaleTo.height
-                      : state.bookView.scaleTo)),
-        )
+  Iterable<Widget> buildPreview() {
+    List<Widget> images = currentPages
+        .map((e) =>
+        Expanded(
+            flex: 1,
+            child: Listener(
+                onPointerDown: handleMouseClick,
+                child: SingleImage(
+                    image: e.entry.image,
+                    scaleTo: scaleTo))))
         .toList();
-    return isRightToLeftMode ? list : list.reversed.toList();
+
+
+    return isRightToLeftMode
+      ? images.reversed
+      : images;
+
   }
 
   @override
@@ -237,59 +289,64 @@ class _ReaderGridState extends State<ReaderSingle> {
           title: Text("$widget.book.name"),
           actions: [
             TextButton(
-              onPressed: () {
-                if (isDoublePageView!) {
-                  setPagesSingle();
-                } else {
-                  setPagesDouble(isDoublePageView!);
-                }
-                context.read<ReaderBloc>().add(ToggleDoublePageViewMode());
-              },
-              child: const Text(
-                "Double page",
-                style: TextStyle(color: Colors.white),
+
+              onPressed: handleChangePageView,
+              child: Text(
+                isDoublePageView
+                    ? "Single page"
+                    : "Double page",
+                style: TEXT_STYLE_NORMAL,
+
               ),
             ),
             TextButton(
-              onPressed: isDoublePageView ? switchDirection : null,
+              onPressed: switchDirection,
               child: Text(
-                isRightToLeftMode ? "Left to Right" : "Right to left",
-                style: const TextStyle(color: Colors.white),
+                isRightToLeftMode
+                    ? "Left to Right"
+                    : "Right to left",
+                style: isDoublePageView
+                    ? TEXT_STYLE_NORMAL
+                    : TEXT_STYLE_DISABLED,
               ),
             ),
             TextButton(
-              onPressed: isDoublePageView
-                  ? null
-                  : () => context.read<ReaderBloc>().add(ToggleScaleTo()),
+
+              onPressed: toggleImageScaling,
+
               child: Text(
-                scaleTo == ScaleTo.height ? "Scale to height" : "Scale to with",
-                style: const TextStyle(color: Colors.white),
+                scaleTo == ScaleTo.width
+                    ? "Scale to height"
+                    : "Scale to width",
+                style: isDoublePageView
+                    ? TEXT_STYLE_DISABLED
+                    : TEXT_STYLE_NORMAL,
               ),
             ),
           ],
         ),
-        body: RawKeyboardListener(
-          autofocus: true,
-          focusNode: _focusNode,
-          child: Listener(
-            onPointerDown: handleMouseClick,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                SizedBox(
-                  width: 100,
-                  child: ListPreview(
-                      pages: pages.toList(),
-                      scoreController: _scrollController,
-                      currentPages: currentPages,
-                      onTap: null),
-                ),
-                ...renderPages(isRightToLeftMode),
-              ],
-            ),
-          ),
-        ),
-      );
-    });
+
+        body: BlocBuilder<ReaderBloc, ReaderState>(
+          builder: (context, state) {
+            return RawKeyboardListener(
+                autofocus: true,
+                focusNode: _focusNode,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    SizedBox(
+                      width: 100,
+                      child: ListPreview(
+                          pages: pages.toList(),
+                          scoreController: _scrollController,
+                          currentPages: currentPages,
+                          onTap: handlePreviewClick),
+                    ),
+                    ...buildPreview()
+                  ],
+                ));
+          },
+        ));
+
   }
 }
