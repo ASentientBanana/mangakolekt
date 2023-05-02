@@ -23,42 +23,26 @@ class _MangaReaderState extends State<MangaReader> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      floatingActionButton: FloatingActionButton(
-        child: const Text('..'),
-        onPressed: () {
-          final readerBoc = context.read<ReaderBloc>();
-          if (readerBoc.state is ReaderLoaded) {
-            final readerView =
-                (readerBoc.state as ReaderLoaded).bookView.readerView;
-            readerBoc.add(ChangeReaderView(
-                readerView: readerView == ReaderView.single
-                    ? ReaderView.grid
-                    : ReaderView.single));
-          }
-        },
-      ),
-      body: Focus(
-        // This disables the default focus behaviour
-        canRequestFocus: false,
-        child: FutureBuilder(
-          builder: (context, snapshot) {
-            return BlocBuilder<ReaderBloc, ReaderState>(
-                builder: (context, state) {
-              if (state is ReaderLoaded && snapshot.hasData) {
-                final readerView = state.bookView.readerView;
-                if (readerView == ReaderView.single) {
-                  return ReaderSingle(book: snapshot.data!);
-                }
-                if (readerView == ReaderView.grid) {
-                  return ReaderGrid(book: snapshot.data!);
-                }
+    return Focus(
+      // This disables the default focus behaviour
+      canRequestFocus: false,
+      child: FutureBuilder(
+        builder: (context, snapshot) {
+          return BlocBuilder<ReaderBloc, ReaderState>(
+              builder: (context, state) {
+            if (state is ReaderLoaded && snapshot.hasData) {
+              final readerView = state.bookView.readerView;
+              if (readerView == ReaderView.single) {
+                return ReaderSingle(book: snapshot.data!);
               }
-              return const CircularProgressIndicator();
-            });
-          },
-          future: getBook(context),
-        ),
+              if (readerView == ReaderView.grid) {
+                return ReaderGrid(book: snapshot.data!);
+              }
+            }
+            return const CircularProgressIndicator();
+          });
+        },
+        future: getBook(context),
       ),
     );
     // return

@@ -7,6 +7,7 @@ import 'package:mangakolekt/models/book.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:uuid/uuid.dart';
 import '../constants.dart';
+import '../util/files.dart';
 
 Future<OldBook?> getBookFromArchive(String path) async {
   // final book = await File(path).readAsBytes();
@@ -57,10 +58,9 @@ Future<String> unzipCoverBeta(String path, String out) async {
     final outFile = File(outputPath);
     final output = await outFile.create(recursive: true);
     stream.pipe(output.openWrite());
-    print(outputPath);
     return outputPath.split("/").last;
   } catch (e) {
-    print(e);
+    log("Err:: ${e.toString()}");
   }
   return '';
 }
@@ -95,7 +95,6 @@ Future<String> unzipFiles(List<File> files, String outputPath) async {
       (numberOfChunks * chunkSize).clamp(0, numberOfItems));
   final n = chunks.length;
   final receivePorts = List<ReceivePort>.generate(n, (_) => ReceivePort());
-  print("Number of isolates:: $n");
   final isolateFutures = List<Future>.generate(
       n,
       (i) => Isolate.spawn(_unzipFilesInIsolate,

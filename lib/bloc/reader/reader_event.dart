@@ -26,10 +26,17 @@ class ChangeReaderView extends ReaderEvent {
 }
 
 class ToggleDoublePageViewMode extends ReaderEvent {
-  // const ChangeReaderView ();
-
   @override
   List<Object> get props => [];
 }
 
+class ToggleIsRightToLeftMode extends ReaderEvent {
+  @override
+  List<Object> get props => [];
+}
+
+class ToggleScaleTo extends ReaderEvent {
+  @override
+  List<Object> get props => [];
+}
 // class PrevPage extends ReaderEvent{}
