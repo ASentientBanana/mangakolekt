@@ -28,12 +28,12 @@ MVP:
 
 - [ ] Support more than the .zip and .cbz file formats.
 - [ ] windows build
-- [ ] dynamic theme
-- [ ] Settings page
+- [ ] dynamic theme (<_>)
 - [ ] Add refresh func to lib
-- [ ] Add edit func to lib element
-- [ ] Redo/update thae add lib modal
+- [ ] Add edit func to lib element 
+- [ ] Redo/update the add lib modal
 - [ ] Add a local db to remember what is being red, where the user stoped etc..
+- [ ] Settings page
 - [ ] Redo the reader image view (spacing, sizing)
 - [ ] Add a parallelized process to downscale images
 

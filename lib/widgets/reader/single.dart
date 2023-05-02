@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:mangakolekt/bloc/reader/reader_bloc.dart';
+import 'package:mangakolekt/constants.dart';
 import 'package:mangakolekt/models/util.dart';
 import 'package:mangakolekt/widgets/reader/double_page_veiw.dart';
 import 'package:mangakolekt/widgets/reader/list_preview.dart';
@@ -40,7 +41,9 @@ class _ReaderGridState extends State<ReaderSingle> {
 
   void setPagesDouble(bool isDoublePageView) {
     setState(() {
-      if (currentPages[0].index < pages.length - 2) {
+      //There is an error here if the final page selected in single mode and then switched to double
+      if (currentPages[0].index < pages.length - 2 &&
+          currentPages[0].index != pages.length - 1) {
         currentPages.add(pages[currentPages[0].index + 1]);
       } else {
         BookPage p = currentPages[0];
@@ -51,8 +54,54 @@ class _ReaderGridState extends State<ReaderSingle> {
   }
 
   void setPagesSingle() {
+    if (currentPages.length > 1) {
+      setState(() {
+        currentPages.removeAt(1);
+      });
+    }
+  }
+
+  void pageAction(PageAction pa) {
+    final state = context.read<ReaderBloc>().state as ReaderLoaded;
+    // Direction check
+    final isNext = pa == PageAction.next;
+    if (isNext) {
+      if (currentPages.last.index == pages.last.index) return;
+    } else {
+      if (currentPages.first.index == 0) return;
+    }
+
+    final dIndex = (isNext ? 2 : -2);
+    final sIndex = (isNext ? 1 : -1);
+
     setState(() {
-      currentPages.removeAt(1);
+      if (state.bookView.isDoublePageView!) {
+        if (currentPages[1].index > 2) {
+          int e1;
+          int e2;
+          if (currentPages[1].index == pages.length - 2) {
+            e1 = pages.length - 2;
+            e2 = pages.length - 1;
+          } else {
+            e1 = currentPages[0].index + dIndex;
+            e2 = currentPages[1].index + dIndex;
+          }
+
+          currentPages.replaceRange(0, 2, [pages[e1], pages[e2]]);
+        } else {
+          currentPages.replaceRange(0, 2, [
+            pages[currentPages[0].index + sIndex],
+            pages[currentPages[1].index + sIndex]
+          ]);
+        }
+      } else {
+        if (!isNext && currentPages[0].index > 0) {
+          currentPages[0] = pages[currentPages[0].index + sIndex];
+        } else if (isNext && currentPages[0].index < pages.length - 1) {
+          currentPages[0] = pages[currentPages[0].index + 1];
+        }
+      }
+      handleScrollAnimation(currentPages[0].index);
     });
   }
 
@@ -67,77 +116,21 @@ class _ReaderGridState extends State<ReaderSingle> {
     int right = 2;
 
     if (ev.buttons == left) {
-      nextPage();
+      pageAction(PageAction.next);
     } else if (ev.buttons == right) {
-      prevPage();
+      pageAction(PageAction.previous);
     }
   }
 
   bool handleKeyPress(KeyEvent ev) {
     if (ev is KeyUpEvent) return false;
 
-    if ([LogicalKeyboardKey.arrowLeft, LogicalKeyboardKey.arrowUp]
-        .contains(ev.logicalKey)) {
-      prevPage();
-    } else if ([
-      LogicalKeyboardKey.arrowRight,
-      LogicalKeyboardKey.arrowDown,
-      LogicalKeyboardKey.space
-    ].contains(ev.logicalKey)) {
-      nextPage();
+    if (nextKeyMap.contains(ev.logicalKey)) {
+      pageAction(PageAction.next);
+    } else if (prevKeyMap.contains(ev.logicalKey)) {
+      pageAction(PageAction.previous);
     }
     return false;
-  }
-
-  void nextPage() {
-    final state = context.read<ReaderBloc>().state as ReaderLoaded;
-
-    if (currentPages.last.index == pages.last.index) return;
-    setState(() {
-      if (state.bookView.isDoublePageView!) {
-        if (currentPages[1].index < pages.length - 2) {
-          currentPages.replaceRange(0, 2, [
-            pages[currentPages[0].index + 2],
-            pages[currentPages[1].index + 2]
-          ]);
-        } else {
-          currentPages.replaceRange(0, 2, [
-            pages[currentPages[0].index + 1],
-            pages[currentPages[1].index + 1]
-          ]);
-        }
-      } else {
-        if (currentPages[0].index < pages.length - 1) {
-          currentPages[0] = pages[currentPages[0].index + 1];
-        }
-      }
-      handleScrollAnimation(currentPages[0].index);
-    });
-  }
-
-  void prevPage() {
-    if (currentPages.first.index == 0) return;
-    final state = context.read<ReaderBloc>().state as ReaderLoaded;
-    setState(() {
-      if (state.bookView.isDoublePageView!) {
-        if (currentPages[1].index > 2) {
-          currentPages.replaceRange(0, 2, [
-            pages[currentPages[0].index - 2],
-            pages[currentPages[1].index - 2]
-          ]);
-        } else {
-          currentPages.replaceRange(0, 2, [
-            pages[currentPages[0].index - 1],
-            pages[currentPages[1].index - 1]
-          ]);
-        }
-      } else {
-        if (currentPages[0].index > 0) {
-          currentPages[0] = pages[currentPages[0].index - 1];
-        }
-      }
-      handleScrollAnimation(currentPages[0].index);
-    });
   }
 
   void handlePreviewClick(int pageIndex, bool isDoublePageView) {
@@ -197,7 +190,7 @@ class _ReaderGridState extends State<ReaderSingle> {
     return [];
   }
 
-  Iterable<Widget> renderPages(bool isRightToLeftMode) {
+  Iterable<Widget> renderBooks(bool isRightToLeftMode) {
     final state = BlocProvider.of<ReaderBloc>(context).state;
     if (state is! ReaderLoaded) return [];
     final list = currentPages
@@ -237,60 +230,56 @@ class _ReaderGridState extends State<ReaderSingle> {
       final scaleTo = bookView.scaleTo;
 
       return Scaffold(
-          appBar: AppBar(
-            title: Text("$widget.book.name"),
-            actions: [
-              TextButton(
-                onPressed: () => handleChangePageView(isDoublePageView),
-                child: Text(
-                  isDoublePageView ? "Single page" : "Double page",
-                  style: TEXT_STYLE_NORMAL,
-                ),
+        appBar: AppBar(
+          title: Text("$widget.book.name"),
+          actions: [
+            TextButton(
+              onPressed: () => handleChangePageView(isDoublePageView),
+              child: Text(
+                isDoublePageView ? "Single page" : "Double page",
+                style: TEXT_STYLE_NORMAL,
               ),
-              TextButton(
-                onPressed: isDoublePageView ? switchDirection : null,
-                child: Text(
-                  isRightToLeftMode ? "Left to Right" : "Right to left",
-                  style: isDoublePageView
-                      ? TEXT_STYLE_NORMAL
-                      : TEXT_STYLE_DISABLED,
-                ),
+            ),
+            TextButton(
+              onPressed: isDoublePageView ? switchDirection : null,
+              child: Text(
+                isRightToLeftMode ? "Left to Right" : "Right to left",
+                style:
+                    isDoublePageView ? TEXT_STYLE_NORMAL : TEXT_STYLE_DISABLED,
               ),
-              TextButton(
-                onPressed: () =>
-                    context.read<ReaderBloc>().add(ToggleScaleTo()),
-                child: Text(
-                  scaleTo == ScaleTo.width
-                      ? "Scale to height"
-                      : "Scale to width",
-                  style: isDoublePageView
-                      ? TEXT_STYLE_DISABLED
-                      : TEXT_STYLE_NORMAL,
-                ),
+            ),
+            TextButton(
+              onPressed: () => context.read<ReaderBloc>().add(ToggleScaleTo()),
+              child: Text(
+                scaleTo == ScaleTo.width ? "Scale to height" : "Scale to width",
+                style:
+                    isDoublePageView ? TEXT_STYLE_DISABLED : TEXT_STYLE_NORMAL,
               ),
-            ],
-          ),
-          body: BlocBuilder<ReaderBloc, ReaderState>(
-            builder: (context, state) {
-              return RawKeyboardListener(
-                  autofocus: true,
-                  focusNode: _focusNode,
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      SizedBox(
-                        width: 100,
-                        child: ListPreview(
-                            pages: pages.toList(),
-                            scoreController: _scrollController,
-                            currentPages: currentPages,
-                            onTap: null),
-                      ),
-                      ...renderPages(isRightToLeftMode),
-                    ],
-                  ));
-            },
-          ));
+            ),
+          ],
+        ),
+        body: BlocBuilder<ReaderBloc, ReaderState>(
+          builder: (context, state) {
+            return RawKeyboardListener(
+                autofocus: true,
+                focusNode: _focusNode,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    SizedBox(
+                      width: 100,
+                      child: ListPreview(
+                          pages: pages.toList(),
+                          scoreController: _scrollController,
+                          currentPages: currentPages,
+                          onTap: null),
+                    ),
+                    ...renderBooks(isRightToLeftMode),
+                  ],
+                ));
+          },
+        ),
+      );
     });
   }
 }
