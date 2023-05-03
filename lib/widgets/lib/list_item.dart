@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:mangakolekt/bloc/library.dart';
+import 'package:mangakolekt/bloc/library/library_bloc.dart';
 import 'package:mangakolekt/models/book.dart';
 import '../../util/files.dart';
 
@@ -22,9 +22,9 @@ class _LibListItemState extends State<LibListItem> {
     final dbList = await readAppDB();
     if (isDeleted) {
       // ignore: use_build_context_synchronously
-      context.read<LibBloc>().setLibList(dbList);
+      context.read<LibraryBloc>().add(SetLibs(libs: dbList));
       // ignore: use_build_context_synchronously
-      context.read<LibBloc>().resetPath();
+      context.read<LibraryBloc>().add(Reset());
     } else {
       print("file not deleted");
     }
@@ -41,7 +41,7 @@ class _LibListItemState extends State<LibListItem> {
                   backgroundColor: MaterialStateProperty.all(
                       Theme.of(context).colorScheme.secondary)),
               onPressed: () {
-                context.read<LibBloc>().setPath(widget.item);
+                context.read<LibraryBloc>().add(SetCover(cover: widget.item));
               },
               child: Text(widget.item.name, overflow: TextOverflow.ellipsis)),
         ),

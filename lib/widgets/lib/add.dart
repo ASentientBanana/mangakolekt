@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:mangakolekt/bloc/library.dart';
+import 'package:mangakolekt/bloc/library/library_bloc.dart';
 import 'package:mangakolekt/models/book.dart';
 import 'package:mangakolekt/util/files.dart';
 import 'dart:isolate';
@@ -56,7 +56,7 @@ class AddToLibraryModalState extends State<AddToLibraryModal> {
     String enteredText = textEditingController.text;
     await addToAppDB(enteredText, widget.selectedDir).then((libList) {
       // Fluter doesn't like using context and async/await
-      context.read<LibBloc>().setLibList(libList);
+      context.read<LibraryBloc>().add(SetLibs(libs: libList));
     });
     setState(() {
       isSubmitDisabled = false;

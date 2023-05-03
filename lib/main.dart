@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:mangakolekt/bloc/library.dart';
+import 'package:mangakolekt/bloc/library/library_bloc.dart';
 import 'package:mangakolekt/bloc/reader/reader_bloc.dart';
 import 'package:mangakolekt/screens/lib.dart';
 import 'package:mangakolekt/screens/reader.dart';
@@ -22,9 +22,10 @@ class MyApp extends StatelessWidget {
     const tertiary = Color(0xFF453C41);
     return MultiBlocProvider(
       providers: [
-        BlocProvider<LibBloc>(create: (BuildContext context) => LibBloc()),
         BlocProvider<ReaderBloc>(
             create: (BuildContext context) => ReaderBloc()),
+        BlocProvider<LibraryBloc>(
+            create: (BuildContext context) => LibraryBloc()),
       ],
       child: MaterialApp(
         title: 'MangaKolekt',

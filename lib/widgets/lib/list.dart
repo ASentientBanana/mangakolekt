@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:mangakolekt/bloc/library.dart';
+import 'package:mangakolekt/bloc/library/library_bloc.dart';
 import 'package:mangakolekt/models/store.dart';
 import 'package:mangakolekt/util/files.dart';
 import 'package:mangakolekt/widgets/lib/list_item.dart';
@@ -13,8 +13,8 @@ class LibList extends StatelessWidget {
     return Container(
       color: Theme.of(context).colorScheme.tertiary,
       padding: const EdgeInsets.all(30),
-      child: BlocBuilder<LibBloc, LibStore>(
-        builder: (context, snapshot) {
+      child: BlocBuilder<LibraryBloc, LibraryState>(
+        builder: (context, state) {
           return FutureBuilder(
             builder: (context, snapshot) {
               int index = 0;
