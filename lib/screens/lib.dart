@@ -58,6 +58,13 @@ class _MyHomePageState extends State<MyHomePage> {
         title: const Text(
           'Select Library you want to read',
         ),
+        actions: [
+          ElevatedButton(
+              onPressed: () {
+                Navigator.of(context).pushNamed('/settings');
+              },
+              child: const Text('Settings'))
+        ],
         automaticallyImplyLeading: false,
       ),
       body: Container(

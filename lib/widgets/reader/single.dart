@@ -4,7 +4,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:mangakolekt/bloc/reader/reader_bloc.dart';
 import 'package:mangakolekt/constants.dart';
 import 'package:mangakolekt/models/util.dart';
-import 'package:mangakolekt/widgets/reader/double_page_veiw.dart';
 import 'package:mangakolekt/widgets/reader/list_preview.dart';
 import 'package:mangakolekt/widgets/reader/single_image.dart';
 
@@ -212,10 +211,10 @@ class _ReaderGridState extends State<ReaderSingle> {
   }
 
   void handleChangePageView(bool isDoublePageView) {
-    if (isDoublePageView!) {
+    if (isDoublePageView) {
       setPagesSingle();
     } else {
-      setPagesDouble(isDoublePageView!);
+      setPagesDouble(isDoublePageView);
     }
     context.read<ReaderBloc>().add(ToggleDoublePageViewMode());
   }
