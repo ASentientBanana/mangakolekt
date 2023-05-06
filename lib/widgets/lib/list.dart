@@ -19,13 +19,10 @@ class LibList extends StatelessWidget {
             builder: (context, snapshot) {
               int index = 0;
               final list = snapshot.data?.map((e) {
-                return Padding(
-                  padding: const EdgeInsets.all(10),
-                  child: LibListItem(item: e, index: index),
-                );
+                return LibListItem(item: e, index: index);
               }).toList();
               return SizedBox(
-                width: 200,
+                // width: 200,
                 child: Column(
                   children: list ??
                       [const Flexible(child: Text("No libraries added"))],

@@ -51,8 +51,16 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   @override
+  void initState() {
+    Future.delayed(Duration.zero, () {
+      context.read<ReaderBloc>().add(LoadBook(bookView: BookView.init()));
+    });
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    context.read<ReaderBloc>().add(LoadBook(bookView: BookView.init()));
+    double width = MediaQuery.of(context).size.width;
     return Scaffold(
       appBar: AppBar(
         title: const Text(
@@ -76,14 +84,14 @@ class _MyHomePageState extends State<MyHomePage> {
         child: Stack(
           children: [
             Row(
-              children: const [
-                Flexible(
+              children: [
+                const Flexible(
                   flex: 1,
                   child: LibList(),
                 ),
                 Flexible(
-                  flex: 3,
-                  child: LibGrid(),
+                  flex: width < 1000 ? 1 : 3,
+                  child: const LibGrid(),
                 ),
               ],
             ),

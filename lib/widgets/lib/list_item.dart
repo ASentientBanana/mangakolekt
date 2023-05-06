@@ -32,41 +32,45 @@ class _LibListItemState extends State<LibListItem> {
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      children: [
-        Container(
-          constraints: const BoxConstraints(maxWidth: 140),
-          child: ElevatedButton(
-              style: ButtonStyle(
+    return LayoutBuilder(builder: (context, contestraints) {
+      return Row(
+        children: [
+          SizedBox(
+            // width: contestraints.maxWidth * 0.7,
+            // constraints: const BoxConstraints(minWidth: 400),
+            width: contestraints.maxWidth *
+                (contestraints.maxWidth > 130 ? 0.7 : 0.5),
+            child: ElevatedButton(
+                style: ButtonStyle(
                   backgroundColor: MaterialStateProperty.all(
-                      Theme.of(context).colorScheme.secondary)),
-              onPressed: () {
-                context.read<LibraryBloc>().add(SetCover(cover: widget.item));
-              },
-              child: Text(widget.item.name, overflow: TextOverflow.ellipsis)),
-        ),
-        // '${item.name.length <= 15 ? item.name : item.name.substring(0, 10)}...')),
-        PopupMenuButton(
-            itemBuilder: (context) => [
-                  PopupMenuItem<String>(
-                    value: "test",
-                    child: const Text('Edit'),
-                    onTap: () {
-                      // print(item.mapString);
-                    },
-                  ),
-                  PopupMenuItem<String>(
-                    value: "test",
-                    child: const Text('Refresh'),
-                    onTap: () {},
-                  ),
-                  PopupMenuItem<String>(
-                    value: "test",
-                    child: const Text('Delete'),
-                    onTap: () => handleDeleteFromLib(context),
-                  )
-                ])
-      ],
-    );
+                      Theme.of(context).colorScheme.secondary),
+                ),
+                onPressed: () {
+                  context.read<LibraryBloc>().add(SetCover(cover: widget.item));
+                },
+                child: Text(widget.item.name, overflow: TextOverflow.ellipsis)),
+          ),
+          PopupMenuButton(
+              color: Theme.of(context).colorScheme.secondary,
+              itemBuilder: (context) => [
+                    PopupMenuItem<String>(
+                      value: "test",
+                      child: const Text('Edit'),
+                      onTap: () {},
+                    ),
+                    PopupMenuItem<String>(
+                      value: "test",
+                      child: const Text('Refresh'),
+                      onTap: () {},
+                    ),
+                    PopupMenuItem<String>(
+                      value: "test",
+                      child: Text(contestraints.maxWidth.toString()),
+                      onTap: () => handleDeleteFromLib(context),
+                    )
+                  ])
+        ],
+      );
+    });
   }
 }

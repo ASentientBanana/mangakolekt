@@ -9,6 +9,7 @@ class LibGrid extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    double width = MediaQuery.of(context).size.width;
     return Container(
         // color: Colors.orange,
         padding: const EdgeInsets.all(30),
@@ -18,15 +19,18 @@ class LibGrid extends StatelessWidget {
             return FutureBuilder(
               builder: (context, snapshot) {
                 if (snapshot.hasData) {
+                  final l =
+                      snapshot.data!.map((e) => GridItem(item: e)).toList();
+                  if (l.isEmpty) {
+                    return Container();
+                  }
                   return GridView.count(
                       // padding: const EdgeInsets.all(20),
                       primary: false,
-                      crossAxisCount: 2,
+                      crossAxisCount: width > 1000 ? 2 : 1,
                       mainAxisSpacing: 100,
                       crossAxisSpacing: 10,
-                      children: snapshot.data!
-                          .map((e) => GridItem(item: e))
-                          .toList());
+                      children: l);
                 } else {
                   return const CircularProgressIndicator();
                 }
