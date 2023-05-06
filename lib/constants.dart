@@ -9,11 +9,14 @@ const appMapFile = "map.txt";
 const libFolderName = ".mangakolektLib";
 const libFolderCoverFolderName = "covers";
 const libFolderMapFile = ".mangakolektion";
+const appFolder = "mangakolekt";
 
 const supportedBookTypes = ['cbz'];
 const supportedImageTypes = ['png', 'jpeg', 'jpg', 'bmp'];
 
 const logFilePath = ".mangalog.txt";
+
+const themeFileName = "theme.json";
 
 const nextKeyMap = [LogicalKeyboardKey.arrowLeft, LogicalKeyboardKey.arrowUp];
 

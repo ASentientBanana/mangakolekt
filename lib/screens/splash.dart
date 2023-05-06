@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:mangakolekt/bloc/theme/theme_bloc.dart';
+import 'package:mangakolekt/models/bloc/theme.dart';
 import 'package:mangakolekt/util/files.dart';
 
 class SplashScreen extends StatefulWidget {
@@ -9,25 +12,6 @@ class SplashScreen extends StatefulWidget {
 }
 
 class _SplashScreenState extends State<SplashScreen> {
-  // init function to create, load and read any data before opening home page
-  Future<void> initApp(BuildContext context) async {
-    //create log file
-    await Future.delayed(const Duration(seconds: 1));
-    //This is only since the compiler doesnt like async + context
-
-    await createLogFile();
-
-    createAppDB().then((value) {
-      Navigator.pushNamed(context, '/home');
-    });
-  }
-
-  @override
-  void initState() {
-    initApp(context);
-    super.initState();
-  }
-
   @override
   Widget build(BuildContext context) {
     return const Scaffold(
@@ -38,5 +22,30 @@ class _SplashScreenState extends State<SplashScreen> {
         ),
       ),
     );
+  }
+
+  // init function to create, load and read any data before opening home page
+  Future<void> initApp(BuildContext context) async {
+    //generating the theme file if not missing and reading if there
+    final themes = await checkThemeFile();
+
+    // loading the themes to the store
+    await Future.delayed(const Duration(seconds: 1), () {
+      //This is only since the compiler doesnt like async + context so its in a callback
+      context.read<ThemeBloc>().add(InitializeTheme(themes: themes, theme: 0));
+    });
+
+    await createLogFile();
+
+    //This is only since the compiler doesnt like async + context so its in a callback
+    createAppDB().then((value) {
+      Navigator.pushNamed(context, '/home');
+    });
+  }
+
+  @override
+  void initState() {
+    initApp(context);
+    super.initState();
   }
 }

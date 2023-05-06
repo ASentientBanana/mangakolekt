@@ -33,7 +33,7 @@ class AppWidget extends StatelessWidget {
             ),
           ),
           appBarTheme: AppBarTheme(
-            backgroundColor: theme.primaryDark,
+            backgroundColor: theme.appbarBackground,
             foregroundColor: Colors.white,
             iconTheme: const IconThemeData(
               color: Colors.white,

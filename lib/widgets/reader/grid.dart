@@ -62,37 +62,40 @@ class _ReaderGridState extends State<ReaderGrid> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(
-          title: Text(widget.book.name),
-          actions: [
-            TextButton(
-                onPressed: () {
-                  setState(() {
-                    if (isRightToLeftMode) {
-                      isRightToLeftMode = false;
-                      switchReadingDirection(pages);
-                    }
-                    isDoublePageView = !isDoublePageView;
-                  });
-                },
-                child: const Text(
-                  "Double page",
-                  style: TextStyle(color: Colors.white),
-                )),
-            TextButton(
-                onPressed: isDoublePageView ? switchDirection : null,
-                child: Text(
-                  isRightToLeftMode ? "Left to Right" : "Right to left",
-                  style: const TextStyle(color: Colors.white),
-                )),
-          ],
-        ),
-        body: Center(
-          child: GridView.count(
-            crossAxisCount: isDoublePageView ? 2 : 1,
-            primary: false,
-            children: createDoubleView(pages),
+      appBar: AppBar(
+        title: Text(widget.book.name),
+        actions: [
+          TextButton(
+            onPressed: () {
+              setState(() {
+                if (isRightToLeftMode) {
+                  isRightToLeftMode = false;
+                  switchReadingDirection(pages);
+                }
+                isDoublePageView = !isDoublePageView;
+              });
+            },
+            child: const Text(
+              "Double page",
+              style: TextStyle(color: Colors.white),
+            ),
           ),
-        ));
+          TextButton(
+            onPressed: isDoublePageView ? switchDirection : null,
+            child: Text(
+              isRightToLeftMode ? "Left to Right" : "Right to left",
+              style: const TextStyle(color: Colors.white),
+            ),
+          ),
+        ],
+      ),
+      body: Center(
+        child: GridView.count(
+          crossAxisCount: isDoublePageView ? 2 : 1,
+          primary: false,
+          children: createDoubleView(pages),
+        ),
+      ),
+    );
   }
 }

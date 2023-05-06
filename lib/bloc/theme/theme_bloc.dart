@@ -9,11 +9,11 @@ class ThemeBloc extends Bloc<ThemeEvent, ThemeState> {
   ThemeBloc() : super(ThemeInitial()) {
     on<SelectTheme>(_onSelectTheme);
     on<SetThemes>(_onSetThemes);
+    on<InitializeTheme>(_onInitTheme);
   }
 
   void _onSelectTheme(SelectTheme event, Emitter<ThemeState> emit) {
     if (state is ThemeLoaded) {
-      // final _state = state as ThemeLoaded;
       emit(ThemeLoaded(
           themes: (state as ThemeLoaded).themes, theme: event.theme));
     }
@@ -25,5 +25,9 @@ class ThemeBloc extends Bloc<ThemeEvent, ThemeState> {
       emit(ThemeLoaded(
           themes: event.themes, theme: (state as ThemeLoaded).theme));
     }
+  }
+
+  void _onInitTheme(InitializeTheme event, Emitter<ThemeState> emit) {
+    emit(ThemeLoaded(themes: event.themes, theme: event.theme));
   }
 }

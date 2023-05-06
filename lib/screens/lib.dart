@@ -60,10 +60,14 @@ class _MyHomePageState extends State<MyHomePage> {
         ),
         actions: [
           ElevatedButton(
+              style: ButtonStyle(
+                backgroundColor: MaterialStateProperty.all(
+                    Theme.of(context).colorScheme.secondary),
+              ),
               onPressed: () {
                 Navigator.of(context).pushNamed('/settings');
               },
-              child: const Text('Settings'))
+              child: const Icon(Icons.settings))
         ],
         automaticallyImplyLeading: false,
       ),

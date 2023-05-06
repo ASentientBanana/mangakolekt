@@ -1,5 +1,7 @@
+import 'dart:convert';
 import 'dart:io';
 import 'package:file_picker/file_picker.dart';
+import 'package:mangakolekt/models/bloc/theme.dart';
 import 'package:mangakolekt/models/book.dart';
 import 'package:path_provider/path_provider.dart';
 import './util.dart';
@@ -13,12 +15,6 @@ Future<List<File>> getFileListFromDir(String path) async {
     return File(elem.path);
   }).toList();
 }
-
-// Future<bool> checkIfSuportedFile({String? path, String? name}) async {
-//   if (name != null) return supportedBookTypes.contains(name.trim().split('.').last);
-//   if (path != null) return supportedTypes.contains(path.trim().split('.').last);
-//   return false;
-// }
 
 Future<String?> pickDirectory() async {
   return await FilePicker.platform.getDirectoryPath();
@@ -207,5 +203,36 @@ Future<void> log(String msg) async {
   final f = File("${dirPath.path}/$logFilePath");
   if (await f.exists()) {
     await f.writeAsString("$msg\n", mode: FileMode.append);
+  }
+}
+
+Future<List<ThemeStore>> readThemeFile() async {
+  final dirPath = await getApplicationDocumentsDirectory();
+  final filePath = "${dirPath.path}/$appFolder/$themeFileName";
+  var input = await File(filePath).readAsString();
+  Map<String, dynamic> map = jsonDecode(input);
+  List<dynamic> themes = map['themes'];
+  return themes.map((e) => ThemeStore.fromJSON(e)).toList();
+}
+
+Future<List<ThemeStore>> createThemeFile() async {
+  final dirPath = await getApplicationDocumentsDirectory();
+  final filePath = "${dirPath.path}/$appFolder/$themeFileName";
+
+  final f = await File(filePath).create();
+  final theme = ThemeStore.defaultTheme();
+  await f.writeAsString(
+      '{ "current": 0, "themes":[${jsonEncode(theme.toJSON())}]}');
+
+  return [theme];
+}
+
+Future<List<ThemeStore>> checkThemeFile() async {
+  final dirPath = await getApplicationDocumentsDirectory();
+  final filePath = "${dirPath.path}/$appFolder/$themeFileName";
+  if (await File(filePath).exists()) {
+    return await readThemeFile();
+  } else {
+    return await createThemeFile();
   }
 }

@@ -20,3 +20,11 @@ class SetThemes extends ThemeEvent {
   @override
   List<Object> get props => [];
 }
+
+class InitializeTheme extends ThemeEvent {
+  final List<ThemeStore> themes;
+  final int theme;
+  const InitializeTheme({required this.themes, required this.theme});
+  @override
+  List<Object> get props => [];
+}

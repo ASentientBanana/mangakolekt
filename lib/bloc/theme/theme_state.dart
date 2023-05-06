@@ -22,5 +22,5 @@ class ThemeLoaded extends ThemeState {
   ThemeStore get activeTheme => themes[theme];
 
   @override
-  List<Object> get props => [];
+  List<Object> get props => [themes, theme];
 }

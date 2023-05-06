@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:mangakolekt/models/book.dart';
 import 'package:mangakolekt/util/files.dart';
 
@@ -36,4 +37,8 @@ void switchReadingDirection(list) {
       swap(list, i, i + 1);
     }
   }
+}
+
+List<int> colorToList(Color clr) {
+  return [clr.alpha, clr.red, clr.green, clr.blue];
 }
