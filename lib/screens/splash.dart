@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:mangakolekt/bloc/theme/theme_bloc.dart';
 import 'package:mangakolekt/models/bloc/theme.dart';
+import 'package:mangakolekt/util/archive.dart';
 import 'package:mangakolekt/util/files.dart';
 
 class SplashScreen extends StatefulWidget {
@@ -40,6 +41,7 @@ class _SplashScreenState extends State<SplashScreen> {
     //This is only since the compiler doesnt like async + context so its in a callback
     createAppDB().then((value) {
       Navigator.pushNamed(context, '/home');
+      // getCoversFromDir();
     });
   }
 

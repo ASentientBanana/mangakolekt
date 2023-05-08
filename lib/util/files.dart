@@ -69,7 +69,7 @@ Future<void> createLibFolder(String path, {Callback? cb}) async {
   final dir = Directory("$path/$libFolderName");
   final coversDir = Directory("$path/$libFolderName/$libFolderCoverFolderName");
   final mapFile = File("$path/$libFolderName/$libFolderMapFile");
-  final libFilderExists = await dir.exists();
+  // final libFilderExists = await dir.exists();
 
   // // Create expected dirs
   await dir.create();
@@ -78,8 +78,8 @@ Future<void> createLibFolder(String path, {Callback? cb}) async {
 
   //maper format is filename;path
   final start = DateTime.now().millisecondsSinceEpoch;
-  final books = await getBooksV2(path);
-  // final books = await getBooks(path, cb: cb);
+  final books = await getCoversFromDir(path: path);
+  // final books = await getBooksV2(path, cb: cb);
   final end = DateTime.now().millisecondsSinceEpoch;
 
   final folderName = path.split('/').last;
@@ -191,7 +191,7 @@ Future<List<BookCover>> loadTitles(BookCover? libBook) async {
 
 Future<void> createLogFile() async {
   final dirPath = await getApplicationDocumentsDirectory();
-  final f = File("${dirPath.path}/$logFilePath");
+  final f = File("${dirPath.path}/$appFolder/$logFilePath");
   if (!(await f.exists())) {
     await f.create();
   }
@@ -219,7 +219,7 @@ Future<List<ThemeStore>> createThemeFile() async {
   final dirPath = await getApplicationDocumentsDirectory();
   final filePath = "${dirPath.path}/$appFolder/$themeFileName";
 
-  final f = await File(filePath).create();
+  final f = await File(filePath).create(recursive: true);
   final theme = ThemeStore.defaultTheme();
   await f.writeAsString(
       '{ "current": 0, "themes":[${jsonEncode(theme.toJSON())}]}');

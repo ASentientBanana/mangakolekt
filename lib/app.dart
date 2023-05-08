@@ -40,10 +40,11 @@ class AppWidget extends StatelessWidget {
             ),
           ),
           colorScheme: ColorScheme.fromSwatch().copyWith(
-              primary: theme.primaryColor,
-              secondary: theme.accentColor,
-              tertiary: theme.tertiary,
-              brightness: Brightness.dark),
+            primary: theme.primaryColor,
+            secondary: theme.accentColor,
+            tertiary: theme.tertiary,
+            brightness: Brightness.dark,
+          ),
         ),
         routes: {
           '/': (context) => const SplashScreen(),

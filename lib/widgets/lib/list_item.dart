@@ -65,7 +65,7 @@ class _LibListItemState extends State<LibListItem> {
                     ),
                     PopupMenuItem<String>(
                       value: "test",
-                      child: Text(contestraints.maxWidth.toString()),
+                      child: const Text("Delete"),
                       onTap: () => handleDeleteFromLib(context),
                     )
                   ])

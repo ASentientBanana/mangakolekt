@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:io';
 import 'dart:isolate';
+import 'dart:typed_data';
 import 'package:archive/archive_io.dart';
 import 'package:flutter/material.dart';
 import 'package:mangakolekt/models/book.dart';
@@ -113,7 +114,7 @@ void _unzipFilesInIsolate(List<dynamic> args) async {
   var booksString = '';
   try {
     for (final file in files) {
-      final out = '$outputPath/$libFolderName/$libFolderCoverFolderName/';
+      final out = '$outputPath/$libFolderName/$libFolderCoverFolderName';
       final coverName = await unzipCoverBeta(file.path, out);
       booksString +=
           "${file.path.split("/").last};$out/$coverName;${file.path}&";
@@ -158,4 +159,62 @@ Future<List<BookCover>> getBookList({String path = ""}) async {
 Future<bool> checkTempDir() async {
   Directory tempDir = await getTemporaryDirectory();
   return await Directory(tempDir.path).list().isEmpty;
+}
+
+Future<List<String>> getCoversFromList(List<String> list, String out) async {
+  final len = list.length;
+  final List<String> outputImages = [];
+  for (var i = 0; i < len; i++) {
+    const uuid = Uuid();
+    final id = uuid.v4();
+    final path = list[i];
+    try {
+      final targetFile = File(path);
+      final bytes = await targetFile.readAsBytes();
+      final archive = ZipDecoder().decodeBytes(bytes);
+      final file = archive.files.where((element) => element.isFile).first;
+      final filename = file.name;
+      final ext = filename.split('.').last;
+      final data = file.content;
+      final outputPath = "$out/$id.$ext";
+      final outFile = File(outputPath);
+      await outFile.create(recursive: true);
+      outFile.writeAsBytes(data);
+      outputImages.add(
+          "${targetFile.path.split("/").last};$outputPath;${targetFile.path}");
+    } catch (e) {
+      log("Err:: ${e.toString()}");
+    }
+  }
+
+  return outputImages;
+}
+
+Future<List<String>> getCoversFromDir({
+  required String path,
+}) async {
+  final out = '$path/$libFolderName/$libFolderCoverFolderName/';
+  final dirContents = Directory(path);
+  if (!await dirContents.exists()) '';
+  final targetFiles = await dirContents
+      .list()
+      .where((element) => element.path.split('/').last.split('.').last == 'cbz')
+      .map((event) => event.path)
+      .toList();
+  var iCount = 3;
+  final chunks = List.empty(growable: true);
+  final fileCount = targetFiles.length;
+  if (fileCount < iCount) iCount = fileCount;
+  var chunkSize = (fileCount / iCount).floor();
+  for (var i = 0; i < iCount; i++) {
+    chunks.add(targetFiles.sublist(i * chunkSize, (i * chunkSize) + chunkSize));
+  }
+  final List<Future<List<String>>> futures = List.empty(growable: true);
+
+  for (var chunk in chunks) {
+    futures.add(getCoversFromList(chunk, out));
+  }
+  final results = await Future.wait(futures);
+
+  return results.reduce((value, element) => [...value, ...element]);
 }
