@@ -19,13 +19,25 @@ class ThemeGreed extends StatelessWidget {
       final List<ThemeButton> themesList = [];
       final len = themes.length;
       for (var i = 0; i < len; i++) {
-        themesList.add(ThemeButton(
-          themeStore: themes[i],
-          index: i,
-        ));
+        themesList.add(
+          ThemeButton(
+            themeStore: themes[i],
+            index: i,
+          ),
+        );
       }
-      // themesList.add(ThemeButton(index: index, themeStore: themeStore))
-      return Row(children: themesList);
+      return Column(
+        children: [
+          const Padding(
+            padding: EdgeInsets.only(top: 60, bottom: 40),
+            child: Text("Available themes"),
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: themesList,
+          ),
+        ],
+      );
     });
   }
 }

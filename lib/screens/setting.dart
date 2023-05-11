@@ -15,9 +15,11 @@ class _SettingsPageState extends State<SettingsPage> {
         title: const Text("Settings"),
       ),
       body: SingleChildScrollView(
-        child: Column(children: const [
-          ThemeGreed(),
-        ]),
+        child: Column(
+          children: const [
+            ThemeGreed(),
+          ],
+        ),
       ),
     );
   }
