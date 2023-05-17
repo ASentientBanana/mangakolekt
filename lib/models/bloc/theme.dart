@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:flutter/material.dart';
 import 'package:mangakolekt/util/util.dart';
 
@@ -17,7 +15,7 @@ class ThemeStore {
       required this.accentColor,
       required this.primaryColor,
       required this.backgroundColor,
-      required this.textColor});
+      this.textColor = Colors.black});
 
   static listToColor(List<int> clr) {
     if (clr.length == 4) {
@@ -57,5 +55,24 @@ class ThemeStore {
     appbarBackground = const Color.fromARGB(206, 36, 48, 58);
     tertiary = const Color.fromARGB(234, 36, 48, 58);
     textColor = const Color.fromARGB(256, 0, 0, 0);
+  }
+  static List<ThemeStore> generateDefaultThemes() {
+    final green = ThemeStore(
+      backgroundColor: const Color.fromARGB(255, 14, 22, 21),
+      accentColor: const Color.fromARGB(255, 14, 22, 21),
+      primaryColor: const Color.fromARGB(255, 65, 104, 101),
+      appbarBackground: const Color.fromARGB(255, 55, 88, 86),
+      tertiary: const Color.fromARGB(255, 55, 88, 86),
+      textColor: const Color.fromARGB(256, 0, 0, 0),
+    );
+    final purple = ThemeStore(
+      backgroundColor: const Color.fromARGB(255, 215, 143, 240),
+      accentColor: const Color.fromARGB(255, 241, 215, 249),
+      primaryColor: const Color.fromARGB(255, 88, 34, 94),
+      appbarBackground: const Color.fromARGB(255, 241, 215, 249),
+      tertiary: const Color.fromARGB(255, 88, 34, 94),
+      textColor: const Color.fromARGB(256, 0, 0, 0),
+    );
+    return [ThemeStore.defaultTheme(), green, purple];
   }
 }

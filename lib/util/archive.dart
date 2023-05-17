@@ -4,6 +4,7 @@ import 'dart:isolate';
 import 'dart:typed_data';
 import 'package:archive/archive_io.dart';
 import 'package:flutter/material.dart';
+import 'package:mangakolekt/ffi/ffi_handler.dart';
 import 'package:mangakolekt/models/book.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:uuid/uuid.dart';
@@ -201,7 +202,7 @@ Future<List<String>> getCoversFromDir({
       .where((element) => element.path.split('/').last.split('.').last == 'cbz')
       .map((event) => event.path)
       .toList();
-  var iCount = 3;
+  var iCount = 1;
   final chunks = List.empty(growable: true);
   final fileCount = targetFiles.length;
   if (fileCount < iCount) iCount = fileCount;
@@ -209,12 +210,13 @@ Future<List<String>> getCoversFromDir({
   for (var i = 0; i < iCount; i++) {
     chunks.add(targetFiles.sublist(i * chunkSize, (i * chunkSize) + chunkSize));
   }
-  final List<Future<List<String>>> futures = List.empty(growable: true);
+  // final List<Future<List<String>>> futures = List.empty(growable: true);
 
-  for (var chunk in chunks) {
-    futures.add(getCoversFromList(chunk, out));
-  }
-  final results = await Future.wait(futures);
+  // final output = await getCoversFromList(targetFiles, out);
+  final output = await ffiUnzip(targetFiles, path, out);
 
-  return results.reduce((value, element) => [...value, ...element]);
+  // final results = await Future.wait(futures);
+
+  // return results.reduce((value, element) => [...value, ...element]);
+  return output;
 }

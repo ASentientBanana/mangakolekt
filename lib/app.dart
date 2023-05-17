@@ -46,6 +46,8 @@ class AppWidget extends StatelessWidget {
             brightness: Brightness.dark,
           ),
         ),
+
+        // theme: convertToThemeData(theme),
         routes: {
           '/': (context) => const SplashScreen(),
           '/home': (context) => const MyHomePage(),

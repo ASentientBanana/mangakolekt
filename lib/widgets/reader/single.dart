@@ -74,7 +74,7 @@ class _ReaderGridState extends State<ReaderSingle> {
     final sIndex = (isNext ? 1 : -1);
 
     setState(() {
-      if (state.bookView.isDoublePageView!) {
+      if (state.bookView.isDoublePageView) {
         if (currentPages[1].index > 2) {
           int e1;
           int e2;
@@ -224,8 +224,8 @@ class _ReaderGridState extends State<ReaderSingle> {
     return BlocBuilder<ReaderBloc, ReaderState>(builder: (context, state) {
       final bookView = (state as ReaderLoaded).bookView;
 
-      final isDoublePageView = bookView.isDoublePageView!;
-      final isRightToLeftMode = bookView.isRightToLeftMode!;
+      final isDoublePageView = bookView.isDoublePageView;
+      final isRightToLeftMode = bookView.isRightToLeftMode;
       final scaleTo = bookView.scaleTo;
 
       return Scaffold(

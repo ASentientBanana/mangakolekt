@@ -1,6 +1,6 @@
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
-import 'package:mangakolekt/models/book.dart';
+import 'package:mangakolekt/models/bloc/reader.dart';
 import 'package:mangakolekt/models/util.dart';
 
 part 'reader_event.dart';
@@ -26,16 +26,16 @@ class ReaderBloc extends Bloc<ReaderEvent, ReaderState> {
   void _onToggleIsRightToLeftMode(
       ToggleIsRightToLeftMode event, Emitter<ReaderState> emit) {
     final state = this.state;
-    if (state is ReaderLoaded && state.bookView.isRightToLeftMode != null) {
+    if (state is ReaderLoaded) {
       emit(ReaderLoaded(
-          bookView: state.bookView.copyWith(
-              isRightToLeftMode: !state.bookView.isRightToLeftMode!)));
+          bookView: state.bookView
+              .copyWith(isRightToLeftMode: !state.bookView.isRightToLeftMode)));
     }
   }
 
   void _onToggleScaleTo(ToggleScaleTo event, Emitter<ReaderState> emit) {
     final state = this.state;
-    if (state is ReaderLoaded && state.bookView.isDoublePageView != null) {
+    if (state is ReaderLoaded) {
       emit(ReaderLoaded(
           bookView: state.bookView.copyWith(
               scaleTo: state.bookView.scaleTo == ScaleTo.height
@@ -47,10 +47,10 @@ class ReaderBloc extends Bloc<ReaderEvent, ReaderState> {
   void _onToggleDoublePageViewMode(
       ToggleDoublePageViewMode event, Emitter<ReaderState> emit) {
     final state = this.state;
-    if (state is ReaderLoaded && state.bookView.isDoublePageView != null) {
+    if (state is ReaderLoaded) {
       emit(ReaderLoaded(
           bookView: state.bookView
-              .copyWith(isDoublePageView: !state.bookView.isDoublePageView!)));
+              .copyWith(isDoublePageView: !state.bookView.isDoublePageView)));
     }
   }
 

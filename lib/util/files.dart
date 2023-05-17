@@ -220,11 +220,11 @@ Future<List<ThemeStore>> createThemeFile() async {
   final filePath = "${dirPath.path}/$appFolder/$themeFileName";
 
   final f = await File(filePath).create(recursive: true);
-  final theme = ThemeStore.defaultTheme();
+  final themes = ThemeStore.generateDefaultThemes();
   await f.writeAsString(
-      '{ "current": 0, "themes":[${jsonEncode(theme.toJSON())}]}');
+      '{ "current": 0, "themes":[${themes.map((e) => jsonEncode(e.toJSON())).join(',')} ]}');
 
-  return [theme];
+  return themes;
 }
 
 Future<List<ThemeStore>> checkThemeFile() async {

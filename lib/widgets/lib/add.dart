@@ -52,12 +52,17 @@ class AddToLibraryModalState extends State<AddToLibraryModal> {
     // ReceivePort receivePortPageNumber = ReceivePort();
     // Isolate isolatePageNumber =
     //     await Isolate.spawn(getNumberOfPages, receivePortPageNumber.sendPort);
+    final sw = Stopwatch()..start();
+
     await createLibFolder(widget.selectedDir, cb: incrementProgress);
     String enteredText = textEditingController.text;
     await addToAppDB(enteredText, widget.selectedDir).then((libList) {
       // Fluter doesn't like using context and async/await
       context.read<LibraryBloc>().add(SetLibs(libs: libList));
     });
+
+    sw.stop();
+    print(sw.elapsed);
     setState(() {
       isSubmitDisabled = false;
     });
