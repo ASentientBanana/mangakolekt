@@ -1,0 +1,3 @@
+[submodule "unzip"]
+	path = unzip
+	url = git@github.com:ASentientBanana/mangakolekt_unzip_module.git
