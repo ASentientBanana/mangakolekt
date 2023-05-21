@@ -49,9 +49,6 @@ class AddToLibraryModalState extends State<AddToLibraryModal> {
     setState(() {
       isSubmitDisabled = true;
     });
-    // ReceivePort receivePortPageNumber = ReceivePort();
-    // Isolate isolatePageNumber =
-    //     await Isolate.spawn(getNumberOfPages, receivePortPageNumber.sendPort);
     final sw = Stopwatch()..start();
 
     await createLibFolder(widget.selectedDir, cb: incrementProgress);
@@ -78,11 +75,15 @@ class AddToLibraryModalState extends State<AddToLibraryModal> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: 800,
-      width: 1000,
+      height: 400,
+      width: 400,
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(10),
+        // borderRadius: BorderRadius.circular(10),
+        border: Border.all(
+            color: Theme.of(context).colorScheme.tertiary,
+            width: 1,
+            style: BorderStyle.solid),
         color: Theme.of(context).colorScheme.secondary,
       ),
       child: Column(
@@ -104,23 +105,19 @@ class AddToLibraryModalState extends State<AddToLibraryModal> {
             ),
           ),
           const SizedBox(height: 10),
-          Padding(
-            padding: const EdgeInsets.all(20),
-            child: LinearProgressIndicator(
-                semanticsLabel: "label",
-                value: numberOfFiles.clamp(0, maxNumberOfFiles) /
-                    maxNumberOfFiles // Clamps the value between 0 and 232 and squeezes it between 0 and 1
-                ),
-          ),
           Center(
             child: Row(
               children: [
                 Expanded(
                     child: ElevatedButton(
                   onPressed: isSubmitDisabled ? null : handleSubmit,
-                  child: const Text('Add'),
+                  child: isSubmitDisabled
+                      ? const CircularProgressIndicator()
+                      : const Text('Add'),
                 )),
-                const Padding(padding: EdgeInsets.all(20)),
+                const Padding(
+                  padding: EdgeInsets.all(20),
+                ),
                 Expanded(
                   child: ElevatedButton(
                     onPressed: isSubmitDisabled ? null : handleCancel,

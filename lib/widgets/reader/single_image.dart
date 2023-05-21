@@ -36,10 +36,6 @@ class _SingleImageState extends State<SingleImage> {
             controller: _imageScrollController,
             child: Image(image: widget.image.image, fit: BoxFit.cover),
           );
-    return Container(
-        decoration: BoxDecoration(
-            border: Border.all(
-                color: Colors.red, style: BorderStyle.solid, width: 1)),
-        child: img);
+    return Container(child: img);
   }
 }

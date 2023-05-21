@@ -39,7 +39,11 @@ class _MangaReaderState extends State<MangaReader> {
                 return ReaderGrid(book: snapshot.data!);
               }
             }
-            return const CircularProgressIndicator();
+            return const SizedBox(
+              width: 40,
+              height: 40,
+              child: CircularProgressIndicator(),
+            );
           });
         },
         future: getBook(context),

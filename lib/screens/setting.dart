@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mangakolekt/widgets/settings/theme_add.dart';
 import 'package:mangakolekt/widgets/settings/theme_grid.dart';
 
 class SettingsPage extends StatefulWidget {
@@ -8,6 +9,10 @@ class SettingsPage extends StatefulWidget {
 }
 
 class _SettingsPageState extends State<SettingsPage> {
+  void goToThemeCreator(BuildContext context) {
+    Navigator.pushNamed(context, '/theme_creator');
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -16,8 +21,13 @@ class _SettingsPageState extends State<SettingsPage> {
       ),
       body: SingleChildScrollView(
         child: Column(
-          children: const [
-            ThemeGreed(),
+          children: [
+            const ThemeGreed(),
+            ElevatedButton(
+              onPressed: null,
+              // onPressed: () => goToThemeCreator(context),
+              child: const Text("Add new theme"),
+            ),
           ],
         ),
       ),

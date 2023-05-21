@@ -110,8 +110,9 @@ class _MyHomePageState extends State<MyHomePage> {
         ),
       ),
       floatingActionButton: FloatingActionButton(
-          onPressed: isPickingFile ? null : pickDirHandler,
-          child: const Icon(Icons.add)),
+        onPressed: isPickingFile ? null : pickDirHandler,
+        child: const Icon(Icons.add),
+      ),
     );
   }
 }
