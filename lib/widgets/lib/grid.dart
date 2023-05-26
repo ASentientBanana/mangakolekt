@@ -32,7 +32,7 @@ class LibGrid extends StatelessWidget {
                       crossAxisSpacing: 10,
                       children: l);
                 } else {
-                  return const CircularProgressIndicator();
+                  return const SizedBox.shrink();
                 }
               },
               future: loadTitles(state.libStore.cover),

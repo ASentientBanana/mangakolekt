@@ -42,3 +42,12 @@ void switchReadingDirection(list) {
 List<int> colorToList(Color clr) {
   return [clr.alpha, clr.red, clr.green, clr.blue];
 }
+
+Route<Widget> pageRouteBuilderWrapper(RouteSettings settings, Widget page) {
+  return PageRouteBuilder(
+    settings:
+        settings, // Pass this to make popUntil(), pushNamedAndRemoveUntil(), works
+    pageBuilder: (_, __, ___) => page,
+    transitionsBuilder: (_, a, __, c) => FadeTransition(opacity: a, child: c),
+  );
+}

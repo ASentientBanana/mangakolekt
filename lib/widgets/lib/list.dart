@@ -17,23 +17,20 @@ class LibList extends StatelessWidget {
         builder: (context, state) {
           return FutureBuilder(
             builder: (context, snapshot) {
-              int index = 0;
-              print(snapshot.data);
-              final list = snapshot.data?.map((e) {
-                return LibListItem(item: e, index: index);
-              }).toList();
-              return SizedBox(
-                // width: 200,
-                child: Column(
-                  children: list!.isEmpty
-                      ? [
-                          const Flexible(
-                            child: Text("No libraries added"),
-                          ),
-                        ]
-                      : list,
-                ),
-              );
+              if (snapshot.hasData) {
+                final List<Widget> list = [];
+                final len = snapshot.data!.length;
+                for (var i = 0; i < len; i++) {
+                  list.add(LibListItem(item: snapshot.data![i], index: i));
+                }
+                return SizedBox(
+                  width: 200,
+                  child: Column(children: list),
+                );
+              } else {
+                return SizedBox.shrink();
+              }
+              // return LibListItem(item: e, index: index);
             },
             future: readAppDB(),
           );
