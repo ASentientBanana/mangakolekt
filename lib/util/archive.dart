@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'dart:io';
 import 'dart:isolate';
-import 'dart:typed_data';
 import 'package:archive/archive_io.dart';
 import 'package:flutter/material.dart';
 import 'package:mangakolekt/ffi/ffi_handler.dart';
@@ -10,14 +9,14 @@ import 'package:path_provider/path_provider.dart';
 import 'package:uuid/uuid.dart';
 import '../constants.dart';
 import '../util/files.dart';
+import 'package:path/path.dart' as p;
 
 Future<OldBook?> getBookFromArchive(String path) async {
   // final book = await File(path).readAsBytes();
 
   final bytes = await File(path).readAsBytes();
 
-  // Decode the Zip file
-  final bookName = path.split('/').last;
+  final bookName = p.split(path).last;
 
   final Archive archive;
   try {
@@ -56,11 +55,12 @@ Future<String> unzipCoverBeta(String path, String out) async {
     final ext = filename.split('.').last;
     final data = file.content as List<int>;
     final stream = Stream<List<int>>.fromIterable([data]);
-    final outputPath = "$out/$id.$ext";
+    // final outputPath = "$out/$id.$ext";
+    final outputPath = p.join(out, "$id.$ext");
     final outFile = File(outputPath);
     final output = await outFile.create(recursive: true);
     stream.pipe(output.openWrite());
-    return outputPath.split("/").last;
+    return p.split(outputPath).last;
   } catch (e) {
     log("Err:: ${e.toString()}");
   }
@@ -115,10 +115,10 @@ void _unzipFilesInIsolate(List<dynamic> args) async {
   var booksString = '';
   try {
     for (final file in files) {
-      final out = '$outputPath/$libFolderName/$libFolderCoverFolderName';
+      final out = p.join(outputPath, libFolderName, libFolderCoverFolderName);
       final coverName = await unzipCoverBeta(file.path, out);
       booksString +=
-          "${file.path.split("/").last};$out/$coverName;${file.path}&";
+          "${p.split(file.path).last};${p.join(out, coverName)};${file.path}&";
     }
     sendPort.send(booksString);
     return;
@@ -128,11 +128,12 @@ void _unzipFilesInIsolate(List<dynamic> args) async {
 }
 
 bool checkIfPathIsFile(String path, String type) {
+  final file = path.split('.').last;
   if (type == 'book') {
-    return supportedBookTypes.contains(path.split('.').last);
+    return supportedBookTypes.contains(file);
   }
   if (type == 'image') {
-    return supportedImageTypes.contains(path.split('.').last);
+    return supportedImageTypes.contains(file);
   }
   return false;
 }
@@ -177,12 +178,12 @@ Future<List<String>> getCoversFromList(List<String> list, String out) async {
       final filename = file.name;
       final ext = filename.split('.').last;
       final data = file.content;
-      final outputPath = "$out/$id.$ext";
+      final outputPath = p.join(out, "$id.$ext");
       final outFile = File(outputPath);
       await outFile.create(recursive: true);
       outFile.writeAsBytes(data);
       outputImages.add(
-          "${targetFile.path.split("/").last};$outputPath;${targetFile.path}");
+          "${p.split(targetFile.path).last};$outputPath;${targetFile.path}");
     } catch (e) {
       log("Err:: ${e.toString()}");
     }
@@ -194,29 +195,15 @@ Future<List<String>> getCoversFromList(List<String> list, String out) async {
 Future<List<String>> getCoversFromDir({
   required String path,
 }) async {
-  final out = '$path/$libFolderName/$libFolderCoverFolderName/';
+  final out = p.join(path, libFolderName, libFolderCoverFolderName);
   final dirContents = Directory(path);
-  if (!await dirContents.exists()) '';
+  if (!await dirContents.exists()) return [];
   final targetFiles = await dirContents
       .list()
-      .where((element) => element.path.split('/').last.split('.').last == 'cbz')
+      .where((element) => p.split(element.path).last.split('.').last == 'cbz')
       .map((event) => event.path)
       .toList();
-  var iCount = 1;
-  final chunks = List.empty(growable: true);
-  final fileCount = targetFiles.length;
-  if (fileCount < iCount) iCount = fileCount;
-  var chunkSize = (fileCount / iCount).floor();
-  for (var i = 0; i < iCount; i++) {
-    chunks.add(targetFiles.sublist(i * chunkSize, (i * chunkSize) + chunkSize));
-  }
-  // final List<Future<List<String>>> futures = List.empty(growable: true);
-
-  // final output = await getCoversFromList(targetFiles, out);
   final output = await ffiUnzip(targetFiles, path, out);
-
-  // final results = await Future.wait(futures);
-
-  // return results.reduce((value, element) => [...value, ...element]);
+  print("Images extracted");
   return output;
 }

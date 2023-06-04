@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:mangakolekt/bloc/theme/theme_bloc.dart';
-import 'package:mangakolekt/models/bloc/theme.dart';
-import 'package:mangakolekt/util/archive.dart';
 import 'package:mangakolekt/util/files.dart';
 
 class SplashScreen extends StatefulWidget {

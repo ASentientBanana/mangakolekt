@@ -4,7 +4,7 @@ import 'package:mangakolekt/models/util.dart';
 class SingleImage extends StatefulWidget {
   final Image image;
   final ScaleTo scaleTo;
-  SingleImage({required this.image, required this.scaleTo}) : super();
+  const SingleImage({super.key, required this.image, required this.scaleTo});
 
   @override
   _SingleImageState createState() => _SingleImageState();

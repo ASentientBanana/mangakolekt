@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:mangakolekt/models/book.dart';
-import 'package:mangakolekt/util/files.dart';
 
 List<BookCover> sortCoversNumeric(List<BookCover> list) {
   final regex = RegExp(r'\d+');

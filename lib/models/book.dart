@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:mangakolekt/models/util.dart';
 
 enum BookReadStatus { read, unread }
 

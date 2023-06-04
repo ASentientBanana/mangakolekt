@@ -1,7 +1,7 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:mangakolekt/bloc/library/library_bloc.dart';
-import 'package:mangakolekt/models/book.dart';
 import 'package:mangakolekt/util/files.dart';
 import 'dart:isolate';
 
@@ -17,6 +17,10 @@ class AddToLibraryModal extends StatefulWidget {
 }
 
 void getNumberOfPages(SendPort send) async {}
+
+Future<void> _submitIsolateCallback(String target) async {
+  await createLibFolder(target);
+}
 
 class AddToLibraryModalState extends State<AddToLibraryModal> {
   final TextEditingController textEditingController = TextEditingController();
@@ -45,21 +49,25 @@ class AddToLibraryModalState extends State<AddToLibraryModal> {
     super.initState();
   }
 
-  void handleSubmit() async {
+  Future startIsolate() async {
+    await compute(_submitIsolateCallback, widget.selectedDir);
+  }
+
+  // Todo: paralelize this
+  void handleSubmit(BuildContext context) async {
+    final selectedDir = widget.selectedDir;
     setState(() {
       isSubmitDisabled = true;
     });
-    final sw = Stopwatch()..start();
 
-    await createLibFolder(widget.selectedDir, cb: incrementProgress);
-    String enteredText = textEditingController.text;
-    await addToAppDB(enteredText, widget.selectedDir).then((libList) {
-      // Fluter doesn't like using context and async/await
-      context.read<LibraryBloc>().add(SetLibs(libs: libList));
-    });
+    if (isSubmitDisabled) {
+      await startIsolate();
+      await addToAppDB(textEditingController.text, selectedDir).then((libList) {
+        // Fluter doesn't like using context and async/await
+        context.read<LibraryBloc>().add(SetLibs(libs: libList));
+      });
+    }
 
-    sw.stop();
-    print(sw.elapsed);
     setState(() {
       isSubmitDisabled = false;
     });
@@ -110,7 +118,8 @@ class AddToLibraryModalState extends State<AddToLibraryModal> {
               children: [
                 Expanded(
                     child: ElevatedButton(
-                  onPressed: isSubmitDisabled ? null : handleSubmit,
+                  onPressed:
+                      isSubmitDisabled ? null : () => handleSubmit(context),
                   child: isSubmitDisabled
                       ? const CircularProgressIndicator()
                       : const Text('Add'),
