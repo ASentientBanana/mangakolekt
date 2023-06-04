@@ -34,3 +34,13 @@ class ToggleScaleTo extends ReaderEvent {
   @override
   List<Object> get props => [];
 }
+
+class Increment extends ReaderEvent {
+  @override
+  List<Object> get props => [];
+}
+
+class Decrement extends ReaderEvent {
+  @override
+  List<Object> get props => [];
+}

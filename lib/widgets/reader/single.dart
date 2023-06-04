@@ -24,7 +24,7 @@ class ReaderSingle extends StatefulWidget {
 class _ReaderGridState extends State<ReaderSingle> {
   int numberOfPages = 0;
   List<BookPage> pages = [];
-  List<BookPage> currentPages = [];
+  List<int> currentPages = [];
   final _focusNode = FocusNode();
 
   final ScrollController _scrollController = ScrollController();
@@ -41,12 +41,12 @@ class _ReaderGridState extends State<ReaderSingle> {
   void setPagesDouble(bool isDoublePageView) {
     setState(() {
       //There is an error here if the final page selected in single mode and then switched to double
-      if (currentPages[0].index < pages.length - 2 &&
-          currentPages[0].index != pages.length - 1) {
-        currentPages.add(pages[currentPages[0].index + 1]);
+      if (currentPages[0] < pages.length - 2 &&
+          currentPages[0] != pages.length - 1) {
+        currentPages.add((pages[currentPages[0] + 1]).index);
       } else {
-        BookPage p = currentPages[0];
-        currentPages[0] = pages[p.index - 1];
+        int p = currentPages[0];
+        currentPages[0] = pages[p - 1].index;
         currentPages[1] = p;
       }
     });
@@ -60,14 +60,17 @@ class _ReaderGridState extends State<ReaderSingle> {
     }
   }
 
+  void handlePagePreviewClick() {}
+
   void pageAction(PageAction pa) {
+    final pageLen = pages.length;
     final state = context.read<ReaderBloc>().state as ReaderLoaded;
     // Direction check
     final isNext = pa == PageAction.next;
     if (isNext) {
-      if (currentPages.last.index == pages.last.index) return;
+      if (currentPages.last == pages.last.index) return;
     } else {
-      if (currentPages.first.index == 0) return;
+      if (currentPages.first == 0) return;
     }
 
     final dIndex = (isNext ? 2 : -2);
@@ -75,32 +78,32 @@ class _ReaderGridState extends State<ReaderSingle> {
 
     setState(() {
       if (state.bookView.isDoublePageView) {
-        if (currentPages[1].index > 2) {
+        if (currentPages[1] > 2) {
           int e1;
           int e2;
-          if (currentPages[1].index == pages.length - 2) {
-            e1 = pages.length - 2;
-            e2 = pages.length - 1;
+          if (currentPages[1] == pageLen - 2) {
+            e1 = pageLen - 2;
+            e2 = pageLen - 1;
           } else {
-            e1 = currentPages[0].index + dIndex;
-            e2 = currentPages[1].index + dIndex;
+            e1 = currentPages[0] + dIndex;
+            e2 = currentPages[1] + dIndex;
           }
 
-          currentPages.replaceRange(0, 2, [pages[e1], pages[e2]]);
+          currentPages.replaceRange(0, 2, [pages[e1].index, pages[e2].index]);
         } else {
           currentPages.replaceRange(0, 2, [
-            pages[currentPages[0].index + sIndex],
-            pages[currentPages[1].index + sIndex]
+            pages[currentPages[0] + sIndex].index,
+            pages[currentPages[1] + sIndex].index
           ]);
         }
       } else {
-        if (!isNext && currentPages[0].index > 0) {
-          currentPages[0] = pages[currentPages[0].index + sIndex];
-        } else if (isNext && currentPages[0].index < pages.length - 1) {
-          currentPages[0] = pages[currentPages[0].index + 1];
+        if (!isNext && currentPages[0] > 0) {
+          currentPages[0] = pages[currentPages[0] + sIndex].index;
+        } else if (isNext && currentPages[0] < pageLen - 1) {
+          currentPages[0] = pages[currentPages[0] + 1].index;
         }
       }
-      handleScrollAnimation(currentPages[0].index);
+      handleScrollAnimation(currentPages[0]);
     });
   }
 
@@ -133,17 +136,18 @@ class _ReaderGridState extends State<ReaderSingle> {
   }
 
   void handlePreviewClick(int pageIndex, bool isDoublePageView) {
+    final pageLen = pages.length;
     setState(() {
       if (isDoublePageView) {
-        if (pageIndex == pages.length - 1) {
-          currentPages[0] = pages[pages.length - 2];
-          currentPages[1] = pages[pages.length - 1];
+        if (pageIndex == pageLen - 1) {
+          currentPages[0] = pages[pageLen - 2].index;
+          currentPages[1] = pages[pageLen - 1].index;
         } else {
-          currentPages[0] = pages[pageIndex];
-          currentPages[1] = pages[pageIndex + 1];
+          currentPages[0] = pages[pageIndex].index;
+          currentPages[1] = pages[pageIndex + 1].index;
         }
       } else {
-        currentPages[0] = pages[pageIndex];
+        currentPages[0] = pages[pageIndex].index;
       }
     });
   }
@@ -162,13 +166,13 @@ class _ReaderGridState extends State<ReaderSingle> {
           return BookPage(entry: e, index: i - 1);
         }).toList();
         if (!state.bookView.isDoublePageView) {
-          currentPages.add(pages[0]);
+          currentPages.add(pages[0].index);
         } else {
           if (pages.length >= 2) {
-            currentPages[0] = pages[0];
-            currentPages[1] = pages[1];
+            currentPages[0] = pages[0].index;
+            currentPages[1] = pages[1].index;
           } else {
-            currentPages[0] = pages[0];
+            currentPages[0] = pages[0].index;
           }
         }
       });
@@ -199,7 +203,7 @@ class _ReaderGridState extends State<ReaderSingle> {
             child: Listener(
               onPointerDown: handleMouseClick,
               child: SingleImage(
-                  image: e.entry.image,
+                  image: pages[e].entry.image,
                   scaleTo: state.bookView.isDoublePageView
                       ? ScaleTo.height
                       : state.bookView.scaleTo),
@@ -268,10 +272,11 @@ class _ReaderGridState extends State<ReaderSingle> {
                     SizedBox(
                       width: 100,
                       child: ListPreview(
+                          isDoublePage: isDoublePageView,
                           pages: pages.toList(),
                           scoreController: _scrollController,
                           currentPages: currentPages,
-                          onTap: null),
+                          onTap: handlePreviewClick),
                     ),
                     ...renderBooks(isRightToLeftMode),
                   ],

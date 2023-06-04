@@ -12,8 +12,21 @@ class ReaderBloc extends Bloc<ReaderEvent, ReaderState> {
     on<ChangeReaderView>(_changeReaderView);
     on<ToggleDoublePageViewMode>(_onToggleDoublePageViewMode);
     on<ToggleIsRightToLeftMode>(_onToggleIsRightToLeftMode);
-    on<ToggleScaleTo>(_onToggleScaleTo);
+    on<Increment>(_onIncrement);
+    on<Decrement>(_onDecrement);
   }
+
+  void _onIncrement(Increment event, Emitter<ReaderState> emit) {
+    final state = this.state;
+    if (state is! ReaderLoaded) return;
+
+    if (state.bookView.isDoublePageView) {
+      //Check bounds
+      // if(state.bookView.)
+    }
+  }
+
+  void _onDecrement(Decrement event, Emitter<ReaderState> emit) {}
 
   void _changeReaderView(ChangeReaderView event, Emitter<ReaderState> emit) {
     final state = this.state;

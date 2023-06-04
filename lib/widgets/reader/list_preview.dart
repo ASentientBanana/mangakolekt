@@ -4,11 +4,12 @@ import 'package:mangakolekt/models/book.dart';
 class ListPreview extends StatelessWidget {
   final List<BookPage> pages;
   final ScrollController scoreController;
-  final List<BookPage> currentPages;
-  final void Function(int index, void Function())? onTap;
-
+  final List<int> currentPages;
+  final void Function(int index, bool)? onTap;
+  final bool isDoublePage;
   const ListPreview(
       {super.key,
+      required this.isDoublePage,
       required this.pages,
       required this.scoreController,
       required this.currentPages,
@@ -32,13 +33,13 @@ class ListPreview extends StatelessWidget {
                       child: InkWell(
                         onTap: () {
                           if (onTap != null) {
-                            onTap!(e.index, () {});
+                            onTap!(e.index, isDoublePage);
                           }
                         },
                         child: Container(
                             decoration: BoxDecoration(
-                                border: currentPages.any(
-                                        (element) => element.index == e.index)
+                                border: currentPages
+                                        .any((element) => element == e.index)
                                     ? Border.all(
                                         color: Colors.red,
                                         width: 5,
