@@ -161,7 +161,7 @@ class _ReaderGridState extends State<ReaderSingle> {
           i++;
           return BookPage(entry: e, index: i - 1);
         }).toList();
-        if (!state.bookView.isDoublePageView!) {
+        if (!state.bookView.isDoublePageView) {
           currentPages.add(pages[0]);
         } else {
           if (pages.length >= 2) {
@@ -200,7 +200,7 @@ class _ReaderGridState extends State<ReaderSingle> {
               onPointerDown: handleMouseClick,
               child: SingleImage(
                   image: e.entry.image,
-                  scaleTo: state.bookView.isDoublePageView!
+                  scaleTo: state.bookView.isDoublePageView
                       ? ScaleTo.height
                       : state.bookView.scaleTo),
             ),

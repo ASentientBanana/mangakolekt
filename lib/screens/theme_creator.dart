@@ -81,7 +81,7 @@ class _ThemeCreatorPageState extends State<ThemeCreatorPage> {
           ),
           floatingActionButton: FloatingActionButton(
             onPressed: () {},
-            child: Icon(Icons.save),
+            child: const Icon(Icons.save),
           ),
         ));
   }

@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 import 'package:mangakolekt/models/bloc/theme.dart';
 
 class AddThemeButton extends StatefulWidget {
@@ -42,7 +41,7 @@ class _AddThemeButtonState extends State<AddThemeButton> {
                     style: BorderStyle.solid,
                     width: 1),
               ),
-              child: Column(
+              child: const Column(
                 children: [],
               ),
             ),

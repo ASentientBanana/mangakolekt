@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:mangakolekt/models/book.dart';
-import 'package:mangakolekt/util/files.dart';
 
 List<BookCover> sortCoversNumeric(List<BookCover> list) {
   final regex = RegExp(r'\d+');
@@ -41,4 +40,13 @@ void switchReadingDirection(list) {
 
 List<int> colorToList(Color clr) {
   return [clr.alpha, clr.red, clr.green, clr.blue];
+}
+
+Route<Widget> pageRouteBuilderWrapper(RouteSettings settings, Widget page) {
+  return PageRouteBuilder(
+    settings:
+        settings, // Pass this to make popUntil(), pushNamedAndRemoveUntil(), works
+    pageBuilder: (_, __, ___) => page,
+    transitionsBuilder: (_, a, __, c) => FadeTransition(opacity: a, child: c),
+  );
 }

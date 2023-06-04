@@ -7,6 +7,10 @@ import 'package:path_provider/path_provider.dart';
 import './util.dart';
 import '../constants.dart';
 import './archive.dart';
+import 'package:path/path.dart' as p;
+
+String Function(String) getMapFilePath =
+    (String path) => p.join(path, appFolder, appMapFile);
 
 Future<List<File>> getFileListFromDir(String path) async {
   Directory d = Directory(path);
@@ -23,8 +27,7 @@ Future<String?> pickDirectory() async {
 Future<void> createAppDB() async {
   // on linux its '/home/petar/Documents'
   final appDocumentDir = await getApplicationDocumentsDirectory();
-  final mapFile = File("${appDocumentDir.path}/mangakolekt/$appMapFile");
-
+  final mapFile = File(p.join(appDocumentDir.path, appFolder, appMapFile));
   if (!(await mapFile.exists())) {
     await mapFile.create(recursive: true);
   }
@@ -33,7 +36,7 @@ Future<void> createAppDB() async {
 Future<List<BookCover>> readAppDB() async {
   // on linux its '/home/petar/Documents'
   final appDocumentDir = await getApplicationDocumentsDirectory();
-  final mapFile = File("${appDocumentDir.path}/mangakolekt/$appMapFile");
+  final mapFile = File(getMapFilePath(appDocumentDir.path));
   final mapContents = await mapFile.readAsString();
   final books =
       mapContents.split('\n').where((element) => element != '').map((e) {
@@ -46,7 +49,7 @@ Future<List<BookCover>> readAppDB() async {
 Future<List<BookCover>> addToAppDB(String name, path) async {
   // on linux its '/home/petar/Documents'
   final appDocumentDir = await getApplicationDocumentsDirectory();
-  final mapFile = File("${appDocumentDir.path}/mangakolekt/$appMapFile");
+  final mapFile = File(getMapFilePath(appDocumentDir.path));
   final mapContents = await mapFile.readAsString();
   final newMap =
       mapContents.split('\n').where((element) => element != '').toList();
@@ -62,40 +65,43 @@ Future<List<BookCover>> addToAppDB(String name, path) async {
   return books;
 }
 
-typedef void Callback();
+typedef Callback = void Function();
 
-Future<void> createLibFolder(String path, {Callback? cb}) async {
+Future<void> createLibFolder(
+  String path,
+) async {
   //scan dir
-  final dir = Directory("$path/$libFolderName");
-  final coversDir = Directory("$path/$libFolderName/$libFolderCoverFolderName");
-  final mapFile = File("$path/$libFolderName/$libFolderMapFile");
-  // final libFilderExists = await dir.exists();
-
+  final dir = Directory(p.join(path, libFolderName));
+  final coversDir =
+      Directory(p.join(path, libFolderName, libFolderCoverFolderName));
+  final mapFile = File(p.join(path, libFolderName, libFolderMapFile));
   // // Create expected dirs
   await dir.create();
   await coversDir.create();
   await mapFile.create();
 
   //maper format is filename;path
-  final start = DateTime.now().millisecondsSinceEpoch;
+  // final start = DateTime.now().millisecondsSinceEpoch;
   final books = await getCoversFromDir(path: path);
   // final books = await getBooksV2(path, cb: cb);
-  final end = DateTime.now().millisecondsSinceEpoch;
+  // final end = DateTime.now().millisecondsSinceEpoch;
 
-  final folderName = path.split('/').last;
-
-  await log("$folderName: ${(end - start) / 1000} seconds");
-  // final covers = books.map((element) {
-  //   return "${element.name};${element.path};${element.bookPath}";
-  // }).toList();
+  // final folderName = p.split(path).last;
+  // try {
+  //   // final dirPath = await getApplicationDocumentsDirectory();
+  //   await log("$folderName: ${(end - start) / 1000} seconds");
+  // } catch (e) {
+  //   print(e);
+  // }
   await mapFile.writeAsString(books.join('\n'));
 }
 
-Future<List<BookCover>> readFromLib(BookCover liBook) async {
-  final dir = Directory("${liBook.path}/$libFolderName");
+Future<List<BookCover>> readFromLib(BookCover libBook) async {
+  final dir = Directory(p.join(libBook.path, libFolderName));
   final coversDir =
-      Directory("${liBook.path}/$libFolderName/$libFolderCoverFolderName");
-  final mapFile = File("${liBook.path}/$libFolderName/$libFolderMapFile");
+      Directory(p.join(libBook.path, libFolderName, libFolderCoverFolderName));
+  final mapFile = File(p.join(libBook.path, libFolderName, libFolderMapFile));
+
   final libFolderExists = await dir.exists();
   final coversDirExits = await coversDir.exists();
   final mapFileExists = await mapFile.exists();
@@ -135,7 +141,7 @@ Future<bool> deleteLibbyIndex(String libString, int index) async {
   //template name;path;bookPath
   //check if app mapFile and lib mapFile exist;
   final appDocumentDir = await getApplicationDocumentsDirectory();
-  final mapFile = File("${appDocumentDir.path}/mangakolekt/$appMapFile");
+  final mapFile = File(getMapFilePath(appDocumentDir.path));
 
   if (await mapFile.exists()) {
     final contents = await mapFile.readAsString();
@@ -144,9 +150,7 @@ Future<bool> deleteLibbyIndex(String libString, int index) async {
     final newContents = contentList.join('\n');
     await mapFile.writeAsString(newContents);
   }
-
-  final libDir = Directory("${libString.split(';')[1]}/$libFolderName");
-  print("Delet dir:: $libDir");
+  final libDir = Directory(p.join(libString.split(';')[1], libFolderName));
   if (await libDir.exists()) {
     await libDir.delete(
       recursive: true,
@@ -159,7 +163,7 @@ Future<bool> deleteLib(String libString) async {
   //template name;path;bookPath
   //check if app mapFile and lib mapFile exist;
   final appDocumentDir = await getApplicationDocumentsDirectory();
-  final mapFile = File("${appDocumentDir.path}/mangakolekt/$appMapFile");
+  final mapFile = File(getMapFilePath(appDocumentDir.path));
   final splitLibString = libString.split(';')[1];
   String path = splitLibString;
   if (!(await mapFile.exists())) return false;
@@ -175,7 +179,8 @@ Future<bool> deleteLib(String libString) async {
     }
     await mapFile.writeAsString(splitContents.join('\n'));
   }
-  final libDir = Directory("$path/$libFolderName");
+  // final libDir = Directory("$path/$libFolderName");
+  final libDir = Directory(p.join(path, libFolderName));
   if (await libDir.exists()) {
     await libDir.delete(recursive: true);
     print("removed map from $path");
@@ -191,24 +196,30 @@ Future<List<BookCover>> loadTitles(BookCover? libBook) async {
 
 Future<void> createLogFile() async {
   final dirPath = await getApplicationDocumentsDirectory();
-  final f = File("${dirPath.path}/$appFolder/$logFilePath");
+  final f = File(p.join(dirPath.path, appFolder, logFilePath));
   if (!(await f.exists())) {
     await f.create();
   }
 }
 
 Future<void> log(String msg) async {
-  final dirPath = await getApplicationDocumentsDirectory();
+  final logPath = p.join(appFolder, logFilePath);
+  // final dirPath = await getApplicationDocumentsDirectory();
+  // print("test");
+  // print(appFolder);
+  // print(logFilePath);
+  print(logPath);
 
-  final f = File("${dirPath.path}/$logFilePath");
-  if (await f.exists()) {
-    await f.writeAsString("$msg\n", mode: FileMode.append);
-  }
+  // final f = File(logPath);
+
+  // if (await f.exists()) {
+  //   await f.writeAsString("$msg\n", mode: FileMode.append);
+  // }
 }
 
 Future<List<ThemeStore>> readThemeFile() async {
   final dirPath = await getApplicationDocumentsDirectory();
-  final filePath = "${dirPath.path}/$appFolder/$themeFileName";
+  final filePath = p.join(dirPath.path, appFolder, themeFileName);
   var input = await File(filePath).readAsString();
   Map<String, dynamic> map = jsonDecode(input);
   List<dynamic> themes = map['themes'];
@@ -217,7 +228,7 @@ Future<List<ThemeStore>> readThemeFile() async {
 
 Future<List<ThemeStore>> createThemeFile() async {
   final dirPath = await getApplicationDocumentsDirectory();
-  final filePath = "${dirPath.path}/$appFolder/$themeFileName";
+  final filePath = p.join(dirPath.path, appFolder, themeFileName);
 
   final f = await File(filePath).create(recursive: true);
   final themes = ThemeStore.generateDefaultThemes();
@@ -229,7 +240,7 @@ Future<List<ThemeStore>> createThemeFile() async {
 
 Future<List<ThemeStore>> checkThemeFile() async {
   final dirPath = await getApplicationDocumentsDirectory();
-  final filePath = "${dirPath.path}/$appFolder/$themeFileName";
+  final filePath = p.join(dirPath.path, appFolder, themeFileName);
   if (await File(filePath).exists()) {
     return await readThemeFile();
   } else {

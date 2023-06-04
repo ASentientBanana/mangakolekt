@@ -25,3 +25,4 @@ const prevKeyMap = [
   LogicalKeyboardKey.arrowDown,
   LogicalKeyboardKey.space
 ];
+

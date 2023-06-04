@@ -5,22 +5,17 @@ import 'package:mangakolekt/models/book.dart';
 import 'package:mangakolekt/models/util.dart';
 import 'package:mangakolekt/widgets/reader/grid.dart';
 import 'package:mangakolekt/widgets/reader/single.dart';
+
 import '../util/archive.dart';
 
 class MangaReader extends StatefulWidget {
-  MangaReader({Key? key}) : super(key: key);
+  const MangaReader({Key? key}) : super(key: key);
 
   @override
   _MangaReaderState createState() => _MangaReaderState();
 }
 
 class _MangaReaderState extends State<MangaReader> {
-  Future<OldBook?> getBook(BuildContext context) async {
-    final args = ModalRoute.of(context)!.settings.arguments as String;
-    final oldBook = await getBookFromArchive(args);
-    return oldBook;
-  }
-
   @override
   Widget build(BuildContext context) {
     return Focus(
@@ -39,10 +34,12 @@ class _MangaReaderState extends State<MangaReader> {
                 return ReaderGrid(book: snapshot.data!);
               }
             }
-            return const SizedBox(
-              width: 40,
-              height: 40,
-              child: CircularProgressIndicator(),
+            return const Scaffold(
+              body: Center(
+                child: SizedBox(
+                  child: CircularProgressIndicator(),
+                ),
+              ),
             );
           });
         },
@@ -50,5 +47,12 @@ class _MangaReaderState extends State<MangaReader> {
       ),
     );
     // return
+  }
+
+  Future<OldBook?> getBook(BuildContext context) async {
+    await Future.delayed(const Duration(microseconds: 1000));
+    final args = ModalRoute.of(context)!.settings.arguments as String;
+    final oldBook = await getBookFromArchive(args);
+    return oldBook;
   }
 }
