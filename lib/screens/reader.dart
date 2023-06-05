@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:mangakolekt/bloc/reader/reader_bloc.dart';
@@ -52,7 +53,8 @@ class _MangaReaderState extends State<MangaReader> {
   Future<OldBook?> getBook(BuildContext context) async {
     await Future.delayed(const Duration(microseconds: 1000));
     final args = ModalRoute.of(context)!.settings.arguments as String;
-    final oldBook = await getBookFromArchive(args);
+    final oldBook = await compute(getBookFromArchive, args);
+    // final oldBook = await getBookFromArchive(args);
     return oldBook;
   }
 }

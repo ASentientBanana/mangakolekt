@@ -188,11 +188,6 @@ class _ReaderGridState extends State<ReaderSingle> {
     ServicesBinding.instance.keyboard.removeHandler(handleKeyPress);
   }
 
-  // TODO: remove(unused)
-  Future<List<Image>> getPages() async {
-    return [];
-  }
-
   Iterable<Widget> renderBooks(bool isRightToLeftMode) {
     final state = BlocProvider.of<ReaderBloc>(context).state;
     if (state is! ReaderLoaded) return [];
@@ -264,23 +259,24 @@ class _ReaderGridState extends State<ReaderSingle> {
         body: BlocBuilder<ReaderBloc, ReaderState>(
           builder: (context, state) {
             return RawKeyboardListener(
-                autofocus: true,
-                focusNode: _focusNode,
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    SizedBox(
-                      width: 100,
-                      child: ListPreview(
-                          isDoublePage: isDoublePageView,
-                          pages: pages.toList(),
-                          scoreController: _scrollController,
-                          currentPages: currentPages,
-                          onTap: handlePreviewClick),
-                    ),
-                    ...renderBooks(isRightToLeftMode),
-                  ],
-                ));
+              autofocus: true,
+              focusNode: _focusNode,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  SizedBox(
+                    width: 100,
+                    child: ListPreview(
+                        isDoublePage: isDoublePageView,
+                        pages: pages.toList(),
+                        scoreController: _scrollController,
+                        currentPages: currentPages,
+                        onTap: handlePreviewClick),
+                  ),
+                  ...renderBooks(isRightToLeftMode),
+                ],
+              ),
+            );
           },
         ),
       );
