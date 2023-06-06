@@ -17,6 +17,7 @@ const supportedImageTypes = ['png', 'jpeg', 'jpg', 'bmp'];
 const logFilePath = ".mangalog.txt";
 
 const themeFileName = "theme.json";
+const currentFolder = "current";
 
 const nextKeyMap = [LogicalKeyboardKey.arrowLeft, LogicalKeyboardKey.arrowUp];
 
@@ -25,4 +26,3 @@ const prevKeyMap = [
   LogicalKeyboardKey.arrowDown,
   LogicalKeyboardKey.space
 ];
-

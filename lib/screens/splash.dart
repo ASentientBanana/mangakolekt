@@ -35,7 +35,7 @@ class _SplashScreenState extends State<SplashScreen> {
     });
 
     await createLogFile();
-
+    await createCurrentDir();
     //This is only since the compiler doesnt like async + context so its in a callback
     createAppDB().then((value) {
       Navigator.pushNamed(context, '/home');

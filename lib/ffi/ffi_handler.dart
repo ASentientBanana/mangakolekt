@@ -1,17 +1,35 @@
 import 'dart:ffi'; // For FFI
 import 'package:ffi/ffi.dart';
+import 'dart:typed_data';
 
 typedef UnziperFunc = Pointer<Uint8> Function(
     Pointer<Uint8> filesString, Pointer<Uint8> path, Pointer<Uint8> output);
 // typedef FreeMem = ffi.Void Function(
 //     ffi.Pointer<ffi.Pointer<ffi.Uint8>>, ffi.Int32); // FFI fn signature
 
+typedef ExtractImagesFromZipFunction = Void Function(
+    Pointer<Utf8> zipFilePath, Pointer<Utf8> targetPath);
+
+typedef ExtractImagesFromZipFunctionDart = void Function(
+    Pointer<Utf8> zipFilePath, Pointer<Utf8> targetPath);
+
 final dylib =
     DynamicLibrary.open("/home/petar/Projects/mangakolekt/lib/ffi/libunzip.so");
 
 final unziper = dylib.lookupFunction<UnziperFunc, UnziperFunc>("Unzip");
-// final ffi.Void freestring =
-//     dylib.lookup<ffi.NativeFunction<FreeMem>>('FreeStrings').asFunction();
+final unzipBook = dylib.lookupFunction<ExtractImagesFromZipFunction,
+    ExtractImagesFromZipFunctionDart>("Unzip_Single_book");
+
+Future<List<Uint8List>?> ffiUnzipSingleBook(
+    String _bookPath, String _targetPath) async {
+  print(_targetPath);
+  final bookPath = _bookPath.toNativeUtf8();
+  final targetPath = _targetPath.toNativeUtf8();
+  unzipBook(bookPath, targetPath);
+
+  calloc.free(bookPath);
+  calloc.free(targetPath);
+}
 
 Future<List<String>> ffiUnzip(
     List<String> files, String path, String out) async {

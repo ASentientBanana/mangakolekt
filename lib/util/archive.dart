@@ -1,10 +1,12 @@
 import 'dart:async';
 import 'dart:io';
 import 'dart:isolate';
+import 'dart:math';
 import 'package:archive/archive_io.dart';
 import 'package:flutter/material.dart';
 import 'package:mangakolekt/ffi/ffi_handler.dart';
 import 'package:mangakolekt/models/book.dart';
+import 'package:mangakolekt/util/util.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:uuid/uuid.dart';
 import '../constants.dart';
@@ -206,4 +208,33 @@ Future<List<String>> getCoversFromDir({
   final output = await ffiUnzip(targetFiles, path, out);
   print("Images extracted");
   return output;
+}
+
+//TODO: clean this up its dirty
+Future<OldBook?> unzipSingleBookToCurrent(List<String> args) async {
+  print("start");
+  final pathToBook = args[0];
+  final dest = args[1];
+  final bookName = p.split(pathToBook).last;
+  await ffiUnzipSingleBook(pathToBook, dest);
+  final dir = Directory(dest);
+  if (!(await dir.exists())) return null;
+
+  final dirFiles = await dir
+      .list()
+      .where(
+          (event) => supportedImageTypes.contains(event.path.split('.').last))
+      .toList();
+  final fileCount = dirFiles.length;
+  List<PageEntry> pages = [];
+
+  for (var i = 0; i < fileCount; i++) {
+    final entry = dirFiles[i];
+
+    final name = p.split(entry.path).last;
+
+    pages.add(PageEntry(name: name, image: Image.file(File(entry.path))));
+  }
+
+  return OldBook(pages: pages, pageNumber: fileCount, name: bookName);
 }

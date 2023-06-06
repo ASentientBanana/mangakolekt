@@ -247,3 +247,16 @@ Future<List<ThemeStore>> checkThemeFile() async {
     return await createThemeFile();
   }
 }
+
+Future<String> getCurrentDirPath() async {
+  final dirPath = await getApplicationDocumentsDirectory();
+  return p.join(dirPath.path, appFolder, currentFolder);
+}
+
+Future<void> createCurrentDir() async {
+  final dirPath = await getApplicationDocumentsDirectory();
+  final d = Directory(await getCurrentDirPath());
+  if (!(await d.exists())) {
+    await d.create();
+  }
+}

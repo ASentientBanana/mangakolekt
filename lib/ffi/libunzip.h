@@ -23,6 +23,13 @@ typedef struct { const char *p; ptrdiff_t n; } _GoString_;
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
+
+__attribute__((weak))
+ void my_memcpy_wrapper(void* dest, const void* src, size_t size) {
+     memcpy(dest, src, size);
+ }
+
 
 #line 1 "cgo-generated-wrapper"
 
@@ -81,6 +88,7 @@ extern "C" {
 #endif
 
 extern char* Unzip(char* _files, char* _path, char* _output);
+extern void Unzip_Single_book(char* _filePath, char* _dest);
 extern void FreeStrings(char* str, int count);
 
 #ifdef __cplusplus
