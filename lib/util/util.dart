@@ -22,7 +22,7 @@ List<BookCover> sortCoversNumeric(List<BookCover> list) {
     });
 }
 
-List<PageEntry> sortPagesNumeric(List<PageEntry> list) {
+List<PageEntry> sortCoversPagesNumeric(List<PageEntry> list) {
   final regex = RegExp(r'\d+');
 
   List<int> extractNumbers(String s) =>
@@ -33,6 +33,9 @@ List<PageEntry> sortPagesNumeric(List<PageEntry> list) {
       final aNumbers = extractNumbers(a.name);
       final bNumbers = extractNumbers(b.name);
       final length = aNumbers.length;
+      if (aNumbers.isEmpty || bNumbers.isEmpty) {
+        return a.name.compareTo(b.name);
+      }
       for (var i = 0; i < length; i++) {
         final comparison = aNumbers[i].compareTo(bNumbers[i]);
         if (comparison != 0) {

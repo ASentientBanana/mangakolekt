@@ -212,7 +212,6 @@ Future<List<String>> getCoversFromDir({
 
 //TODO: clean this up its dirty
 Future<OldBook?> unzipSingleBookToCurrent(List<String> args) async {
-  print("start");
   final pathToBook = args[0];
   final dest = args[1];
   final bookName = p.split(pathToBook).last;
@@ -227,14 +226,14 @@ Future<OldBook?> unzipSingleBookToCurrent(List<String> args) async {
       .toList();
   final fileCount = dirFiles.length;
   List<PageEntry> pages = [];
-
-  for (var i = 0; i < fileCount; i++) {
-    final entry = dirFiles[i];
-
-    final name = p.split(entry.path).last;
-
-    pages.add(PageEntry(name: name, image: Image.file(File(entry.path))));
+  for (var e in dirFiles) {
+    final name = p.split(e.path).last;
+    final file = File(e.path);
+    if (!(await file.exists())) continue;
+    pages.add(PageEntry(name: name, image: Image.file(file)));
   }
-
-  return OldBook(pages: pages, pageNumber: fileCount, name: bookName);
+  return OldBook(
+      pages: sortCoversPagesNumeric(pages),
+      pageNumber: fileCount,
+      name: bookName);
 }
