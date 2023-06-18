@@ -19,9 +19,9 @@ const logFilePath = ".mangalog.txt";
 const themeFileName = "theme.json";
 const currentFolder = "current";
 
-const nextKeyMap = [LogicalKeyboardKey.arrowLeft, LogicalKeyboardKey.arrowUp];
+const prevKeyMap = [LogicalKeyboardKey.arrowLeft, LogicalKeyboardKey.arrowUp];
 
-const prevKeyMap = [
+const nextKeyMap = [
   LogicalKeyboardKey.arrowRight,
   LogicalKeyboardKey.arrowDown,
   LogicalKeyboardKey.space

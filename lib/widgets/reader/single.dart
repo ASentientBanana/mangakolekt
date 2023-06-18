@@ -60,8 +60,6 @@ class _ReaderGridState extends State<ReaderSingle> {
     }
   }
 
-  void handlePagePreviewClick() {}
-
   void pageAction(PageAction pa) {
     final pageLen = pages.length;
     final state = context.read<ReaderBloc>().state as ReaderLoaded;

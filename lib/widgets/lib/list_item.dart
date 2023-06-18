@@ -53,18 +53,18 @@ class _LibListItemState extends State<LibListItem> {
           PopupMenuButton(
               color: Theme.of(context).colorScheme.secondary,
               itemBuilder: (context) => [
+                    // PopupMenuItem<String>(
+                    //   value: "test",
+                    //   child: const Text('Edit'),
+                    //   onTap: () {},
+                    // ),
+                    // PopupMenuItem<String>(
+                    //   value: "test",
+                    //   child: const Text('Refresh'),
+                    //   onTap: () {},
+                    // ),
                     PopupMenuItem<String>(
-                      value: "test",
-                      child: const Text('Edit'),
-                      onTap: () {},
-                    ),
-                    PopupMenuItem<String>(
-                      value: "test",
-                      child: const Text('Refresh'),
-                      onTap: () {},
-                    ),
-                    PopupMenuItem<String>(
-                      value: "test",
+                      value: "",
                       child: const Text("Delete"),
                       onTap: () => handleDeleteFromLib(context),
                     )

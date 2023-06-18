@@ -1,18 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:mangakolekt/models/book.dart';
 
+final regex = RegExp(r'\d+');
+List<int> extractNumbers(String s) =>
+    regex.allMatches(s).map((m) => int.parse(m.group(0)!)).toList();
+
 List<BookCover> sortCoversNumeric(List<BookCover> list) {
-  final regex = RegExp(r'\d+');
-
-  List<int> extractNumbers(String s) =>
-      regex.allMatches(s).map((m) => int.parse(m.group(0)!)).toList();
-
   return list
     ..sort((a, b) {
       final aNumbers = extractNumbers(a.name);
       final bNumbers = extractNumbers(b.name);
       final length = aNumbers.length;
       for (var i = 0; i < length; i++) {
+        // print("$aNumbers - $bNumbers");
         final comparison = aNumbers[i].compareTo(bNumbers[i]);
         if (comparison != 0) {
           return comparison;
@@ -23,19 +23,11 @@ List<BookCover> sortCoversNumeric(List<BookCover> list) {
 }
 
 List<PageEntry> sortCoversPagesNumeric(List<PageEntry> list) {
-  final regex = RegExp(r'\d+');
-
-  List<int> extractNumbers(String s) =>
-      regex.allMatches(s).map((m) => int.parse(m.group(0)!)).toList();
-
   return list
     ..sort((a, b) {
       final aNumbers = extractNumbers(a.name);
       final bNumbers = extractNumbers(b.name);
       final length = aNumbers.length;
-      if (aNumbers.isEmpty || bNumbers.isEmpty) {
-        return a.name.compareTo(b.name);
-      }
       for (var i = 0; i < length; i++) {
         final comparison = aNumbers[i].compareTo(bNumbers[i]);
         if (comparison != 0) {
