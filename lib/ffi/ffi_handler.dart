@@ -1,6 +1,9 @@
 import 'dart:ffi'; // For FFI
+import 'dart:io';
 import 'package:ffi/ffi.dart';
 import 'dart:typed_data';
+
+import 'package:flutter/material.dart';
 
 typedef UnziperFunc = Pointer<Uint8> Function(
     Pointer<Uint8> filesString, Pointer<Uint8> path, Pointer<Uint8> output);
@@ -13,8 +16,21 @@ typedef ExtractImagesFromZipFunction = Void Function(
 typedef ExtractImagesFromZipFunctionDart = void Function(
     Pointer<Utf8> zipFilePath, Pointer<Utf8> targetPath);
 
-final dylib =
-    DynamicLibrary.open("/home/petar/Projects/mangakolekt/lib/ffi/libunzip.so");
+String libForPlatform() {
+  if (Platform.isLinux) {
+    return 'libunzip.so';
+  }
+  if (Platform.isMacOS) {
+    return 'libunzip.dylib';
+  }
+  if (Platform.isWindows) {
+    return 'libunzip.dll';
+  }
+  return 'libunzip.so';
+}
+
+final dylib = DynamicLibrary.open(
+    "/home/petar/Projects/mangakolekt/lib/ffi/${libForPlatform()}");
 
 final unziper = dylib.lookupFunction<UnziperFunc, UnziperFunc>("Unzip");
 final unzipBook = dylib.lookupFunction<ExtractImagesFromZipFunction,
