@@ -18,19 +18,18 @@ typedef ExtractImagesFromZipFunctionDart = void Function(
 
 String libForPlatform() {
   if (Platform.isLinux) {
-    return 'libunzip.so';
+    return 'linux/libunzip.so';
   }
   if (Platform.isMacOS) {
-    return 'libunzip.dylib';
+    return 'mac/libunzip.dylib';
   }
   if (Platform.isWindows) {
-    return 'libunzip.dll';
+    return 'win/libunzip.dll';
   }
-  return 'libunzip.so';
+  return 'linux/libunzip.so';
 }
 
-final dylib = DynamicLibrary.open(
-    "/home/petar/Projects/mangakolekt/lib/ffi/${libForPlatform()}");
+final dylib = DynamicLibrary.open("assets/${libForPlatform()}");
 
 final unziper = dylib.lookupFunction<UnziperFunc, UnziperFunc>("Unzip");
 final unzipBook = dylib.lookupFunction<ExtractImagesFromZipFunction,
