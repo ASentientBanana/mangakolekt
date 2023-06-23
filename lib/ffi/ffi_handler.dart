@@ -16,20 +16,27 @@ typedef ExtractImagesFromZipFunction = Void Function(
 typedef ExtractImagesFromZipFunctionDart = void Function(
     Pointer<Utf8> zipFilePath, Pointer<Utf8> targetPath);
 
-String libForPlatform() {
-  if (Platform.isLinux) {
-    return 'linux/libunzip.so';
-  }
+DynamicLibrary libForPlatform() {
+  DynamicLibrary dylib;
+
+  // For macOS
   if (Platform.isMacOS) {
-    return 'mac/libunzip.dylib';
+    dylib = DynamicLibrary.open('macos/Runner/libunzip.dylib');
   }
-  if (Platform.isWindows) {
-    return 'win/libunzip.dll';
+
+  // For Windows
+  else if (Platform.isWindows) {
+    dylib = DynamicLibrary.open('windows/runner/libunzip.dll');
   }
-  return 'linux/libunzip.so';
+
+  // For Linux
+  else {
+    dylib = DynamicLibrary.open('lib/linux/libunzip.so');
+  }
+  return dylib;
 }
 
-final dylib = DynamicLibrary.open("assets/${libForPlatform()}");
+final dylib = libForPlatform();
 
 final unziper = dylib.lookupFunction<UnziperFunc, UnziperFunc>("Unzip");
 final unzipBook = dylib.lookupFunction<ExtractImagesFromZipFunction,
