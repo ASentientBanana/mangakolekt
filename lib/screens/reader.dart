@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -55,8 +57,13 @@ class _MangaReaderState extends State<MangaReader> {
     await Future.delayed(const Duration(microseconds: 1000));
     final args = ModalRoute.of(context)!.settings.arguments as String;
     final d = await getCurrentDirPath();
-    final oldBook = await compute(unzipSingleBookToCurrent, [args, d]);
-
+    OldBook? oldBook;
+    //TODO: Figure out building for windows
+    if (Platform.isLinux) {
+      oldBook = await compute(unzipSingleBookToCurrent, [args, d]);
+    } else {
+      oldBook = await getBookFromArchive(args);
+    }
     return oldBook;
   }
 }

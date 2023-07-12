@@ -82,8 +82,12 @@ Future<void> createLibFolder(
 
   //maper format is filename;path
   // final start = DateTime.now().millisecondsSinceEpoch;
-  final books = await getCoversFromDir(path: path);
-  // final books = await getBooksV2(path, cb: cb);
+  List<String> books;
+  if (Platform.isLinux) {
+    books = await getCoversFromDir(path: path);
+  } else {
+    books = await getBooksV2(path);
+  }
   // final end = DateTime.now().millisecondsSinceEpoch;
 
   // final folderName = p.split(path).last;
@@ -208,8 +212,6 @@ Future<void> log(String msg) async {
   // print("test");
   // print(appFolder);
   // print(logFilePath);
-  print(logPath);
-
   // final f = File(logPath);
 
   // if (await f.exists()) {

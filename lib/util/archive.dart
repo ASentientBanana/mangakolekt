@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'dart:io';
 import 'dart:isolate';
-import 'dart:math';
 import 'package:archive/archive_io.dart';
 import 'package:flutter/material.dart';
 import 'package:mangakolekt/ffi/ffi_handler.dart';
