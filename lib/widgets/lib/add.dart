@@ -97,12 +97,16 @@ class AddToLibraryModalState extends State<AddToLibraryModal> {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Text(
-            'Enter a name for the lib located at: ${widget.selectedDir}',
-            style: const TextStyle(
+          const Text(
+            'Enter a name for the lib located at:',
+            style: TextStyle(
               fontWeight: FontWeight.bold,
               fontSize: 20,
             ),
+          ),
+          Container(
+            padding: const EdgeInsets.only(left: 20),
+            child: Text(widget.selectedDir),
           ),
           const SizedBox(height: 10),
           TextField(

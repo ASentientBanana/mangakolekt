@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -38,7 +40,7 @@ class _ReaderGridState extends State<ReaderSingle> {
         duration: const Duration(milliseconds: 100), curve: Curves.linear);
   }
 
-  void setPagesDouble(bool isDoublePageView) {
+  void setPagesDouble() {
     setState(() {
       //There is an error here if the final page selected in single mode and then switched to double
       if (currentPages[0] < pages.length - 2 &&
@@ -105,12 +107,6 @@ class _ReaderGridState extends State<ReaderSingle> {
     });
   }
 
-  void switchDirection() {
-    final bloc = context.read<ReaderBloc>();
-    if (bloc.state is! ReaderLoaded) return;
-    bloc.add(ToggleIsRightToLeftMode());
-  }
-
   void handleMouseClick(PointerEvent ev) {
     int left = 1;
     int right = 2;
@@ -151,6 +147,20 @@ class _ReaderGridState extends State<ReaderSingle> {
   }
 
   @override
+  dispose() {
+    super.dispose();
+    ServicesBinding.instance.keyboard.removeHandler(handleKeyPress);
+  }
+
+  void handleChangePageView(bool isDoublePageView) {
+    if (isDoublePageView) {
+      setPagesDouble();
+    } else {
+      setPagesSingle();
+    }
+  }
+
+  @override
   initState() {
     if (widget.book.pages.isEmpty) return;
     Future.delayed(Duration.zero, () {
@@ -179,105 +189,78 @@ class _ReaderGridState extends State<ReaderSingle> {
     super.initState();
   }
 
-  @override
-  dispose() {
-    // _focusNode.dispose();
-    super.dispose();
-    ServicesBinding.instance.keyboard.removeHandler(handleKeyPress);
-  }
+  bool listenerHandler(ReaderState p, ReaderState c) {
+    final prev = p as ReaderLoaded;
+    final current = c as ReaderLoaded;
 
-  Iterable<Widget> renderBooks(bool isRightToLeftMode) {
-    final state = BlocProvider.of<ReaderBloc>(context).state;
-    if (state is! ReaderLoaded) return [];
-    final list = currentPages
-        .map(
-          (e) => Expanded(
-            flex: 1,
-            child: Listener(
-              onPointerDown: handleMouseClick,
-              child: SingleImage(
-                  image: pages[e].entry.image,
-                  scaleTo: state.bookView.isDoublePageView
-                      ? ScaleTo.height
-                      : state.bookView.scaleTo),
-            ),
-          ),
-        )
-        .toList();
-    return isRightToLeftMode ? list : list.reversed;
-  }
-
-  void handleChangePageView(bool isDoublePageView) {
-    if (isDoublePageView) {
-      setPagesSingle();
-    } else {
-      setPagesDouble(isDoublePageView);
+    //handle page view number toggle
+    if (prev.bookView.isDoublePageView != current.bookView.isDoublePageView) {
+      handleChangePageView(current.bookView.isDoublePageView);
     }
-    context.read<ReaderBloc>().add(ToggleDoublePageViewMode());
+    //handle reading direction toggle
+    if (prev.bookView.isRightToLeftMode != current.bookView.isRightToLeftMode) {
+      setState(() {
+        currentPages = currentPages.reversed.toList();
+      });
+    }
+    return false;
   }
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<ReaderBloc, ReaderState>(builder: (context, state) {
-      final bookView = (state as ReaderLoaded).bookView;
+    return BlocBuilder<ReaderBloc, ReaderState>(
+      builder: (context, state) {
+        final bookView = (state as ReaderLoaded).bookView;
 
-      final isDoublePageView = bookView.isDoublePageView;
-      final isRightToLeftMode = bookView.isRightToLeftMode;
-      final scaleTo = bookView.scaleTo;
+        final isDoublePageView = bookView.isDoublePageView;
+        final isRightToLeftMode = bookView.isRightToLeftMode;
+        final scaleTo = bookView.scaleTo;
 
-      return Scaffold(
-        appBar: AppBar(
-          title: Text("$widget.book.name"),
-          actions: [
-            TextButton(
-              onPressed: () => handleChangePageView(isDoublePageView),
-              child: Text(
-                isDoublePageView ? "Single page" : "Double page",
-                style: TEXT_STYLE_NORMAL,
+        return RawKeyboardListener(
+          autofocus: true,
+          focusNode: _focusNode,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              SizedBox(
+                width: 100,
+                child: ListPreview(
+                    isDoublePage: isDoublePageView,
+                    pages: pages.toList(),
+                    scoreController: _scrollController,
+                    currentPages: currentPages,
+                    onTap: handlePreviewClick),
               ),
-            ),
-            TextButton(
-              onPressed: isDoublePageView ? switchDirection : null,
-              child: Text(
-                isRightToLeftMode ? "Left to Right" : "Right to left",
-                style:
-                    isDoublePageView ? TEXT_STYLE_NORMAL : TEXT_STYLE_DISABLED,
-              ),
-            ),
-            TextButton(
-              onPressed: () => context.read<ReaderBloc>().add(ToggleScaleTo()),
-              child: Text(
-                scaleTo == ScaleTo.width ? "Scale to height" : "Scale to width",
-                style:
-                    isDoublePageView ? TEXT_STYLE_DISABLED : TEXT_STYLE_NORMAL,
-              ),
-            ),
-          ],
-        ),
-        body: BlocBuilder<ReaderBloc, ReaderState>(
-          builder: (context, state) {
-            return RawKeyboardListener(
-              autofocus: true,
-              focusNode: _focusNode,
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  SizedBox(
-                    width: 100,
-                    child: ListPreview(
-                        isDoublePage: isDoublePageView,
-                        pages: pages.toList(),
-                        scoreController: _scrollController,
-                        currentPages: currentPages,
-                        onTap: handlePreviewClick),
+              // I dont like this but it seems the most intuitive way to do this.
+              BlocListener<ReaderBloc, ReaderState>(
+                listenWhen: listenerHandler,
+                listener: (c, a) {},
+                child: SizedBox(
+                  width: MediaQuery.of(context).size.width - 100,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: currentPages
+                        .map(
+                          (e) => Expanded(
+                            flex: 1,
+                            child: Listener(
+                              onPointerDown: handleMouseClick,
+                              child: SingleImage(
+                                  image: pages[e].entry.image,
+                                  scaleTo: state.bookView.isDoublePageView
+                                      ? ScaleTo.height
+                                      : state.bookView.scaleTo),
+                            ),
+                          ),
+                        )
+                        .toList(),
                   ),
-                  ...renderBooks(isRightToLeftMode),
-                ],
+                ),
               ),
-            );
-          },
-        ),
-      );
-    });
+            ],
+          ),
+        );
+      },
+    );
   }
 }

@@ -7,8 +7,8 @@ import 'package:mangakolekt/bloc/reader/reader_bloc.dart';
 import 'package:mangakolekt/models/book.dart';
 import 'package:mangakolekt/models/util.dart';
 import 'package:mangakolekt/util/files.dart';
-import 'package:mangakolekt/widgets/reader/grid.dart';
-import 'package:mangakolekt/widgets/reader/single.dart';
+import 'package:mangakolekt/widgets/reader/double_page_grid.dart';
+import 'package:mangakolekt/widgets/reader/single_page_view.dart';
 
 import '../util/archive.dart';
 
@@ -17,6 +17,81 @@ class MangaReader extends StatefulWidget {
 
   @override
   _MangaReaderState createState() => _MangaReaderState();
+}
+
+Future<OldBook?> getBook(BuildContext context) async {
+  await Future.delayed(const Duration(microseconds: 1000));
+  final args = ModalRoute.of(context)!.settings.arguments as String;
+  final d = await getCurrentDirPath();
+  OldBook? oldBook;
+  //TODO: Figure out building for windows
+  if (Platform.isLinux) {
+    oldBook = await compute(unzipSingleBookToCurrent, [args, d]);
+  } else {
+    oldBook = await getBookFromArchive(args);
+  }
+  return oldBook;
+}
+
+Widget builderFn(
+    BuildContext context, AsyncSnapshot snapshot, ReaderState state) {
+  final Widget viewWidget;
+
+  if (state is! ReaderLoaded || !snapshot.hasData) {
+    return viewWidget = const Center(
+      child: SizedBox(
+        child: CircularProgressIndicator(),
+      ),
+    );
+  }
+  final bookView = (state as ReaderLoaded).bookView;
+
+  void switchDirection() {
+    final bloc = context.read<ReaderBloc>();
+    if (bloc.state is! ReaderLoaded) return;
+    bloc.add(ToggleIsRightToLeftMode());
+  }
+
+  void handleChangePageView(bool isDoublePageView) {
+    context.read<ReaderBloc>().add(ToggleDoublePageViewMode());
+  }
+
+  return Scaffold(
+      appBar: AppBar(
+        title: Text("book name"),
+        actions: [
+          TextButton(
+            onPressed: () => handleChangePageView(bookView.isDoublePageView),
+            child: Text(
+              bookView.isDoublePageView ? "Single page" : "Double page",
+              style: TEXT_STYLE_NORMAL,
+            ),
+          ),
+          TextButton(
+            onPressed: bookView.isDoublePageView ? switchDirection : null,
+            child: Text(
+              bookView.isRightToLeftMode ? "Left to Right" : "Right to left",
+              style: bookView.isDoublePageView
+                  ? TEXT_STYLE_NORMAL
+                  : TEXT_STYLE_DISABLED,
+            ),
+          ),
+          TextButton(
+            onPressed: () => context.read<ReaderBloc>().add(ToggleScaleTo()),
+            child: Text(
+              bookView.scaleTo == ScaleTo.width
+                  ? "Scale to height"
+                  : "Scale to width",
+              style: bookView.isDoublePageView
+                  ? TEXT_STYLE_DISABLED
+                  : TEXT_STYLE_NORMAL,
+            ),
+          ),
+        ],
+      ),
+      body: bookView.readerView == ReaderView.single
+          ? ReaderSingle(book: snapshot.data!)
+          : ReaderGrid(book: snapshot.data!));
 }
 
 class _MangaReaderState extends State<MangaReader> {
@@ -28,42 +103,11 @@ class _MangaReaderState extends State<MangaReader> {
       child: FutureBuilder(
         builder: (context, snapshot) {
           return BlocBuilder<ReaderBloc, ReaderState>(
-              builder: (context, state) {
-            if (state is ReaderLoaded && snapshot.hasData) {
-              final readerView = state.bookView.readerView;
-              if (readerView == ReaderView.single) {
-                return ReaderSingle(book: snapshot.data!);
-              }
-              if (readerView == ReaderView.grid) {
-                return ReaderGrid(book: snapshot.data!);
-              }
-            }
-            return const Scaffold(
-              body: Center(
-                child: SizedBox(
-                  child: CircularProgressIndicator(),
-                ),
-              ),
-            );
-          });
+              builder: (context, state) => builderFn(context, snapshot, state));
         },
         future: getBook(context),
       ),
     );
     // return
-  }
-
-  Future<OldBook?> getBook(BuildContext context) async {
-    await Future.delayed(const Duration(microseconds: 1000));
-    final args = ModalRoute.of(context)!.settings.arguments as String;
-    final d = await getCurrentDirPath();
-    OldBook? oldBook;
-    //TODO: Figure out building for windows
-    if (Platform.isLinux) {
-      oldBook = await compute(unzipSingleBookToCurrent, [args, d]);
-    } else {
-      oldBook = await getBookFromArchive(args);
-    }
-    return oldBook;
   }
 }

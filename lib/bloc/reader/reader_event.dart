@@ -35,6 +35,8 @@ class ToggleScaleTo extends ReaderEvent {
   List<Object> get props => [];
 }
 
+//NOTE: WIP, not sure if smart
+
 class Increment extends ReaderEvent {
   @override
   List<Object> get props => [];

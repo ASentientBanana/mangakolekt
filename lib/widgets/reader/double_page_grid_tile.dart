@@ -12,12 +12,10 @@ class ReaderPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GridTile(
-        child: FractionallySizedBox(
-      heightFactor: 1,
-      // height: 100,
-      child: Center(
+      child: FractionallySizedBox(
+        heightFactor: 1,
         child: item.image,
       ),
-    ));
+    );
   }
 }
