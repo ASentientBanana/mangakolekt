@@ -19,6 +19,11 @@ class MyApp extends StatelessWidget {
       BlocProvider<LibraryBloc>(
           create: (BuildContext context) => LibraryBloc()),
       BlocProvider<ThemeBloc>(create: (BuildContext context) => ThemeBloc()),
-    ], child: const AppWidget());
+    ], child: 
+    const Focus(
+      canRequestFocus: false,
+      child:   AppWidget(),
+      ),
+    );
   }
 }

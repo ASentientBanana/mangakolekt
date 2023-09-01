@@ -24,8 +24,7 @@ Future<OldBook?> getBook(BuildContext context) async {
   final args = ModalRoute.of(context)!.settings.arguments as String;
   final d = await getCurrentDirPath();
   OldBook? oldBook;
-  //TODO: Figure out building for windows
-  if (Platform.isLinux) {
+  if (Platform.isLinux || Platform.isWindows) {
     oldBook = await compute(unzipSingleBookToCurrent, [args, d]);
   } else {
     oldBook = await getBookFromArchive(args);

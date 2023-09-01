@@ -1,9 +1,11 @@
 import 'dart:ffi'; // For FFI
 import 'dart:io';
 import 'package:ffi/ffi.dart';
+import 'package:flutter/foundation.dart';
 import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
+import 'package:path/path.dart';
 
 typedef UnziperFunc = Pointer<Uint8> Function(
     Pointer<Uint8> filesString, Pointer<Uint8> path, Pointer<Uint8> output);
@@ -26,7 +28,17 @@ DynamicLibrary libForPlatform() {
 
   // For Windows
   else if (Platform.isWindows) {
-    dylib = DynamicLibrary.open('windows/runner/libunzip.dll');
+    
+    if (kReleaseMode) {
+    // I'm on release mode, absolute linking
+    final String local_lib =  join('data',  'flutter_assets', 'assets', 'libunzip.dll');
+    String pathToLib = join(Directory(Platform.resolvedExecutable).parent.path, local_lib);
+    dylib = DynamicLibrary.open(pathToLib);
+  } else {
+    // I'm on debug mode, local linking
+    var path = Directory.current.path;
+    dylib = DynamicLibrary.open(join(path,'assets','libunzip.dll'));
+  }
   }
 
   // For Linux
@@ -44,7 +56,6 @@ final unzipBook = dylib.lookupFunction<ExtractImagesFromZipFunction,
 
 Future<List<Uint8List>?> ffiUnzipSingleBook(
     String _bookPath, String _targetPath) async {
-  print(_targetPath);
   final bookPath = _bookPath.toNativeUtf8();
   final targetPath = _targetPath.toNativeUtf8();
   unzipBook(bookPath, targetPath);
@@ -68,8 +79,6 @@ Future<List<String>> ffiUnzip(
   calloc.free(outPtr);
 
   final output = res.cast<Utf8>().toDartString();
-  print("start");
-  print(output.split("&?&")[0]);
-  print("end");
+  // calloc.free(res);
   return output.split("&?&").toList();
 }

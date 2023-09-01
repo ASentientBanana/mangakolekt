@@ -18,7 +18,7 @@ class _SettingsPageState extends State<SettingsPage> {
       appBar: AppBar(
         title: const Text("Settings"),
       ),
-      body: const SingleChildScrollView(
+      body:  SingleChildScrollView(
         child: Column(
           children: [
             ThemeGreed(),

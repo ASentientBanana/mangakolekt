@@ -83,7 +83,7 @@ Future<void> createLibFolder(
   //maper format is filename;path
   // final start = DateTime.now().millisecondsSinceEpoch;
   List<String> books;
-  if (Platform.isLinux) {
+  if (Platform.isLinux || Platform.isWindows) {
     books = await getCoversFromDir(path: path);
   } else {
     books = await getBooksV2(path);
