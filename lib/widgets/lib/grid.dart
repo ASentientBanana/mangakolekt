@@ -19,8 +19,9 @@ class LibGrid extends StatelessWidget {
             return FutureBuilder(
               builder: (context, snapshot) {
                 if (snapshot.hasData) {
-                  final l =
-                      snapshot.data!.map((e) => GridItem(item: e)).toList();
+                  final l = snapshot.data!.map((e) {
+                    return GridItem(item: e);
+                  }).toList();
                   if (l.isEmpty) {
                     return Container();
                   }

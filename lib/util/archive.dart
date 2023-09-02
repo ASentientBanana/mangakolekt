@@ -35,7 +35,7 @@ Future<OldBook?> getBookFromArchive(String path) async {
       pageNumber++;
       pages.add(PageEntry(
           name: entry.name,
-          image: Image.memory(
+          image: Image.file(
             entry.content,
             fit: BoxFit.contain,
           )));
@@ -211,11 +211,14 @@ Future<List<String>> getCoversFromDir({
 
 //TODO: clean this up its dirty
 Future<OldBook?> unzipSingleBookToCurrent(List<String> args) async {
+  //unpack variables
   final pathToBook = args[0];
   final dest = args[1];
+  List<PageEntry> pages = [];
+
+  final dir = Directory(dest);
   final bookName = p.split(pathToBook).last;
   await ffiUnzipSingleBook(pathToBook, dest);
-  final dir = Directory(dest);
   if (!(await dir.exists())) return null;
 
   final dirFiles = await dir
@@ -224,12 +227,13 @@ Future<OldBook?> unzipSingleBookToCurrent(List<String> args) async {
           (event) => supportedImageTypes.contains(event.path.split('.').last))
       .toList();
   final fileCount = dirFiles.length;
-  List<PageEntry> pages = [];
+  await Future.delayed(const Duration(milliseconds: 500));
   for (var e in dirFiles) {
     final name = p.split(e.path).last;
     final file = File(e.path);
     if (!(await file.exists())) continue;
-    pages.add(PageEntry(name: name, image: Image.file(file)));
+    final img = Image.file(file);
+    pages.add(PageEntry(name: name, image: img));
   }
   return OldBook(
       pages: sortCoversPagesNumeric(pages),

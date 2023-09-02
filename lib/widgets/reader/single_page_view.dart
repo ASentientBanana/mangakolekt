@@ -164,6 +164,7 @@ class _ReaderGridState extends State<ReaderSingle> {
   initState() {
     if (widget.book.pages.isEmpty) return;
     Future.delayed(Duration.zero, () {
+      print("Name: ${widget.book.pages[0].name}");
       setState(() {
         final state =
             BlocProvider.of<ReaderBloc>(context).state as ReaderLoaded;

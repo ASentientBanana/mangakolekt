@@ -1,5 +1,5 @@
 name: mangakolekt
-description: A new Flutter project.
+description: A manga simple open source reader.
 
 # The following line prevents the package from being accidentally published to
 # pub.dev using `flutter pub publish`. This is preferred for private packages.
@@ -103,6 +103,7 @@ flutter:
   #
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/custom-fonts/#from-packages
+
 msix_config:
   display_name: Mangakolkekt
   publisher_display_name: Yepex 

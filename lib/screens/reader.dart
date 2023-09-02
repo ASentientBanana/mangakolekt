@@ -20,10 +20,10 @@ class MangaReader extends StatefulWidget {
 }
 
 Future<OldBook?> getBook(BuildContext context) async {
-  await Future.delayed(const Duration(microseconds: 1000));
   final args = ModalRoute.of(context)!.settings.arguments as String;
   final d = await getCurrentDirPath();
   OldBook? oldBook;
+  imageCache.clear();
   if (Platform.isLinux || Platform.isWindows) {
     oldBook = await compute(unzipSingleBookToCurrent, [args, d]);
   } else {
@@ -34,10 +34,8 @@ Future<OldBook?> getBook(BuildContext context) async {
 
 Widget builderFn(
     BuildContext context, AsyncSnapshot snapshot, ReaderState state) {
-  final Widget viewWidget;
-
   if (state is! ReaderLoaded || !snapshot.hasData) {
-    return viewWidget = const Center(
+    return const Center(
       child: SizedBox(
         child: CircularProgressIndicator(),
       ),
@@ -45,6 +43,7 @@ Widget builderFn(
   }
   final bookView = (state as ReaderLoaded).bookView;
 
+  print(snapshot.data);
   void switchDirection() {
     final bloc = context.read<ReaderBloc>();
     if (bloc.state is! ReaderLoaded) return;
@@ -57,7 +56,7 @@ Widget builderFn(
 
   return Scaffold(
       appBar: AppBar(
-        title: Text("book name"),
+        title: const Text("Book name"),
         actions: [
           TextButton(
             onPressed: () => handleChangePageView(bookView.isDoublePageView),
@@ -88,24 +87,19 @@ Widget builderFn(
           ),
         ],
       ),
-      body: bookView.readerView == ReaderView.single
-          ? ReaderSingle(book: snapshot.data!)
-          : ReaderGrid(book: snapshot.data!));
+      body: ReaderSingle(book: snapshot.data!));
 }
 
 class _MangaReaderState extends State<MangaReader> {
   @override
   Widget build(BuildContext context) {
-    return Focus(
-      // This disables the default focus behaviour
-      canRequestFocus: false,
-      child: FutureBuilder(
-        builder: (context, snapshot) {
-          return BlocBuilder<ReaderBloc, ReaderState>(
-              builder: (context, state) => builderFn(context, snapshot, state));
-        },
-        future: getBook(context),
-      ),
+    return FutureBuilder(
+      initialData: null,
+      builder: (context, snapshot) {
+        return BlocBuilder<ReaderBloc, ReaderState>(
+            builder: (context, state) => builderFn(context, snapshot, state));
+      },
+      future: getBook(context),
     );
     // return
   }

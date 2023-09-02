@@ -256,9 +256,22 @@ Future<String> getCurrentDirPath() async {
 }
 
 Future<void> createCurrentDir() async {
-  final dirPath = await getApplicationDocumentsDirectory();
   final d = Directory(await getCurrentDirPath());
   if (!(await d.exists())) {
     await d.create();
   }
+}
+
+Future<void> emptyCurrentDir() async {
+  final dirPath = await getApplicationDocumentsDirectory();
+  final path = p.join(dirPath.path, appFolder, currentFolder);
+  print("PATH: ${path}");
+  final d = Directory(path);
+  print("target: ${d.path}");
+  if (!(await d.exists())) {
+    await d.create();
+    return;
+  }
+  await d.delete(recursive: true);
+  await d.create();
 }

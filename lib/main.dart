@@ -14,15 +14,17 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MultiBlocProvider(providers: [
-      BlocProvider<ReaderBloc>(create: (BuildContext context) => ReaderBloc()),
-      BlocProvider<LibraryBloc>(
-          create: (BuildContext context) => LibraryBloc()),
-      BlocProvider<ThemeBloc>(create: (BuildContext context) => ThemeBloc()),
-    ], child: 
-    const Focus(
-      canRequestFocus: false,
-      child:   AppWidget(),
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider<ReaderBloc>(
+            create: (BuildContext context) => ReaderBloc()),
+        BlocProvider<LibraryBloc>(
+            create: (BuildContext context) => LibraryBloc()),
+        BlocProvider<ThemeBloc>(create: (BuildContext context) => ThemeBloc()),
+      ],
+      child: const Focus(
+        canRequestFocus: false,
+        child: AppWidget(),
       ),
     );
   }
