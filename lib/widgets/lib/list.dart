@@ -14,6 +14,7 @@ class LibList extends StatelessWidget {
       padding: const EdgeInsets.all(30),
       child: BlocBuilder<LibraryBloc, LibraryState>(
         builder: (context, state) {
+          final _db = readAppDB();
           return FutureBuilder(
             builder: (context, snapshot) {
               if (snapshot.hasData) {
@@ -29,9 +30,8 @@ class LibList extends StatelessWidget {
               } else {
                 return const SizedBox.shrink();
               }
-              // return LibListItem(item: e, index: index);
             },
-            future: readAppDB(),
+            future: _db,
           );
         },
       ),

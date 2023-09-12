@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 import 'package:file_picker/file_picker.dart';
+import 'package:flutter/material.dart';
 import 'package:mangakolekt/models/bloc/theme.dart';
 import 'package:mangakolekt/models/book.dart';
 import 'package:path_provider/path_provider.dart';
@@ -34,6 +35,7 @@ Future<void> createAppDB() async {
 }
 
 Future<List<BookCover>> readAppDB() async {
+  print("db render");
   // on linux its '/home/petar/Documents'
   final appDocumentDir = await getApplicationDocumentsDirectory();
   final mapFile = File(getMapFilePath(appDocumentDir.path));
@@ -88,15 +90,7 @@ Future<void> createLibFolder(
   } else {
     books = await getBooksV2(path);
   }
-  // final end = DateTime.now().millisecondsSinceEpoch;
 
-  // final folderName = p.split(path).last;
-  // try {
-  //   // final dirPath = await getApplicationDocumentsDirectory();
-  //   await log("$folderName: ${(end - start) / 1000} seconds");
-  // } catch (e) {
-  //   print(e);
-  // }
   await mapFile.writeAsString(books.join('\n'));
 }
 
@@ -118,6 +112,8 @@ Future<List<BookCover>> readFromLib(BookCover libBook) async {
       .split('\n')
       .map((e) => e.split(";"))
       .where((element) => element.isNotEmpty)
+
+      //TODO: There is a potential error here. it happens wen i open a dir with a cbz file and a dir from the same file
       .map((e) => BookCover(name: e[0], path: e[1], bookPath: e[2]))
       .toList();
 
@@ -192,10 +188,19 @@ Future<bool> deleteLib(String libString) async {
   return true;
 }
 
-Future<List<BookCover>> loadTitles(BookCover? libBook) async {
+Future<List<BookCover>> loadTitles(
+    BookCover? libBook, Function? onError) async {
   if (libBook?.path == '' || libBook == null) return [];
-  final lib = await readFromLib(libBook);
-  return lib;
+  print("rerender");
+  try {
+    final lib = await readFromLib(libBook);
+    return lib;
+  } catch (e) {
+    if (onError != null) {
+      onError();
+    }
+    return [];
+  }
 }
 
 Future<void> createLogFile() async {

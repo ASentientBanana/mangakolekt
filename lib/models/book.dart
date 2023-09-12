@@ -30,12 +30,12 @@ class PageEntry {
   PageEntry({required this.name, required this.image});
 }
 
-class OldBook {
+class Book {
   final int pageNumber;
   final String name;
   final List<PageEntry> pages;
 
-  OldBook({required this.name, required this.pageNumber, required this.pages});
+  Book({required this.name, required this.pageNumber, required this.pages});
 }
 
 class BookPage {

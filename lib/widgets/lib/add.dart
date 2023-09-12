@@ -53,7 +53,6 @@ class AddToLibraryModalState extends State<AddToLibraryModal> {
     await compute(_submitIsolateCallback, widget.selectedDir);
   }
 
-  // Todo: paralelize this
   void handleSubmit(BuildContext context) async {
     final selectedDir = widget.selectedDir;
     setState(() {
@@ -125,7 +124,13 @@ class AddToLibraryModalState extends State<AddToLibraryModal> {
                   onPressed:
                       isSubmitDisabled ? null : () => handleSubmit(context),
                   child: isSubmitDisabled
-                      ? const CircularProgressIndicator()
+                      ? const Center(
+                          child: SizedBox(
+                            height: 20,
+                            width: 20,
+                            child: CircularProgressIndicator(),
+                          ),
+                        )
                       : const Text('Add'),
                 )),
                 const Padding(

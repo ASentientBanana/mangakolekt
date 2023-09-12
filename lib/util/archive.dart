@@ -12,7 +12,7 @@ import '../constants.dart';
 import '../util/files.dart';
 import 'package:path/path.dart' as p;
 
-Future<OldBook?> getBookFromArchive(String path) async {
+Future<Book?> getBookFromArchive(String path) async {
   // final book = await File(path).readAsBytes();
 
   final bytes = await File(path).readAsBytes();
@@ -42,7 +42,7 @@ Future<OldBook?> getBookFromArchive(String path) async {
     }
   }
 
-  return OldBook(pages: pages, pageNumber: pageNumber, name: bookName);
+  return Book(pages: pages, pageNumber: pageNumber, name: bookName);
 }
 
 Future<String> unzipCoverBeta(String path, String out) async {
@@ -210,7 +210,7 @@ Future<List<String>> getCoversFromDir({
 }
 
 //TODO: clean this up its dirty
-Future<OldBook?> unzipSingleBookToCurrent(List<String> args) async {
+Future<Book?> unzipSingleBookToCurrent(List<String> args) async {
   //unpack variables
   final pathToBook = args[0];
   final dest = args[1];
@@ -235,7 +235,7 @@ Future<OldBook?> unzipSingleBookToCurrent(List<String> args) async {
     final img = Image.file(file);
     pages.add(PageEntry(name: name, image: img));
   }
-  return OldBook(
+  return Book(
       pages: sortCoversPagesNumeric(pages),
       pageNumber: fileCount,
       name: bookName);

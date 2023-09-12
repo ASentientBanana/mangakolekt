@@ -13,15 +13,6 @@ class SingleImage extends StatefulWidget {
 class _SingleImageState extends State<SingleImage> {
   final _imageScrollController = ScrollController();
 
-  // @override
-  // void didUpdateWidget(covariant SingleImage oldWidget) {
-  //   if (ScaleTo.width == widget.scaleTo &&
-  //       _imageScrollController.positions.isNotEmpty) {
-  //     _imageScrollController.jumpTo(0.0);
-  //   }
-  //   super.didUpdateWidget(oldWidget);
-  // }
-
   @override
   void dispose() {
     _imageScrollController.dispose();

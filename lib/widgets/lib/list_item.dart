@@ -36,19 +36,20 @@ class _LibListItemState extends State<LibListItem> {
       return Row(
         children: [
           SizedBox(
-            // width: contestraints.maxWidth * 0.7,
-            // constraints: const BoxConstraints(minWidth: 400),
             width: contestraints.maxWidth *
                 (contestraints.maxWidth > 130 ? 0.7 : 0.5),
             child: ElevatedButton(
-                style: ButtonStyle(
-                  backgroundColor: MaterialStateProperty.all(
-                      Theme.of(context).colorScheme.secondary),
-                ),
-                onPressed: () {
-                  context.read<LibraryBloc>().add(SetCover(cover: widget.item));
-                },
-                child: Text(widget.item.name, overflow: TextOverflow.ellipsis)),
+              style: ButtonStyle(
+                backgroundColor: MaterialStateProperty.all(
+                    Theme.of(context).colorScheme.secondary),
+              ),
+              onPressed: () {
+                context.read<LibraryBloc>().add(
+                      SetCover(cover: widget.item),
+                    );
+              },
+              child: Text(widget.item.name, overflow: TextOverflow.ellipsis),
+            ),
           ),
           PopupMenuButton(
               color: Theme.of(context).colorScheme.secondary,
