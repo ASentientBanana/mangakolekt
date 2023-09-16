@@ -25,7 +25,6 @@ class _SplashScreenState extends State<SplashScreen> {
   Future<void> initApp(BuildContext context) async {
     //generating the theme file if not missing and reading if there
     final themes = await checkThemeFile();
-
     // loading the themes to the store
     await Future.delayed(const Duration(seconds: 1), () {
       //This is only since the compiler doesnt like async + context so its in a callback

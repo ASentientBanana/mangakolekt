@@ -1,17 +1,33 @@
+import 'dart:collection';
+
 import 'package:flutter/material.dart';
 import 'package:mangakolekt/models/book.dart';
 import 'package:mangakolekt/models/util.dart';
 
 class ReaderController {
-  List<BookPage> pages;
+  late List<BookPage> pages;
   int _pageNumber = 0;
   List<int> currentPages = [0];
   bool isDoublePageView = false;
   ScaleTo scaleTo = ScaleTo.height;
   bool isRightToLeftMode = false;
-  bool wideView = false;
-  ReaderController({required this.pages}) {
-    _pageNumber = pages.length;
+  HashMap<int, bool> widePages = HashMap();
+
+  ReaderController({required List<BookPage> pageList}) {
+    pages = pageList;
+    _pageNumber = pageList.length;
+
+    // create a list of wide pages
+    // for (var page in pageList) {
+    //   if (page.entry.image.width == null || page.entry.image.height == null) {
+    //     continue;
+    //   }
+    //   if (page.entry.image.width! > page.entry.image.height!) {
+    //     widePages[page.index] = true;
+    //   } else {
+    //     widePages[page.index] = false;
+    //   }
+    // }
   }
 
   toggleScale() {
@@ -32,6 +48,10 @@ class ReaderController {
 
   decrementPage() {
     pageAction(PageAction.previous);
+  }
+
+  checkWideView() {
+    print(widePages);
   }
 
   goToPage(int pageIndex) {
@@ -69,6 +89,7 @@ class ReaderController {
   }
 
   void pageAction(PageAction pa) {
+    checkWideView();
     final pageLen = pages.length;
     // Direction check
     final isNext = pa == PageAction.next;

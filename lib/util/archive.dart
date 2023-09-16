@@ -227,12 +227,18 @@ Future<Book?> unzipSingleBookToCurrent(List<String> args) async {
           (event) => supportedImageTypes.contains(event.path.split('.').last))
       .toList();
   final fileCount = dirFiles.length;
-  await Future.delayed(const Duration(milliseconds: 500));
   for (var e in dirFiles) {
     final name = p.split(e.path).last;
     final file = File(e.path);
     if (!(await file.exists())) continue;
     final img = Image.file(file);
+    //testing
+    print('starting test');
+    final imageBytes = await file.readAsBytes();
+    final decodedImage = Image.memory(imageBytes);
+    print(decodedImage.width);
+    print('ended test');
+
     pages.add(PageEntry(name: name, image: img));
   }
   return Book(

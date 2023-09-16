@@ -73,7 +73,7 @@ class _MangaReaderState extends State<MangaReader> {
   @override
   initState() {
     readerController = ReaderController(
-      pages: widget.book.pages.asMap().entries.map((e) {
+      pageList: widget.book.pages.asMap().entries.map((e) {
         return BookPage(entry: e.value, index: e.key);
       }).toList(),
     );
