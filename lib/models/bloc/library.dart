@@ -1,7 +1,7 @@
 import 'package:mangakolekt/models/book.dart';
 
 class LibStore {
-  BookCover _cover = BookCover(name: "", path: "", bookPath: "");
+  BookCover _cover = BookCover(name: "", path: "", bookPath: "", id: 0);
   List<BookCover> _libList = [];
 
   BookCover get cover => _cover;
@@ -13,7 +13,7 @@ class LibStore {
   }
 
   LibStore.initial() {
-    _cover = BookCover(name: "", path: "", bookPath: "");
+    _cover = BookCover(name: "", path: "", bookPath: "", id: 0);
     _libList = [];
   }
 }

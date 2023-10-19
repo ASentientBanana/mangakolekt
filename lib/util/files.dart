@@ -34,92 +34,7 @@ Future<void> createAppDB() async {
   }
 }
 
-Future<List<BookCover>> readAppDB() async {
-  print("db render");
-  // on linux its '/home/petar/Documents'
-  final appDocumentDir = await getApplicationDocumentsDirectory();
-  final mapFile = File(getMapFilePath(appDocumentDir.path));
-  final mapContents = await mapFile.readAsString();
-  final books =
-      mapContents.split('\n').where((element) => element != '').map((e) {
-    final splitElem = e.split(';');
-    return BookCover(name: splitElem[0], path: splitElem[1], bookPath: "");
-  }).toList();
-  return books;
-}
-
-Future<List<BookCover>> addToAppDB(String name, path) async {
-  // on linux its '/home/petar/Documents'
-  final appDocumentDir = await getApplicationDocumentsDirectory();
-  final mapFile = File(getMapFilePath(appDocumentDir.path));
-  final mapContents = await mapFile.readAsString();
-  final newMap =
-      mapContents.split('\n').where((element) => element != '').toList();
-  newMap.add("$name;$path");
-  final fileContents = newMap.join('\n');
-  await mapFile.writeAsString(fileContents);
-  //TODO: This should be optimized its bad now
-  final books =
-      mapContents.split('\n').where((element) => element != '').map((e) {
-    final splitElem = e.split(';');
-    return BookCover(name: splitElem[0], path: splitElem[1], bookPath: "");
-  }).toList();
-  return books;
-}
-
 typedef Callback = void Function();
-
-Future<void> createLibFolder(
-  String path,
-) async {
-  //scan dir
-  final dir = Directory(p.join(path, libFolderName));
-  final coversDir =
-      Directory(p.join(path, libFolderName, libFolderCoverFolderName));
-  final mapFile = File(p.join(path, libFolderName, libFolderMapFile));
-  // // Create expected dirs
-  await dir.create();
-  await coversDir.create();
-  await mapFile.create();
-
-  //maper format is filename;path
-  // final start = DateTime.now().millisecondsSinceEpoch;
-  List<String> books;
-  if (Platform.isLinux || Platform.isWindows) {
-    books = await getCoversFromDir(path: path);
-  } else {
-    books = await getBooksV2(path);
-  }
-
-  await mapFile.writeAsString(books.join('\n'));
-}
-
-Future<List<BookCover>> readFromLib(BookCover libBook) async {
-  final dir = Directory(p.join(libBook.path, libFolderName));
-  final coversDir =
-      Directory(p.join(libBook.path, libFolderName, libFolderCoverFolderName));
-  final mapFile = File(p.join(libBook.path, libFolderName, libFolderMapFile));
-
-  final libFolderExists = await dir.exists();
-  final coversDirExits = await coversDir.exists();
-  final mapFileExists = await mapFile.exists();
-
-  //Check if everything exists;
-  if (!libFolderExists && !coversDirExits && !mapFileExists) {}
-  final mapContents = await mapFile.readAsString();
-
-  final covers = mapContents
-      .split('\n')
-      .map((e) => e.split(";"))
-      .where((element) => element.isNotEmpty)
-
-      //TODO: There is a potential error here. it happens wen i open a dir with a cbz file and a dir from the same file
-      .map((e) => BookCover(name: e[0], path: e[1], bookPath: e[2]))
-      .toList();
-
-  // covers.sort(sortCovers);
-  return sortCoversNumeric(covers.toList());
-}
 
 Future<void> registerBookToLib(String libPath, bookPath) async {}
 
@@ -159,48 +74,16 @@ Future<bool> deleteLibbyIndex(String libString, int index) async {
   return true;
 }
 
-Future<bool> deleteLib(String libString) async {
+Future<bool> deleteLib(String path) async {
   //template name;path;bookPath
   //check if app mapFile and lib mapFile exist;
-  final appDocumentDir = await getApplicationDocumentsDirectory();
-  final mapFile = File(getMapFilePath(appDocumentDir.path));
-  final splitLibString = libString.split(';')[1];
-  String path = splitLibString;
-  if (!(await mapFile.exists())) return false;
-  final contents = await mapFile.readAsString();
-  //This may be a problem if user wants same lib as multiple entries
-  final splitContents = contents.split('\n');
-  final len = splitContents.length;
-  for (var i = 0; i < len; i++) {
-    final element = splitContents[i];
-    if ("$element;".compareTo(libString) == 0) {
-      splitContents.removeAt(i);
-      break;
-    }
-    await mapFile.writeAsString(splitContents.join('\n'));
-  }
+
   // final libDir = Directory("$path/$libFolderName");
   final libDir = Directory(p.join(path, libFolderName));
   if (await libDir.exists()) {
     await libDir.delete(recursive: true);
-    print("removed map from $path");
   }
   return true;
-}
-
-Future<List<BookCover>> loadTitles(
-    BookCover? libBook, Function? onError) async {
-  if (libBook?.path == '' || libBook == null) return [];
-  print("rerender");
-  try {
-    final lib = await readFromLib(libBook);
-    return lib;
-  } catch (e) {
-    if (onError != null) {
-      onError();
-    }
-    return [];
-  }
 }
 
 Future<void> createLogFile() async {
@@ -213,15 +96,6 @@ Future<void> createLogFile() async {
 
 Future<void> log(String msg) async {
   final logPath = p.join(appFolder, logFilePath);
-  // final dirPath = await getApplicationDocumentsDirectory();
-  // print("test");
-  // print(appFolder);
-  // print(logFilePath);
-  // final f = File(logPath);
-
-  // if (await f.exists()) {
-  //   await f.writeAsString("$msg\n", mode: FileMode.append);
-  // }
 }
 
 Future<List<ThemeStore>> readThemeFile() async {
@@ -270,9 +144,7 @@ Future<void> createCurrentDir() async {
 Future<void> emptyCurrentDir() async {
   final dirPath = await getApplicationDocumentsDirectory();
   final path = p.join(dirPath.path, appFolder, currentFolder);
-  print("PATH: ${path}");
   final d = Directory(path);
-  print("target: ${d.path}");
   if (!(await d.exists())) {
     await d.create();
     return;

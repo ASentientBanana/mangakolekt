@@ -2,6 +2,10 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:mangakolekt/bloc/library/library_bloc.dart';
+import 'package:mangakolekt/controllers/archive.dart';
+import 'package:mangakolekt/models/book.dart';
+import 'package:mangakolekt/util/database/database_core.dart';
+import 'package:mangakolekt/util/database/database_helpers.dart';
 import 'package:mangakolekt/util/files.dart';
 import 'dart:isolate';
 
@@ -17,10 +21,6 @@ class AddToLibraryModal extends StatefulWidget {
 }
 
 void getNumberOfPages(SendPort send) async {}
-
-Future<void> _submitIsolateCallback(String target) async {
-  await createLibFolder(target);
-}
 
 class AddToLibraryModalState extends State<AddToLibraryModal> {
   final TextEditingController textEditingController = TextEditingController();
@@ -49,8 +49,13 @@ class AddToLibraryModalState extends State<AddToLibraryModal> {
     super.initState();
   }
 
-  Future startIsolate() async {
-    await compute(_submitIsolateCallback, widget.selectedDir);
+  Future<List<String>?> startIsolate() async {
+    final cb = await ArchiveController.unpackCovers(widget.selectedDir);
+    if (cb == null) {
+      return null;
+    }
+    final res = await compute(cb, widget.selectedDir);
+    return res;
   }
 
   void handleSubmit(BuildContext context) async {
@@ -60,11 +65,31 @@ class AddToLibraryModalState extends State<AddToLibraryModal> {
     });
 
     if (isSubmitDisabled) {
-      await startIsolate();
-      await addToAppDB(textEditingController.text, selectedDir).then((libList) {
-        // Fluter doesn't like using context and async/await
-        context.read<LibraryBloc>().add(SetLibs(libs: libList));
-      });
+      //Format is name;path;bookPath
+      final bookCoverMapStringList = await startIsolate();
+
+      if (bookCoverMapStringList == null) {
+        return;
+      }
+      // Add manga to Manga table in db
+      final mangaList = await DatabaseMangaHelpers.addManga(
+          path: selectedDir,
+          name: textEditingController.text,
+          returnManga: true);
+
+      if (mangaList == null) {
+        return;
+      }
+
+      final id = mangaList
+          .firstWhere((element) => element.name == textEditingController.text)
+          .id;
+      await DatabaseMangaHelpers.addMangaMapping(bookCoverMapStringList, id);
+
+      if (mangaList.isNotEmpty) {
+        context.read<LibraryBloc>().add(SetLibs(libs: mangaList));
+      }
+      // });
     }
 
     setState(() {
@@ -112,7 +137,7 @@ class AddToLibraryModalState extends State<AddToLibraryModal> {
             controller: textEditingController,
             decoration: const InputDecoration(
               border: OutlineInputBorder(),
-              hintText: 'Enter text here',
+              hintText: 'Manga name',
             ),
           ),
           const SizedBox(height: 10),

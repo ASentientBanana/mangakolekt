@@ -8,12 +8,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
-  group("file-creation", () {
-    // test('should print app docs path', () async {
-    //   expect(await createAppDB(), '');
-    // });
-  });
 }

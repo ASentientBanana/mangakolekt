@@ -14,6 +14,14 @@ class SetCover extends LibraryEvent {
   List<Object> get props => [];
 }
 
+class RemoveBook extends LibraryEvent {
+  final int id;
+  const RemoveBook({required this.id});
+
+  @override
+  List<Object> get props => [];
+}
+
 class SetLibs extends LibraryEvent {
   final List<BookCover> libs;
   const SetLibs({required this.libs});

@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:mangakolekt/bloc/library/library_bloc.dart';
 import 'package:mangakolekt/models/book.dart';
+import 'package:mangakolekt/util/database/database_core.dart';
+import 'package:mangakolekt/util/database/database_helpers.dart';
+import 'package:mangakolekt/util/database/database_table.dart';
 import '../../util/files.dart';
 
 class LibListItem extends StatefulWidget {
@@ -17,27 +20,20 @@ class LibListItem extends StatefulWidget {
 
 class _LibListItemState extends State<LibListItem> {
   void handleDeleteFromLib(BuildContext context) async {
-    final isDeleted =
-        await deleteLibbyIndex(widget.item.mapString, widget.index);
-    final dbList = await readAppDB();
-    if (isDeleted) {
-      // ignore: use_build_context_synchronously
-      context.read<LibraryBloc>().add(SetLibs(libs: dbList));
-      // ignore: use_build_context_synchronously
-      context.read<LibraryBloc>().add(Reset());
-    } else {
-      print("file not deleted");
-    }
+    await deleteLib(widget.item.path);
+    DatabaseMangaHelpers.deleteManga(widget.item.id).then((value) {
+      context.read<LibraryBloc>().add(RemoveBook(id: widget.item.id));
+    });
   }
 
   @override
   Widget build(BuildContext context) {
-    return LayoutBuilder(builder: (context, contestraints) {
+    return LayoutBuilder(builder: (context, constraints) {
       return Row(
         children: [
           SizedBox(
-            width: contestraints.maxWidth *
-                (contestraints.maxWidth > 130 ? 0.7 : 0.5),
+            width:
+                constraints.maxWidth * (constraints.maxWidth > 130 ? 0.7 : 0.5),
             child: ElevatedButton(
               style: ButtonStyle(
                 backgroundColor: MaterialStateProperty.all(

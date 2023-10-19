@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:mangakolekt/bloc/library/library_bloc.dart';
 import 'package:mangakolekt/models/book.dart';
+import 'package:mangakolekt/util/database/database_helpers.dart';
 import 'package:mangakolekt/util/files.dart';
 import 'package:mangakolekt/widgets/lib/grid_item.dart';
 
@@ -22,16 +23,17 @@ class _LibGridState extends State<LibGrid> {
       // color: Colors.orange,
       padding: const EdgeInsets.all(30),
       child: BlocListener<LibraryBloc, LibraryState>(
-        listenWhen: (prev, curr) {
-          if (prev is LibraryLoaded && curr is LibraryLoaded) {
-            return prev.libStore.cover != curr.libStore.cover;
+        listenWhen: (prev, current) {
+          if (prev is LibraryLoaded && current is LibraryLoaded) {
+            return prev.libStore.cover != current.libStore.cover;
           }
           return false;
         },
         listener: (context, state) {
           if (state is LibraryLoaded) {
             setState(() {
-              _title = loadTitles(state.libStore.cover, null);
+              _title = DatabaseMangaHelpers.getCoversFromMangaMap(
+                  state.libStore.cover.id);
             });
           }
         },

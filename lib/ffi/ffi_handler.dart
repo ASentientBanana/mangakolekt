@@ -63,7 +63,7 @@ Future<void> ffiUnzipSingleBook(String _bookPath, String _targetPath) async {
   calloc.free(targetPath);
 }
 
-Future<List<String>> ffiUnzip(
+Future<List<String>> ffiUnzipCovers(
     List<String> files, String path, String out) async {
   final filesString = files.join("&&");
 

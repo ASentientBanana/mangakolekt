@@ -152,13 +152,19 @@ class _MangaReaderState extends State<MangaReader> {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: readerController.currentPages
+                    .asMap()
+                    .entries
                     .map(
                       (e) => Expanded(
                         flex: 1,
                         child: Listener(
                           onPointerDown: handleMouseClick,
                           child: SingleImage(
-                              image: readerController.pages[e].entry.image,
+                              isDouble:
+                                  readerController.currentPages.length == 2,
+                              index: e.key,
+                              image:
+                                  readerController.pages[e.value].entry.image,
                               scaleTo: readerController.scaleTo),
                         ),
                       ),
