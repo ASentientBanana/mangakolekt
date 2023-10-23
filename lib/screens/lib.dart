@@ -1,7 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:mangakolekt/bloc/reader/reader_bloc.dart';
-import 'package:mangakolekt/models/bloc/reader.dart';
 import 'package:mangakolekt/models/book.dart';
 import 'package:mangakolekt/util/files.dart';
 import 'package:mangakolekt/widgets/lib/add.dart';
@@ -52,14 +49,6 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   @override
-  void initState() {
-    Future.delayed(Duration.zero, () {
-      context.read<ReaderBloc>().add(LoadBook(bookView: BookView.init()));
-    });
-    super.initState();
-  }
-
-  @override
   Widget build(BuildContext context) {
     double width = MediaQuery.of(context).size.width;
     return Scaffold(
@@ -69,14 +58,18 @@ class _MyHomePageState extends State<MyHomePage> {
         ),
         actions: [
           ElevatedButton(
-              style: ButtonStyle(
-                backgroundColor: MaterialStateProperty.all(
-                    Theme.of(context).colorScheme.secondary),
-              ),
-              onPressed: () {
-                Navigator.of(context).pushNamed('/settings');
-              },
-              child: const Icon(Icons.settings))
+            style: ButtonStyle(
+              backgroundColor: MaterialStateProperty.all(
+                  Theme.of(context).colorScheme.secondary),
+            ),
+            onPressed: () {
+              Navigator.of(context).pushNamed('/settings');
+            },
+            child: const SizedBox(
+              width: 100,
+              child: Icon(Icons.settings),
+            ),
+          ),
         ],
         automaticallyImplyLeading: false,
       ),

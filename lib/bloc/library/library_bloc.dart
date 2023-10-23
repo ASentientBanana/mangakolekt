@@ -11,6 +11,21 @@ class LibraryBloc extends Bloc<LibraryEvent, LibraryState> {
     on<SetLibs>(_onSetLibs);
     on<SetCover>(_onSetCover);
     on<Reset>(_onReset);
+    on<RemoveBook>(_removeBook);
+  }
+
+  void _removeBook(RemoveBook event, Emitter<LibraryState> emit) {
+    final state = this.state;
+    if (state is LibraryLoaded) {
+      emit(LibraryLoaded(
+          libStore: LibStore(
+              cover: state.libStore.cover.id == event.id
+                  ? LibStore.initial().cover
+                  : state.libStore.cover,
+              list: state.libStore.libList
+                  .where((element) => element.id != event.id)
+                  .toList())));
+    }
   }
 
   void _onReset(Reset event, Emitter<LibraryState> emit) {

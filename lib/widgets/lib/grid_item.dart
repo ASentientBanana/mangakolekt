@@ -14,14 +14,15 @@ class _GridItemState extends State<GridItem> {
   bool isHovering = false;
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
     return GridTile(
       footer: Center(
         child: Text(widget.item.name),
       ),
       child: FractionallySizedBox(
-        heightFactor: 0.9,
+        heightFactor: isHovering ? .82 : 0.8,
+        widthFactor: isHovering ? .82 : 0.8,
         child: InkWell(
+          hoverColor: Colors.transparent,
           onHover: (_isHovering) {
             setState(() {
               isHovering = _isHovering;
@@ -32,16 +33,7 @@ class _GridItemState extends State<GridItem> {
                 arguments: widget.item.bookPath);
           },
           child: Container(
-            decoration: BoxDecoration(
-              borderRadius: const BorderRadius.all(Radius.circular(5)),
-              color: theme.colorScheme.tertiary,
-              border: isHovering
-                  ? Border.all(
-                      color: theme.colorScheme.primary,
-                      style: BorderStyle.solid,
-                      width: 3)
-                  : null,
-            ),
+            padding: const EdgeInsets.all(10),
             child: Image.file(
               fit: BoxFit.contain,
               File(widget.item.path),

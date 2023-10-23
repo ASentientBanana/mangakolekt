@@ -3,12 +3,12 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:mangakolekt/bloc/theme/theme_bloc.dart';
 import 'package:mangakolekt/models/bloc/theme.dart';
 import 'package:mangakolekt/screens/lib.dart';
-import 'package:mangakolekt/screens/reader.dart';
 import 'package:mangakolekt/screens/setting.dart';
 import 'package:mangakolekt/screens/splash.dart';
 import 'package:mangakolekt/screens/theme_creator.dart';
 import 'package:mangakolekt/util/theme.dart';
 import 'package:mangakolekt/util/util.dart';
+import 'package:mangakolekt/widgets/reader/reader_page_wrapper.dart';
 
 class AppWidget extends StatelessWidget {
   const AppWidget({super.key});
@@ -16,7 +16,7 @@ class AppWidget extends StatelessWidget {
   Route<Widget>? onRouteGenerateHandler(RouteSettings settings) {
     switch (settings.name) {
       case '/reader':
-        return pageRouteBuilderWrapper(settings, const MangaReader());
+        return pageRouteBuilderWrapper(settings, const ReaderPageWrapper());
       case "/home":
         return pageRouteBuilderWrapper(settings, const MyHomePage());
       case "/":

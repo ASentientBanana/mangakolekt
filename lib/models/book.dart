@@ -8,10 +8,15 @@ abstract class DbBookEntety {
 }
 
 class BookCover {
+  late int id;
   String name = '';
   String path = '';
   String bookPath = '';
-  BookCover({required this.name, required this.path, required this.bookPath});
+  BookCover(
+      {required this.name,
+      required this.path,
+      required this.bookPath,
+      required this.id});
 
   String get mapString => "$name;$path;$bookPath";
   // return BookCover(name: bookName, path: out, bookPath: path);
@@ -21,21 +26,36 @@ class BookCover {
     name = stringArr[0];
     path = stringArr[1];
     bookPath = stringArr[2];
+    id = 1111111;
   }
 }
 
 class PageEntry {
   final String name;
   final Image image;
-  PageEntry({required this.name, required this.image});
+  bool isDouble = false;
+  // final double w;
+  // final double h;
+
+  setIsDouble(bool _isDouble) {
+    isDouble = _isDouble;
+    return this;
+  }
+
+  PageEntry({
+    required this.name,
+    required this.image,
+    // required this.h,
+    // required this.w
+  });
 }
 
-class OldBook {
+class Book {
   final int pageNumber;
   final String name;
   final List<PageEntry> pages;
 
-  OldBook({required this.name, required this.pageNumber, required this.pages});
+  Book({required this.name, required this.pageNumber, required this.pages});
 }
 
 class BookPage {

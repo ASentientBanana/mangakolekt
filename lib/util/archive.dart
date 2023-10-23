@@ -12,7 +12,7 @@ import '../constants.dart';
 import '../util/files.dart';
 import 'package:path/path.dart' as p;
 
-Future<OldBook?> getBookFromArchive(String path) async {
+Future<Book?> getBookFromArchive(String path) async {
   // final book = await File(path).readAsBytes();
 
   final bytes = await File(path).readAsBytes();
@@ -35,14 +35,14 @@ Future<OldBook?> getBookFromArchive(String path) async {
       pageNumber++;
       pages.add(PageEntry(
           name: entry.name,
-          image: Image.memory(
+          image: Image.file(
             entry.content,
             fit: BoxFit.contain,
           )));
     }
   }
 
-  return OldBook(pages: pages, pageNumber: pageNumber, name: bookName);
+  return Book(pages: pages, pageNumber: pageNumber, name: bookName);
 }
 
 Future<String> unzipCoverBeta(String path, String out) async {
@@ -162,77 +162,4 @@ Future<List<BookCover>> getBookList({String path = ""}) async {
 Future<bool> checkTempDir() async {
   Directory tempDir = await getTemporaryDirectory();
   return await Directory(tempDir.path).list().isEmpty;
-}
-
-Future<List<String>> getCoversFromList(List<String> list, String out) async {
-  final len = list.length;
-  final List<String> outputImages = [];
-  for (var i = 0; i < len; i++) {
-    const uuid = Uuid();
-    final id = uuid.v4();
-    final path = list[i];
-    try {
-      final targetFile = File(path);
-      final bytes = await targetFile.readAsBytes();
-      final archive = ZipDecoder().decodeBytes(bytes);
-      final file = archive.files.where((element) => element.isFile).first;
-      final filename = file.name;
-      final ext = filename.split('.').last;
-      final data = file.content;
-      final outputPath = p.join(out, "$id.$ext");
-      final outFile = File(outputPath);
-      await outFile.create(recursive: true);
-      outFile.writeAsBytes(data);
-      outputImages.add(
-          "${p.split(targetFile.path).last};$outputPath;${targetFile.path}");
-    } catch (e) {
-      log("Err:: ${e.toString()}");
-    }
-  }
-
-  return outputImages;
-}
-
-Future<List<String>> getCoversFromDir({
-  required String path,
-}) async {
-  final out = p.join(path, libFolderName, libFolderCoverFolderName);
-  final dirContents = Directory(path);
-  if (!await dirContents.exists()) return [];
-  final targetFiles = await dirContents
-      .list()
-      .where((element) => p.split(element.path).last.split('.').last == 'cbz')
-      .map((event) => event.path)
-      .toList();
-  final output = await ffiUnzip(targetFiles, path, out);
-  print("Images extracted");
-  return output;
-}
-
-//TODO: clean this up its dirty
-Future<OldBook?> unzipSingleBookToCurrent(List<String> args) async {
-  final pathToBook = args[0];
-  final dest = args[1];
-  final bookName = p.split(pathToBook).last;
-  await ffiUnzipSingleBook(pathToBook, dest);
-  final dir = Directory(dest);
-  if (!(await dir.exists())) return null;
-
-  final dirFiles = await dir
-      .list()
-      .where(
-          (event) => supportedImageTypes.contains(event.path.split('.').last))
-      .toList();
-  final fileCount = dirFiles.length;
-  List<PageEntry> pages = [];
-  for (var e in dirFiles) {
-    final name = p.split(e.path).last;
-    final file = File(e.path);
-    if (!(await file.exists())) continue;
-    pages.add(PageEntry(name: name, image: Image.file(file)));
-  }
-  return OldBook(
-      pages: sortCoversPagesNumeric(pages),
-      pageNumber: fileCount,
-      name: bookName);
 }

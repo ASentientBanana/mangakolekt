@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 const tmpDirName = ".tmp_manga_kolekt";
@@ -10,6 +11,8 @@ const libFolderName = ".mangakolektLib";
 const libFolderCoverFolderName = "covers";
 const libFolderMapFile = ".mangakolektion";
 const appFolder = "mangakolekt";
+
+const dbName = "manga.db";
 
 const supportedBookTypes = ['cbz'];
 const supportedImageTypes = ['png', 'jpeg', 'jpg', 'bmp'];
@@ -26,3 +29,6 @@ const nextKeyMap = [
   LogicalKeyboardKey.arrowDown,
   LogicalKeyboardKey.space
 ];
+
+const TextStyle TEXT_STYLE_NORMAL = TextStyle(color: Colors.white);
+const TextStyle TEXT_STYLE_DISABLED = TextStyle(color: Colors.grey);
