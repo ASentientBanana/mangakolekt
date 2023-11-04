@@ -33,18 +33,14 @@ class BookCover {
 class PageEntry {
   final String name;
   final Image image;
-  bool isDouble = false;
+  bool isDouble;
   // final double w;
   // final double h;
-
-  setIsDouble(bool _isDouble) {
-    isDouble = _isDouble;
-    return this;
-  }
 
   PageEntry({
     required this.name,
     required this.image,
+    this.isDouble = false,
     // required this.h,
     // required this.w
   });
@@ -54,8 +50,13 @@ class Book {
   final int pageNumber;
   final String name;
   final List<PageEntry> pages;
+  final String path;
 
-  Book({required this.name, required this.pageNumber, required this.pages});
+  Book(
+      {required this.name,
+      required this.pageNumber,
+      required this.pages,
+      required this.path});
 }
 
 class BookPage {

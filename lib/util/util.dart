@@ -5,6 +5,26 @@ final regex = RegExp(r'\d+');
 List<int> extractNumbers(String s) =>
     regex.allMatches(s).map((m) => int.parse(m.group(0)!)).toList();
 
+List<String> sortNumeric(List<String> list) {
+  return list
+    ..sort((a, b) {
+      final aNumbers = extractNumbers(a);
+      final bNumbers = extractNumbers(b);
+      if (aNumbers.length == 0 || bNumbers.length == 0) {
+        return a.compareTo(b);
+      }
+      final comparison = aNumbers[0].compareTo(bNumbers[0]);
+      if (comparison != 0) {
+        return comparison;
+      }
+      // for (var i = 0; i < length; i++) {
+      //   if (comparison != 0) {
+      //   }
+      // }
+      return a.compareTo(b);
+    });
+}
+
 List<BookCover> sortCoversNumeric(List<BookCover> list) {
   return list
     ..sort((a, b) {

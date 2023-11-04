@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:mangakolekt/bloc/theme/theme_bloc.dart';
+import 'package:mangakolekt/locator.dart';
 import 'package:mangakolekt/models/bloc/theme.dart';
 import 'package:mangakolekt/screens/lib.dart';
 import 'package:mangakolekt/screens/setting.dart';
 import 'package:mangakolekt/screens/splash.dart';
 import 'package:mangakolekt/screens/theme_creator.dart';
+import 'package:mangakolekt/services/navigation_service.dart';
 import 'package:mangakolekt/util/theme.dart';
 import 'package:mangakolekt/util/util.dart';
 import 'package:mangakolekt/widgets/reader/reader_page_wrapper.dart';
@@ -16,7 +18,11 @@ class AppWidget extends StatelessWidget {
   Route<Widget>? onRouteGenerateHandler(RouteSettings settings) {
     switch (settings.name) {
       case '/reader':
-        return pageRouteBuilderWrapper(settings, const ReaderPageWrapper());
+        return pageRouteBuilderWrapper(
+            settings,
+            ReaderPageWrapper(
+              path: (settings.arguments as String),
+            ));
       case "/home":
         return pageRouteBuilderWrapper(settings, const MyHomePage());
       case "/":
@@ -43,6 +49,7 @@ class AppWidget extends StatelessWidget {
         theme: convertToThemeData(theme),
         //Using this to remove a transition effect from the default i get when using routes:{}
         onGenerateRoute: onRouteGenerateHandler,
+        navigatorKey: locator<NavigationService>().navigatorKey,
       );
     });
   }

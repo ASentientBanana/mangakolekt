@@ -10,7 +10,9 @@ import 'package:flutter/services.dart';
 
 class MangaReader extends StatefulWidget {
   Book book;
-  MangaReader({Key? key, required this.book}) : super(key: key);
+  Future<void> Function(String, int) updateBook;
+  MangaReader({Key? key, required this.book, required this.updateBook})
+      : super(key: key);
   @override
   _MangaReaderState createState() => _MangaReaderState();
 }
@@ -73,6 +75,8 @@ class _MangaReaderState extends State<MangaReader> {
   @override
   initState() {
     readerController = ReaderController(
+      updateBookCb: widget.updateBook,
+      bookDirPath: widget.book.path,
       pageList: widget.book.pages.asMap().entries.map((e) {
         return BookPage(entry: e.value, index: e.key);
       }).toList(),
@@ -86,6 +90,7 @@ class _MangaReaderState extends State<MangaReader> {
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.book.name),
+        // leading:,
         actions: [
           TextButton(
             onPressed: () {
@@ -151,6 +156,7 @@ class _MangaReaderState extends State<MangaReader> {
               width: MediaQuery.of(context).size.width - 100,
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
+                // children: [Text(readerController.pages.length.toString())],
                 children: readerController.currentPages
                     .asMap()
                     .entries

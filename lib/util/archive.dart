@@ -33,16 +33,23 @@ Future<Book?> getBookFromArchive(String path) async {
     final entry = archive.files[i];
     if (entry.isFile) {
       pageNumber++;
-      pages.add(PageEntry(
+      pages.add(
+        PageEntry(
           name: entry.name,
           image: Image.file(
             entry.content,
             fit: BoxFit.contain,
-          )));
+          ),
+        ),
+      );
     }
   }
 
-  return Book(pages: pages, pageNumber: pageNumber, name: bookName);
+  return Book(
+      pages: pages,
+      pageNumber: pageNumber,
+      name: bookName,
+      path: p.dirname(path));
 }
 
 Future<String> unzipCoverBeta(String path, String out) async {

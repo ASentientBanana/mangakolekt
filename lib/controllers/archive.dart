@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'dart:io';
 
-import 'package:mangakolekt/controllers/book/zip.dart';
+import 'package:mangakolekt/controllers/types/zip.dart';
 import 'package:mangakolekt/models/book.dart';
 
 abstract class BaseBookController {
@@ -12,7 +12,7 @@ abstract class BaseBookController {
 
 class ArchiveController {
   // Add controllers for the file types
-  static List<BookController> controllers = [BookController()];
+  static List<BaseBookController> controllers = [ZipBookController()];
 
   static BaseBookController? getTypeController(String type) {
     for (var controller in ArchiveController.controllers) {
