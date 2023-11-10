@@ -29,8 +29,10 @@ class _GridItemState extends State<GridItem> {
             });
           },
           onTap: () {
-            Navigator.pushNamed(context, '/reader',
-                arguments: widget.item.bookPath);
+            Navigator.pushNamed(context, '/reader', arguments: {
+              "path": widget.item.bookPath,
+              "id": widget.item.id
+            });
           },
           child: Container(
             padding: const EdgeInsets.all(10),

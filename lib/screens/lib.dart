@@ -77,17 +77,8 @@ class _MyHomePageState extends State<MyHomePage> {
         padding: const EdgeInsets.all(4),
         child: Stack(
           children: [
-            Row(
-              children: [
-                const Flexible(
-                  flex: 1,
-                  child: LibList(),
-                ),
-                Flexible(
-                  flex: width < 1000 ? 1 : 3,
-                  child: const LibGrid(),
-                ),
-              ],
+            const Row(
+              children: [LibList(), Expanded(child: LibGrid())],
             ),
             Positioned.fill(
               child: Visibility(

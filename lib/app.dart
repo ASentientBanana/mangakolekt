@@ -18,10 +18,12 @@ class AppWidget extends StatelessWidget {
   Route<Widget>? onRouteGenerateHandler(RouteSettings settings) {
     switch (settings.name) {
       case '/reader':
+        final args = (settings.arguments as Map<String, dynamic>);
         return pageRouteBuilderWrapper(
             settings,
             ReaderPageWrapper(
-              path: (settings.arguments as String),
+              path: args["path"],
+              id: args["id"],
             ));
       case "/home":
         return pageRouteBuilderWrapper(settings, const MyHomePage());

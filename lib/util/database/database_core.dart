@@ -35,7 +35,7 @@ class DatabaseCore {
         .add(
             DatabaseTableField(name: 'doublePageView', type: DatabaseTypes.Int))
         .add(DatabaseTableField(name: 'currentPage', type: DatabaseTypes.Int))
-        .add(DatabaseTableField(name: 'manga', type: DatabaseTypes.Text)),
+        .add(DatabaseTableField(name: 'manga', type: DatabaseTypes.Int)),
     DatabaseTable(name: DatabaseTables.Bookmarks)
         .add(DatabaseTableField(name: 'manga', type: DatabaseTypes.Int))
         .add(DatabaseTableField(name: 'page', type: DatabaseTypes.Int))

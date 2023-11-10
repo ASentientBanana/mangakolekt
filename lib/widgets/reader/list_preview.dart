@@ -30,28 +30,33 @@ class ListPreview extends StatelessWidget {
                               readerController.getCurrentPages().last
                       ? 0
                       : 10),
-              child: Container(
-                color: isSelected
-                    ? Theme.of(context).colorScheme.secondary
-                    : Colors.transparent,
-                width: 100,
-                height: 100,
-                child: FractionallySizedBox(
-                  heightFactor: 1,
-                  // height: 100,
-                  child: Center(
-                    child: InkWell(
-                      onTap: () {
-                        if (onTap != null) {
-                          onTap!(e.value.index);
-                        }
-                      },
-                      child: Container(
-                          padding: EdgeInsets.all(isSelected ? 3 : 0),
-                          child: e.value.entry.image),
+              child: Column(
+                children: [
+                  Container(
+                    color: isSelected
+                        ? Theme.of(context).colorScheme.secondary
+                        : Colors.transparent,
+                    width: 100,
+                    height: 100,
+                    child: FractionallySizedBox(
+                      heightFactor: 1,
+                      // height: 100,
+                      child: Center(
+                        child: InkWell(
+                          onTap: () {
+                            if (onTap != null) {
+                              onTap!(e.value.index);
+                            }
+                          },
+                          child: Container(
+                              padding: EdgeInsets.all(isSelected ? 3 : 0),
+                              child: e.value.entry.image),
+                        ),
+                      ),
                     ),
                   ),
-                ),
+                  Text("${e.key + 1}"),
+                ],
               ));
         },
       ).toList(),

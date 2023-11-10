@@ -19,7 +19,10 @@ import 'package:path_provider/path_provider.dart';
 
 class ReaderPageWrapper extends StatefulWidget {
   final String path;
-  const ReaderPageWrapper({Key? key, required this.path}) : super(key: key);
+  final int id;
+
+  const ReaderPageWrapper({Key? key, required this.path, required this.id})
+      : super(key: key);
 
   @override
   State<ReaderPageWrapper> createState() => _ReaderPageWrapperState();
@@ -48,6 +51,7 @@ class _ReaderPageWrapperState extends State<ReaderPageWrapper> {
 
   @override
   void initState() {
+    print("Opened id: ${widget.id}");
     _book = getBook(widget.path);
     super.initState();
   }
@@ -94,6 +98,7 @@ class _ReaderPageWrapperState extends State<ReaderPageWrapper> {
             );
           }
           return MangaReader(
+            id: widget.id,
             updateBook: updateBook,
             book: snapshot.data!,
           );

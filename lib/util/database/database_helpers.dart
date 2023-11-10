@@ -88,4 +88,11 @@ class DatabaseMangaHelpers {
           bookPath: ""),
     );
   }
+
+  static Future<void> setCurrentManga(int id, int page) async {
+    await DatabaseCore.writeToDB(
+        table: DatabaseTables.Reader,
+        data: {"currentPage": page, "manga": id, "doublePageView": 0});
+    // await DatabaseCore.writeToDB(table: DatabaseTables.Reader, data: {});
+  }
 }

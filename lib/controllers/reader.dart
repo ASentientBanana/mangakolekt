@@ -1,8 +1,11 @@
+import 'package:flutter/foundation.dart';
 import 'package:mangakolekt/models/book.dart';
 import 'package:mangakolekt/models/util.dart';
+import 'package:mangakolekt/util/database/database_helpers.dart';
 
 class ReaderController {
   late List<BookPage> pages;
+  late final int id;
   int pageNumber = 0;
   List<int> currentPages = [0];
   int currentPageIndex = 0;
@@ -14,7 +17,10 @@ class ReaderController {
   Map<int, List<List<int>>> pageMap = {0: [], 1: []};
 
   ReaderController(
-      {required List<BookPage> pageList, this.bookDirPath, this.updateBookCb}) {
+      {required List<BookPage> pageList,
+      this.bookDirPath,
+      this.updateBookCb,
+      required this.id}) {
     pages = pageList;
     pageNumber = pageList.length;
 
@@ -121,6 +127,7 @@ class ReaderController {
     if (!checkInBounds(pa)) {
       return;
     }
+
     if (pa == PageAction.next) {
       currentPageIndex++;
     } else {

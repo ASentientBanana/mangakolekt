@@ -4,14 +4,20 @@ import 'package:mangakolekt/models/book.dart';
 import 'package:mangakolekt/models/util.dart';
 import 'package:mangakolekt/controllers/reader.dart';
 import 'package:mangakolekt/constants.dart';
+import 'package:mangakolekt/util/database/database_helpers.dart';
 import 'package:mangakolekt/widgets/reader/single_image.dart';
 import 'package:mangakolekt/widgets/reader/list_preview.dart';
 import 'package:flutter/services.dart';
 
 class MangaReader extends StatefulWidget {
   Book book;
+  final int id;
   Future<void> Function(String, int) updateBook;
-  MangaReader({Key? key, required this.book, required this.updateBook})
+  MangaReader(
+      {Key? key,
+      required this.book,
+      required this.updateBook,
+      required this.id})
       : super(key: key);
   @override
   _MangaReaderState createState() => _MangaReaderState();
@@ -48,14 +54,13 @@ class _MangaReaderState extends State<MangaReader> {
 
   bool handleKeyPress(KeyEvent ev) {
     if (ev is KeyUpEvent) return false;
-
     setState(() {
       if (nextKeyMap.contains(ev.logicalKey)) {
         readerController.incrementPage();
       } else if (prevKeyMap.contains(ev.logicalKey)) {
         readerController.decrementPage();
       }
-      handleScrollAnimation(readerController.currentPages[0]);
+      handleScrollAnimation(readerController.getCurrentPages()[0]);
     });
     return false;
   }
@@ -71,17 +76,30 @@ class _MangaReaderState extends State<MangaReader> {
     super.dispose();
     ServicesBinding.instance.keyboard.removeHandler(handleKeyPress);
   }
+  // TODO: Add this with a debounce
+  // Future<void> startIsolate() async {
+  //   RootIsolateToken rootIsolateToken = RootIsolateToken.instance!;
+  //   BackgroundIsolateBinaryMessenger.ensureInitialized(rootIsolateToken);
+  //   await compute(
+  //       (message) =>
+  //           DatabaseMangaHelpers.setCurrentManga(message[0], message[1]),
+  //       [widget.id, readerController.getCurrentPages()[0]]);
+  // }
 
   @override
   initState() {
     readerController = ReaderController(
       updateBookCb: widget.updateBook,
+      id: widget.id,
       bookDirPath: widget.book.path,
       pageList: widget.book.pages.asMap().entries.map((e) {
         return BookPage(entry: e.value, index: e.key);
       }).toList(),
     );
     ServicesBinding.instance.keyboard.addHandler(handleKeyPress);
+    // compute((s){},'');
+    // startIsolate();
+
     super.initState();
   }
 
