@@ -5,28 +5,40 @@ import 'package:path_provider/path_provider.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 import 'package:path/path.dart' as p;
 
-//TODO: Add builder later?
 class DatabaseCore {
   static List<DatabaseTable> tables = [
-    DatabaseTable(name: DatabaseTables.Manga, fields: [
-      DatabaseTableField(
-        name: "id",
-        type: "integer",
-        extra: ["primary", "key"],
-      ),
-      DatabaseTableField(
-        name: 'name',
-        type: 'text',
-        extra: ['unique'],
-      ),
-      DatabaseTableField(name: 'path', type: 'text')
-    ]),
-    DatabaseTable(name: DatabaseTables.MangaMap, fields: [
-      DatabaseTableField(name: "name", type: "text"),
-      DatabaseTableField(name: "path", type: "text"),
-      DatabaseTableField(name: "bookPath", type: "text"),
-      DatabaseTableField(name: "manga_id", type: "INTEGER"),
-    ])
+    //Main manga table
+    DatabaseTable(name: DatabaseTables.Manga)
+        .add(
+          DatabaseTableField(
+            name: "id",
+            type: DatabaseTypes.Int,
+            extra: ["primary", "key"],
+          ),
+        )
+        .add(
+          DatabaseTableField(
+            name: 'name',
+            type: DatabaseTypes.Text,
+            extra: ['unique'],
+          ),
+        )
+        .add(DatabaseTableField(name: 'path', type: DatabaseTypes.Text)),
+    //Manga map table
+    DatabaseTable(name: DatabaseTables.MangaMap)
+        .add(DatabaseTableField(name: "name", type: DatabaseTypes.Text))
+        .add(DatabaseTableField(name: "path", type: DatabaseTypes.Text))
+        .add(DatabaseTableField(name: "bookPath", type: DatabaseTypes.Text))
+        .add(DatabaseTableField(name: "manga_id", type: DatabaseTypes.Int)),
+    // Reader table
+    DatabaseTable(name: DatabaseTables.Reader)
+        .add(
+            DatabaseTableField(name: 'doublePageView', type: DatabaseTypes.Int))
+        .add(DatabaseTableField(name: 'currentPage', type: DatabaseTypes.Int))
+        .add(DatabaseTableField(name: 'manga', type: DatabaseTypes.Text)),
+    DatabaseTable(name: DatabaseTables.Bookmarks)
+        .add(DatabaseTableField(name: 'manga', type: DatabaseTypes.Int))
+        .add(DatabaseTableField(name: 'page', type: DatabaseTypes.Int))
   ];
 
   static Future<void> initDatabase() async {
@@ -39,9 +51,8 @@ class DatabaseCore {
     //For now i cant use it, will be back
     // await db.execute('PRAGMA foreign_keys = ON');
     for (var table in DatabaseCore.tables) {
-      await db.execute(table.toSQL());
+      await db.execute(table.build());
     }
-
     await db.close();
   }
 

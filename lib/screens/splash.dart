@@ -44,7 +44,6 @@ class _SplashScreenState extends State<SplashScreen> {
 
     createAppDB().then((value) {
       Navigator.pushNamed(context, '/home');
-      // getCoversFromDir();
     });
   }
 

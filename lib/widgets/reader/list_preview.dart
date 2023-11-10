@@ -17,36 +17,44 @@ class ListPreview extends StatelessWidget {
   Widget build(BuildContext context) {
     return ListView(
       controller: scoreController,
-      children: readerController.pages
-          .asMap()
-          .entries
-          .map(
-            (e) => Padding(
-                padding: const EdgeInsets.only(bottom: 10),
-                child: SizedBox(
-                  width: 100,
-                  height: 100,
-                  child: FractionallySizedBox(
-                    heightFactor: 1,
-                    // height: 100,
-                    child: Center(
-                      child: InkWell(
-                        onTap: () {
-                          if (onTap != null) {
-                            onTap!(e.value.index);
-                          }
-                        },
-                        child: Container(
-                            color: Colors.red,
-                            padding:
-                                EdgeInsets.all(e.value.index == e.key ? 0 : 10),
-                            child: e.value.entry.image),
-                      ),
+      children: readerController.pages.asMap().entries.map(
+        (e) {
+          final isSelected = readerController
+              .getCurrentPages()
+              .any((element) => (e.value.index == element));
+
+          return Padding(
+              padding: EdgeInsets.only(
+                  bottom: isSelected &&
+                          e.value.index !=
+                              readerController.getCurrentPages().last
+                      ? 0
+                      : 10),
+              child: Container(
+                color: isSelected
+                    ? Theme.of(context).colorScheme.secondary
+                    : Colors.transparent,
+                width: 100,
+                height: 100,
+                child: FractionallySizedBox(
+                  heightFactor: 1,
+                  // height: 100,
+                  child: Center(
+                    child: InkWell(
+                      onTap: () {
+                        if (onTap != null) {
+                          onTap!(e.value.index);
+                        }
+                      },
+                      child: Container(
+                          padding: EdgeInsets.all(isSelected ? 3 : 0),
+                          child: e.value.entry.image),
                     ),
                   ),
-                )),
-          )
-          .toList(),
+                ),
+              ));
+        },
+      ).toList(),
     );
   }
 }

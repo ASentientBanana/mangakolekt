@@ -42,7 +42,7 @@ class _MangaReaderState extends State<MangaReader> {
       } else if (ev.buttons == right) {
         readerController.decrementPage();
       }
-      handleScrollAnimation(readerController.currentPages[0]);
+      handleScrollAnimation(readerController.getCurrentPages()[0]);
     });
   }
 
@@ -157,7 +157,9 @@ class _MangaReaderState extends State<MangaReader> {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 // children: [Text(readerController.pages.length.toString())],
-                children: readerController.currentPages
+                children: (readerController.isRightToLeftMode
+                        ? readerController.getCurrentPages()
+                        : readerController.getCurrentPages().reversed.toList())
                     .asMap()
                     .entries
                     .map(
@@ -167,7 +169,8 @@ class _MangaReaderState extends State<MangaReader> {
                           onPointerDown: handleMouseClick,
                           child: SingleImage(
                               isDouble:
-                                  readerController.currentPages.length == 2,
+                                  readerController.getCurrentPages().length ==
+                                      2,
                               index: e.key,
                               image:
                                   readerController.pages[e.value].entry.image,

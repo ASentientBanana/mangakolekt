@@ -33,17 +33,18 @@ class BookCover {
 class PageEntry {
   final String name;
   final Image image;
-  bool isDouble;
+  late bool isDouble;
   // final double w;
   // final double h;
 
   PageEntry({
     required this.name,
     required this.image,
-    this.isDouble = false,
     // required this.h,
     // required this.w
-  });
+  }) {
+    isDouble = name[0] == "_";
+  }
 }
 
 class Book {
@@ -64,3 +65,5 @@ class BookPage {
   int index;
   BookPage({required this.entry, required this.index});
 }
+
+class ReaderPages {}

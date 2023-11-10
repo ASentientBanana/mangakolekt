@@ -1,11 +1,18 @@
 class DatabaseTable {
   final String name;
-  final List<DatabaseTableField> fields;
+  final List<DatabaseTableField> fields = [];
 
-  DatabaseTable({required this.name, required this.fields});
+  DatabaseTable({
+    required this.name,
+  });
 
-  String toSQL() {
-    return "CREATE TABLE IF NOT EXISTS ${this.name} (${fields.join(', ')})";
+  DatabaseTable add(DatabaseTableField dbField) {
+    fields.add(dbField);
+    return this;
+  }
+
+  String build() {
+    return "CREATE TABLE IF NOT EXISTS $name (${fields.join(', ')})";
   }
 }
 
@@ -37,4 +44,14 @@ class DatabaseTableField {
 class DatabaseTables {
   static String Manga = "Manga";
   static String MangaMap = "MangaMap";
+  static String Reader = "Reader";
+  static String Bookmarks = "Bookmarks";
+}
+
+class DatabaseTypes {
+  static String Blob = 'BLOB';
+  static String Null = 'NULL';
+  static String Int = 'INTEGER';
+  static String Real = 'REAL';
+  static String Text = 'TEXT';
 }

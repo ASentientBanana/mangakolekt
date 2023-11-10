@@ -58,7 +58,10 @@ class ZipBookController extends BaseBookController {
       final file = File(e.path);
       if (!(await file.exists())) continue;
       final img = Image.file(file);
-      pages.add(PageEntry(name: name, image: img, isDouble: true));
+      pages.add(PageEntry(
+        name: name,
+        image: img,
+      ));
     }
     return Book(
         pages: sortCoversPagesNumeric(pages),

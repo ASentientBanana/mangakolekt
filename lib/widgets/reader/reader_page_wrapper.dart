@@ -75,7 +75,6 @@ class _ReaderPageWrapperState extends State<ReaderPageWrapper> {
       return;
     }
 
-    print("broked?: ${direction}");
     _navigationService.navigateTo(
         '/reader', sorted[currentIndex + (direction)]);
   }
