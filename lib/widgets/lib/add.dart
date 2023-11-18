@@ -113,10 +113,10 @@ class AddToLibraryModalState extends State<AddToLibraryModal> {
       decoration: BoxDecoration(
         // borderRadius: BorderRadius.circular(10),
         border: Border.all(
-            color: Theme.of(context).colorScheme.tertiary,
+            // color: Theme.of(context).colorScheme.tertiary,
             width: 1,
             style: BorderStyle.solid),
-        color: Theme.of(context).colorScheme.secondary,
+        // color: Theme.of(context).colorScheme.secondary,
       ),
       child: Column(
         mainAxisSize: MainAxisSize.min,

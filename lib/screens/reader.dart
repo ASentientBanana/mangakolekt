@@ -4,7 +4,7 @@ import 'package:mangakolekt/models/book.dart';
 import 'package:mangakolekt/models/util.dart';
 import 'package:mangakolekt/controllers/reader.dart';
 import 'package:mangakolekt/constants.dart';
-import 'package:mangakolekt/util/database/database_helpers.dart';
+import 'package:mangakolekt/widgets/appbar/backButton.dart';
 import 'package:mangakolekt/widgets/reader/single_image.dart';
 import 'package:mangakolekt/widgets/reader/list_preview.dart';
 import 'package:flutter/services.dart';
@@ -31,7 +31,7 @@ class _MangaReaderState extends State<MangaReader> {
   final ScrollController _scrollController = ScrollController();
 
   void handleScrollAnimation(int index) {
-    const int pageImageHeight = 110;
+    const int pageImageHeight = 130;
     // To allow the selected element to be roughly in the middle.
     const int offset = 4;
 
@@ -108,7 +108,7 @@ class _MangaReaderState extends State<MangaReader> {
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.book.name),
-        // leading:,
+        leading: CustomBackButton(),
         actions: [
           TextButton(
             onPressed: () {
@@ -162,16 +162,18 @@ class _MangaReaderState extends State<MangaReader> {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            SizedBox(
-              width: 100,
+            Container(
+              width: 130,
+              color: Theme.of(context).colorScheme.background,
               child: ListPreview(
                   readerController: readerController,
                   scoreController: _scrollController,
                   onTap: handlePreviewClick),
             ),
             // I dont like this but it seems the most intuitive way to do this.
-            SizedBox(
-              width: MediaQuery.of(context).size.width - 100,
+            Container(
+              color: Theme.of(context).colorScheme.background,
+              width: MediaQuery.of(context).size.width - 130,
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 // children: [Text(readerController.pages.length.toString())],

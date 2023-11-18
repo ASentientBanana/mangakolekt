@@ -46,7 +46,10 @@ class ZipBookController extends BaseBookController {
   Future<Book?> unpack(String pathToBook, String dest) async {
     List<PageEntry> pages = [];
     final bookName = p.split(pathToBook).last;
-    await ffiUnzipSingleBook(pathToBook, dest);
+    final success = await ffiUnzipSingleBook(pathToBook, dest);
+    if (!success) {
+      return null;
+    }
     final dir = Directory(dest);
     if (!(await dir.exists())) return null;
     final dirFiles = await dir.list().where((event) {

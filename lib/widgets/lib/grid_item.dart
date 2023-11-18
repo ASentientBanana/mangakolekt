@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:mangakolekt/locator.dart';
 import 'package:mangakolekt/models/book.dart';
 import 'dart:io';
+
+import 'package:mangakolekt/services/navigation_service.dart';
 
 class GridItem extends StatefulWidget {
   final BookCover item;
@@ -12,6 +15,8 @@ class GridItem extends StatefulWidget {
 
 class _GridItemState extends State<GridItem> {
   bool isHovering = false;
+  final _navigationService = locator<NavigationService>();
+
   @override
   Widget build(BuildContext context) {
     return GridTile(
@@ -29,10 +34,9 @@ class _GridItemState extends State<GridItem> {
             });
           },
           onTap: () {
-            Navigator.pushNamed(context, '/reader', arguments: {
-              "path": widget.item.bookPath,
-              "id": widget.item.id
-            });
+            _navigationService.navigateTo('/reader',
+                {"path": widget.item.bookPath, "id": widget.item.id});
+            // Navigator.pushNamed(context, '/reader', arguments: );
           },
           child: Container(
             padding: const EdgeInsets.all(10),

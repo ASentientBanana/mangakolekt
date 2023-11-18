@@ -29,26 +29,35 @@ class _LibListItemState extends State<LibListItem> {
   @override
   Widget build(BuildContext context) {
     return LayoutBuilder(builder: (context, constraints) {
+      final theme = Theme.of(context);
       return Row(
         children: [
-          SizedBox(
+          Container(
+            height: 25,
+            decoration: BoxDecoration(
+              border: Border.all(color: theme.colorScheme.tertiary, width: 2),
+            ),
             width:
                 constraints.maxWidth * (constraints.maxWidth > 130 ? 0.7 : 0.5),
-            child: ElevatedButton(
-              style: ButtonStyle(
-                backgroundColor: MaterialStateProperty.all(
-                    Theme.of(context).colorScheme.secondary),
-              ),
+            child: OutlinedButton(
               onPressed: () {
                 context.read<LibraryBloc>().add(
                       SetCover(cover: widget.item),
                     );
               },
-              child: Text(widget.item.name, overflow: TextOverflow.ellipsis),
+              child: Center(
+                child: Text(
+                  widget.item.name,
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(
+                    color: theme.colorScheme.tertiary,
+                  ),
+                ),
+              ),
             ),
           ),
           PopupMenuButton(
-              color: Theme.of(context).colorScheme.secondary,
+              color: Theme.of(context).colorScheme.tertiary,
               itemBuilder: (context) => [
                     // PopupMenuItem<String>(
                     //   value: "test",

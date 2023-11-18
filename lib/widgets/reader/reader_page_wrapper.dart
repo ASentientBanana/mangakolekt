@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:get_it/get_it.dart';
 import 'package:mangakolekt/bloc/reader/reader_bloc.dart';
 import 'package:mangakolekt/controllers/archive.dart';
 import 'package:mangakolekt/locator.dart';
@@ -40,12 +41,17 @@ class _ReaderPageWrapperState extends State<ReaderPageWrapper> {
     imageCache.clear();
 
     if (Platform.isLinux || Platform.isWindows) {
+      // print("test 1");
       book = await compute(
           ArchiveController.unpack, [bookPath.split('.').last, bookPath, dest]);
+      // print("test 2");
+      // book ??= await compute(getBookFromArchive, bookPath);
+
+      // throwIf(book == null, "Problem loading book");
+      // return Error();
     } else {
       book = await getBookFromArchive(bookPath);
     }
-
     return book;
   }
 
@@ -89,12 +95,40 @@ class _ReaderPageWrapperState extends State<ReaderPageWrapper> {
         future: _book,
         builder: (context, snapshot) {
           if (!snapshot.hasData) {
-            return const Center(
-              child: SizedBox(
-                width: 40,
-                height: 40,
-                child: CircularProgressIndicator(),
-              ),
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return const Center(
+                child: SizedBox(
+                  width: 40,
+                  height: 40,
+                  child: CircularProgressIndicator(),
+                ),
+              );
+            }
+            return Scaffold(
+              body: InkWell(
+                  onTap: () {
+                    _navigationService.goBack();
+                  },
+                  child: Container(
+                    // color: Colors.brown,
+                    child: Center(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text(
+                            'Unable to open book',
+                            style: TextStyle(
+                                color: Colors.grey[400], fontSize: 25),
+                          ),
+                          Text(
+                            'Click to go back',
+                            style: TextStyle(
+                                color: Colors.grey[400], fontSize: 17),
+                          )
+                        ],
+                      ),
+                    ),
+                  )),
             );
           }
           return MangaReader(

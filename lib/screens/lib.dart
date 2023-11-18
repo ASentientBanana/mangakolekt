@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:mangakolekt/locator.dart';
 import 'package:mangakolekt/models/book.dart';
+import 'package:mangakolekt/services/navigation_service.dart';
 import 'package:mangakolekt/util/files.dart';
 import 'package:mangakolekt/widgets/lib/add.dart';
 import 'package:mangakolekt/widgets/lib/grid.dart';
@@ -17,7 +19,10 @@ class _MyHomePageState extends State<MyHomePage> {
   bool isPickingFile = false;
   bool showDialog = false;
   String selectedDir = '';
+  String selectedFile = '';
   BookCover? selectedCover;
+
+  final _navigationService = locator<NavigationService>();
 
   Future<void> pickDirHandler() async {
     setState(() {
@@ -32,6 +37,16 @@ class _MyHomePageState extends State<MyHomePage> {
       showDialog = true;
       selectedDir = dir;
     });
+  }
+
+  Future<void> pickFileHandler() async {
+    final file = await pickFile();
+    if (file == null) {
+      closeDialogHandler();
+      return;
+    }
+    _navigationService.navigateTo('/reader', {"id": 0, "path": file});
+    // Navigator.pushNamed(context, '/reader',arguments: {"page":9999,});
   }
 
   void selectManga(BookCover cover) {
@@ -50,7 +65,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
-    double width = MediaQuery.of(context).size.width;
+    // double width = MediaQuery.of(context).size.width;
     return Scaffold(
       appBar: AppBar(
         title: const Text(
@@ -58,13 +73,11 @@ class _MyHomePageState extends State<MyHomePage> {
         ),
         actions: [
           ElevatedButton(
-            style: ButtonStyle(
-              backgroundColor: MaterialStateProperty.all(
-                  Theme.of(context).colorScheme.secondary),
-            ),
-            onPressed: () {
-              Navigator.of(context).pushNamed('/settings');
-            },
+            // style: ButtonStyle(
+            //   backgroundColor: MaterialStateProperty.all(
+            //       Theme.of(context).colorScheme.secondary),
+            // ),
+            onPressed: pickFileHandler,
             child: const SizedBox(
               width: 100,
               child: Icon(Icons.settings),
@@ -75,6 +88,7 @@ class _MyHomePageState extends State<MyHomePage> {
       ),
       body: Container(
         padding: const EdgeInsets.all(4),
+        color: Theme.of(context).colorScheme.background,
         child: Stack(
           children: [
             const Row(

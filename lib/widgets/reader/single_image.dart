@@ -37,7 +37,7 @@ class _SingleImageState extends State<SingleImage> {
   Widget build(BuildContext context) {
     final Widget img = widget.scaleTo == ScaleTo.height
         ? Container(
-            color: Colors.amber,
+            color: Colors.transparent,
             alignment: setAliment(widget.isDouble, widget.index),
             child: widget.image,
           )

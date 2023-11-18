@@ -11,10 +11,10 @@ typedef UnziperFunc = Pointer<Uint8> Function(
 // typedef FreeMem = ffi.Void Function(
 //     ffi.Pointer<ffi.Pointer<ffi.Uint8>>, ffi.Int32); // FFI fn signature
 
-typedef ExtractImagesFromZipFunction = Void Function(
+typedef ExtractImagesFromZipFunction = Int Function(
     Pointer<Utf8> zipFilePath, Pointer<Utf8> targetPath);
 
-typedef ExtractImagesFromZipFunctionDart = void Function(
+typedef ExtractImagesFromZipFunctionDart = int Function(
     Pointer<Utf8> zipFilePath, Pointer<Utf8> targetPath);
 
 DynamicLibrary libForPlatform() {
@@ -54,13 +54,23 @@ final unziper = dyLib.lookupFunction<UnziperFunc, UnziperFunc>("Unzip");
 final unzipBook = dyLib.lookupFunction<ExtractImagesFromZipFunction,
     ExtractImagesFromZipFunctionDart>("Unzip_Single_book");
 
-Future<void> ffiUnzipSingleBook(String _bookPath, String _targetPath) async {
+Future<bool> ffiUnzipSingleBook(String _bookPath, String _targetPath) async {
   final bookPath = _bookPath.toNativeUtf8();
   final targetPath = _targetPath.toNativeUtf8();
-  unzipBook(bookPath, targetPath);
+  try {
+    int err = unzipBook(bookPath, targetPath);
+    print("RETRUNDED: $err");
+    if (err != 0) {
+      return false;
+    }
+  } catch (e) {
+    print("BAD FILE");
+    print(e);
+  }
 
   calloc.free(bookPath);
   calloc.free(targetPath);
+  return true;
 }
 
 Future<List<String>> ffiUnzipCovers(

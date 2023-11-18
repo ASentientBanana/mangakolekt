@@ -34,7 +34,7 @@ class ListPreview extends StatelessWidget {
                 children: [
                   Container(
                     color: isSelected
-                        ? Theme.of(context).colorScheme.secondary
+                        ? Theme.of(context).colorScheme.tertiary
                         : Colors.transparent,
                     width: 100,
                     height: 100,
