@@ -1,45 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:mangakolekt/constants.dart';
 import 'package:mangakolekt/util/database/database_table.dart';
+import 'package:mangakolekt/util/database/table_definitions.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 import 'package:path/path.dart' as p;
 
 class DatabaseCore {
-  static List<DatabaseTable> tables = [
-    //Main manga table
-    DatabaseTable(name: DatabaseTables.Manga)
-        .add(
-          DatabaseTableField(
-            name: "id",
-            type: DatabaseTypes.Int,
-            extra: ["primary", "key"],
-          ),
-        )
-        .add(
-          DatabaseTableField(
-            name: 'name',
-            type: DatabaseTypes.Text,
-            extra: ['unique'],
-          ),
-        )
-        .add(DatabaseTableField(name: 'path', type: DatabaseTypes.Text)),
-    //Manga map table
-    DatabaseTable(name: DatabaseTables.MangaMap)
-        .add(DatabaseTableField(name: "name", type: DatabaseTypes.Text))
-        .add(DatabaseTableField(name: "path", type: DatabaseTypes.Text))
-        .add(DatabaseTableField(name: "bookPath", type: DatabaseTypes.Text))
-        .add(DatabaseTableField(name: "manga_id", type: DatabaseTypes.Int)),
-    // Reader table
-    DatabaseTable(name: DatabaseTables.Reader)
-        .add(
-            DatabaseTableField(name: 'doublePageView', type: DatabaseTypes.Int))
-        .add(DatabaseTableField(name: 'currentPage', type: DatabaseTypes.Int))
-        .add(DatabaseTableField(name: 'manga', type: DatabaseTypes.Int)),
-    DatabaseTable(name: DatabaseTables.Bookmarks)
-        .add(DatabaseTableField(name: 'manga', type: DatabaseTypes.Int))
-        .add(DatabaseTableField(name: 'page', type: DatabaseTypes.Int))
-  ];
+  static List<DatabaseTable> tables = databaseTableDefinitions;
 
   static Future<void> initDatabase() async {
     sqfliteFfiInit();
@@ -47,9 +15,7 @@ class DatabaseCore {
     final dbPath = p.join(appDocumentDir.path, appFolder, dbName);
     var databaseFactory = databaseFactoryFfi;
     var db = await databaseFactory.openDatabase(dbPath);
-    // enable foreign_keys support
-    //For now i cant use it, will be back
-    // await db.execute('PRAGMA foreign_keys = ON');
+
     for (var table in DatabaseCore.tables) {
       await db.execute(table.build());
     }

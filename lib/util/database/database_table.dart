@@ -11,6 +11,12 @@ class DatabaseTable {
     return this;
   }
 
+  DatabaseTable addPrimaryKey() {
+    fields.add(DatabaseTableField(
+        name: "id", type: DatabaseTypes.Int, extra: ["primary", "key"]));
+    return this;
+  }
+
   String build() {
     return "CREATE TABLE IF NOT EXISTS $name (${fields.join(', ')})";
   }

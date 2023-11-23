@@ -1,3 +1,5 @@
+import 'package:easy_debounce/easy_debounce.dart';
+import 'package:easy_debounce/easy_throttle.dart';
 import 'package:flutter/foundation.dart';
 import 'package:mangakolekt/models/book.dart';
 import 'package:mangakolekt/models/util.dart';
@@ -6,6 +8,7 @@ import 'package:mangakolekt/util/database/database_helpers.dart';
 class ReaderController {
   late List<BookPage> pages;
   late final int id;
+  late final String path;
   int pageNumber = 0;
   List<int> currentPages = [0];
   int currentPageIndex = 0;
@@ -18,6 +21,7 @@ class ReaderController {
 
   ReaderController(
       {required List<BookPage> pageList,
+      required this.path,
       this.bookDirPath,
       this.updateBookCb,
       required this.id}) {
@@ -133,6 +137,9 @@ class ReaderController {
     } else {
       currentPageIndex--;
     }
+    EasyThrottle.throttle('reader', const Duration(seconds: 2), () async {
+      await DatabaseMangaHelpers.setCurrentManga(path, getCurrentPages().first);
+    });
   }
 
   List<int> getCurrentPages() {

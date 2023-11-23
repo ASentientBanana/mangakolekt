@@ -91,6 +91,7 @@ class _MangaReaderState extends State<MangaReader> {
     readerController = ReaderController(
       updateBookCb: widget.updateBook,
       id: widget.id,
+      path: widget.book.path,
       bookDirPath: widget.book.path,
       pageList: widget.book.pages.asMap().entries.map((e) {
         return BookPage(entry: e.value, index: e.key);

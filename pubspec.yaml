@@ -31,6 +31,7 @@ environment:
 dependencies:
   archive: ^3.3.6
   cupertino_icons: ^1.0.2
+  easy_debounce: ^2.0.3
   equatable: ^2.0.5
   ffi: ^2.0.2
   file_picker: ^5.2.6

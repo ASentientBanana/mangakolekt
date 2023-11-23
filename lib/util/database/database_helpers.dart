@@ -89,10 +89,23 @@ class DatabaseMangaHelpers {
     );
   }
 
-  static Future<void> setCurrentManga(int id, int page) async {
-    await DatabaseCore.writeToDB(
-        table: DatabaseTables.Reader,
-        data: {"currentPage": page, "manga": id, "doublePageView": 0});
+  static Future<void> setCurrentManga(String manga, int page) async {
+    try {
+      final db = await DatabaseCore.openDB();
+      //check for results
+      final qRes = await db
+          .query(DatabaseTables.Reader, where: 'manga = ?', whereArgs: [manga]);
+      if (qRes.isEmpty) {
+        await DatabaseCore.writeToDB(
+            table: DatabaseTables.Reader,
+            data: {"manga": manga, "currentPage": page, "doublePageView": 0});
+        return;
+      }
+      await db.update(DatabaseTables.Reader,
+          {"manga": manga, "currentPage": page, "doublePageView": 0});
+    } catch (e) {
+      return;
+    }
     // await DatabaseCore.writeToDB(table: DatabaseTables.Reader, data: {});
   }
 }
