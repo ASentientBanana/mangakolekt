@@ -45,24 +45,26 @@ class AppWidget extends StatelessWidget {
     return MaterialApp(
       title: 'Basenji',
       theme: ThemeData().copyWith(
+        canvasColor: Colors.red,
         scrollbarTheme: ScrollbarThemeData().copyWith(
             thumbColor: const MaterialStatePropertyAll(Color(0xFFc1cc9c))),
         appBarTheme: AppBarTheme().copyWith(),
         textTheme: TextTheme()
             .copyWith(bodyMedium: const TextStyle(color: Color(0xFFc1cc9c))),
         colorScheme: const ColorScheme(
-            brightness: Brightness.dark,
-            primary: Color(0xFF244769),
-            onPrimary: Color(0xFFeef5ee),
-            secondary: Color(0xFFb5d1f1),
-            onSecondary: Color(0xFFc1cc9c),
-            error: Color(0xFF244769),
-            onError: Color(0xFFc1cc9c),
-            background: Color(0xFF081822),
-            onBackground: Color(0xFFeef5ee),
-            surface: Color(0xFF081822),
-            onSurface: Color(0xFFeef5ee),
-            tertiary: Color(0xFFc1cc9c)),
+          brightness: Brightness.dark,
+          primary: Color(0xFF244769),
+          onPrimary: Color(0xFFeef5ee),
+          secondary: Color(0xFFb5d1f1),
+          onSecondary: Color(0xFFc1cc9c),
+          error: Color(0xFF244769),
+          onError: Color(0xFFc1cc9c),
+          background: Color(0xFF081822),
+          onBackground: Color(0xFFeef5ee),
+          surface: Color(0xFF081822),
+          onSurface: Color(0xFFeef5ee),
+          tertiary: Color(0xFFc1cc9c),
+        ),
       ),
       // theme: convertToThemeData(theme),
       //Using this to remove a transition effect from the default i get when using routes:{}

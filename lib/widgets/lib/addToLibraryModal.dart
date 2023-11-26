@@ -4,17 +4,14 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:mangakolekt/bloc/library/library_bloc.dart';
 import 'package:mangakolekt/controllers/archive.dart';
 import 'package:mangakolekt/models/book.dart';
-import 'package:mangakolekt/util/database/database_core.dart';
 import 'package:mangakolekt/util/database/database_helpers.dart';
 import 'package:mangakolekt/util/files.dart';
 import 'dart:isolate';
 
 class AddToLibraryModal extends StatefulWidget {
-  final void Function()? confirmCallback;
   final String selectedDir;
 
-  const AddToLibraryModal(
-      {super.key, this.confirmCallback, required this.selectedDir});
+  const AddToLibraryModal({super.key, required this.selectedDir});
 
   @override
   AddToLibraryModalState createState() => AddToLibraryModalState();
@@ -95,13 +92,8 @@ class AddToLibraryModalState extends State<AddToLibraryModal> {
     setState(() {
       isSubmitDisabled = false;
     });
-    widget.confirmCallback!();
-  }
-
-  void handleCancel() {
-    if (widget.confirmCallback != null) {
-      widget.confirmCallback!();
-    }
+    //TODO: CLOSE MODAL
+    context.read<LibraryBloc>().add(CloseAddToLibModal());
   }
 
   @override
@@ -111,12 +103,8 @@ class AddToLibraryModalState extends State<AddToLibraryModal> {
       width: 400,
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        // borderRadius: BorderRadius.circular(10),
-        border: Border.all(
-            // color: Theme.of(context).colorScheme.tertiary,
-            width: 1,
-            style: BorderStyle.solid),
-        // color: Theme.of(context).colorScheme.secondary,
+        border: Border.all(width: 1, style: BorderStyle.solid),
+        color: Theme.of(context).colorScheme.background,
       ),
       child: Column(
         mainAxisSize: MainAxisSize.min,
@@ -163,7 +151,13 @@ class AddToLibraryModalState extends State<AddToLibraryModal> {
                 ),
                 Expanded(
                   child: ElevatedButton(
-                    onPressed: isSubmitDisabled ? null : handleCancel,
+                    onPressed: isSubmitDisabled
+                        ? null
+                        : () {
+                            context
+                                .read<LibraryBloc>()
+                                .add(CloseAddToLibModal());
+                          },
                     child: const Text('Cancel'),
                   ),
                 )

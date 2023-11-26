@@ -3,7 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:mangakolekt/bloc/library/library_bloc.dart';
 import 'package:mangakolekt/models/book.dart';
 import 'package:mangakolekt/util/database/database_helpers.dart';
-import 'package:mangakolekt/util/files.dart';
+import 'package:mangakolekt/widgets/dragAndDropManga.dart';
 import 'package:mangakolekt/widgets/lib/grid_item.dart';
 
 class LibGrid extends StatefulWidget {
@@ -44,7 +44,7 @@ class _LibGridState extends State<LibGrid> {
                 return GridItem(item: e);
               }).toList();
               if (l.isEmpty) {
-                return const SizedBox.shrink();
+                return DragAndDropSurface();
               }
               return GridView.count(
                   // padding: const EdgeInsets.all(20),
@@ -54,7 +54,7 @@ class _LibGridState extends State<LibGrid> {
                   crossAxisSpacing: 10,
                   children: l);
             } else {
-              return const SizedBox.shrink();
+              return DragAndDropSurface();
             }
           },
           future: _title,

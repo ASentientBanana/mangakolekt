@@ -2,21 +2,15 @@ import 'dart:io';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:get_it/get_it.dart';
-import 'package:mangakolekt/bloc/reader/reader_bloc.dart';
 import 'package:mangakolekt/controllers/archive.dart';
 import 'package:mangakolekt/locator.dart';
 import 'package:mangakolekt/models/book.dart';
 import 'package:mangakolekt/services/navigation_service.dart';
 import 'package:mangakolekt/util/util.dart';
-import 'package:path/path.dart';
 import '../../screens/reader.dart';
 import 'package:mangakolekt/util/archive.dart';
 import 'package:mangakolekt/util/files.dart';
 import 'package:path_provider/path_provider.dart';
-// import 'package:sky_engine/ui/ui.dart' as dart_paint;
-// sky_engine/lib/ui/painting.dart
 
 class ReaderPageWrapper extends StatefulWidget {
   final String path;
@@ -84,9 +78,8 @@ class _ReaderPageWrapperState extends State<ReaderPageWrapper> {
         sorted.isEmpty) {
       return;
     }
-
-    _navigationService.navigateTo(
-        '/reader', sorted[currentIndex + (direction)]);
+    _navigationService.pushAndPop(
+        '/reader', {"path": dirContents[currentIndex + direction], "id": 0});
   }
 
   @override
@@ -109,24 +102,21 @@ class _ReaderPageWrapperState extends State<ReaderPageWrapper> {
                   onTap: () {
                     _navigationService.goBack();
                   },
-                  child: Container(
-                    // color: Colors.brown,
-                    child: Center(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Text(
-                            'Unable to open book',
-                            style: TextStyle(
-                                color: Colors.grey[400], fontSize: 25),
-                          ),
-                          Text(
-                            'Click to go back',
-                            style: TextStyle(
-                                color: Colors.grey[400], fontSize: 17),
-                          )
-                        ],
-                      ),
+                  child: Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(
+                          'Unable to open book',
+                          style:
+                              TextStyle(color: Colors.grey[400], fontSize: 25),
+                        ),
+                        Text(
+                          'Click to go back',
+                          style:
+                              TextStyle(color: Colors.grey[400], fontSize: 17),
+                        )
+                      ],
                     ),
                   )),
             );

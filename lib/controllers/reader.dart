@@ -97,6 +97,7 @@ class ReaderController {
   }
 
   void decrementPage() {
+    print("prev");
     pageAction(PageAction.previous);
   }
 
@@ -116,19 +117,23 @@ class ReaderController {
     }
   }
 
-  bool checkInBounds(PageAction pa) {
+  int checkInBounds(PageAction pa) {
     if (currentPageIndex >= pageMap[isDoublePageView ? 1 : 0]!.length - 1 &&
         pa == PageAction.next) {
-      return false;
+      return 1;
     }
     if (currentPageIndex <= 0 && pa == PageAction.previous) {
-      return false;
+      return -1;
     }
-    return true;
+    return 0;
   }
 
   void pageAction(PageAction pa) {
-    if (!checkInBounds(pa)) {
+    final dir = checkInBounds(pa);
+    if (dir != 0) {
+      if (updateBookCb != null) {
+        updateBookCb!(path, dir);
+      }
       return;
     }
 

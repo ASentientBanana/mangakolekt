@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:mangakolekt/bloc/library/library_bloc.dart';
 import 'package:mangakolekt/locator.dart';
 import 'package:mangakolekt/models/book.dart';
 import 'package:mangakolekt/services/navigation_service.dart';
-import 'package:mangakolekt/util/files.dart';
-import 'package:mangakolekt/widgets/lib/add.dart';
+import 'package:mangakolekt/widgets/lib/addToLibraryModal.dart';
 import 'package:mangakolekt/widgets/lib/grid.dart';
 import 'package:mangakolekt/widgets/lib/list.dart';
+import 'package:mangakolekt/widgets/menuBar.dart';
 
 class MyHomePage extends StatefulWidget {
   const MyHomePage({super.key});
@@ -14,40 +16,7 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  List<Image> images = [];
-
-  bool isPickingFile = false;
-  bool showDialog = false;
-  String selectedDir = '';
-  String selectedFile = '';
   BookCover? selectedCover;
-
-  final _navigationService = locator<NavigationService>();
-
-  Future<void> pickDirHandler() async {
-    setState(() {
-      isPickingFile = true;
-    });
-    final dir = await pickDirectory();
-    if (dir == null) {
-      closeDialogHandler();
-      return;
-    }
-    setState(() {
-      showDialog = true;
-      selectedDir = dir;
-    });
-  }
-
-  Future<void> pickFileHandler() async {
-    final file = await pickFile();
-    if (file == null) {
-      closeDialogHandler();
-      return;
-    }
-    _navigationService.navigateTo('/reader', {"id": 0, "path": file});
-    // Navigator.pushNamed(context, '/reader',arguments: {"page":9999,});
-  }
 
   void selectManga(BookCover cover) {
     setState(() {
@@ -55,37 +24,31 @@ class _MyHomePageState extends State<MyHomePage> {
     });
   }
 
-  void closeDialogHandler() {
-    setState(() {
-      showDialog = false;
-      isPickingFile = false;
-      selectedDir = '';
-    });
+  Widget modalBuilder(BuildContext context, LibraryState state) {
+    if (state is! LibraryLoaded) {
+      return const SizedBox.shrink();
+    }
+
+    if (state.modalPath.isEmpty) {
+      return const SizedBox.shrink();
+    }
+
+    return Positioned.fill(
+      child: Visibility(
+        visible: true,
+        child: Center(
+          child: AddToLibraryModal(
+            selectedDir: state.modalPath,
+          ),
+        ),
+      ),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
-    // double width = MediaQuery.of(context).size.width;
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text(
-          'Select Library you want to read',
-        ),
-        actions: [
-          ElevatedButton(
-            // style: ButtonStyle(
-            //   backgroundColor: MaterialStateProperty.all(
-            //       Theme.of(context).colorScheme.secondary),
-            // ),
-            onPressed: pickFileHandler,
-            child: const SizedBox(
-              width: 100,
-              child: Icon(Icons.settings),
-            ),
-          ),
-        ],
-        automaticallyImplyLeading: false,
-      ),
+    return MangaMenuBar(
+        child: Scaffold(
       body: Container(
         padding: const EdgeInsets.all(4),
         color: Theme.of(context).colorScheme.background,
@@ -94,23 +57,12 @@ class _MyHomePageState extends State<MyHomePage> {
             const Row(
               children: [LibList(), Expanded(child: LibGrid())],
             ),
-            Positioned.fill(
-              child: Visibility(
-                visible: showDialog,
-                child: Center(
-                  child: AddToLibraryModal(
-                      selectedDir: selectedDir,
-                      confirmCallback: closeDialogHandler),
-                ),
-              ),
+            BlocBuilder<LibraryBloc, LibraryState>(
+              builder: modalBuilder,
             )
           ],
         ),
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: isPickingFile ? null : pickDirHandler,
-        child: const Icon(Icons.add),
-      ),
-    );
+    ));
   }
 }

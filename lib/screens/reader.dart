@@ -45,10 +45,11 @@ class _MangaReaderState extends State<MangaReader> {
     setState(() {
       if (ev.buttons == left) {
         readerController.incrementPage();
+        handleScrollAnimation(readerController.getCurrentPages().first);
       } else if (ev.buttons == right) {
         readerController.decrementPage();
+        handleScrollAnimation(readerController.getCurrentPages().first);
       }
-      handleScrollAnimation(readerController.getCurrentPages()[0]);
     });
   }
 
@@ -60,7 +61,7 @@ class _MangaReaderState extends State<MangaReader> {
       } else if (prevKeyMap.contains(ev.logicalKey)) {
         readerController.decrementPage();
       }
-      handleScrollAnimation(readerController.getCurrentPages()[0]);
+      handleScrollAnimation(readerController.getCurrentPages().first);
     });
     return false;
   }
@@ -76,15 +77,6 @@ class _MangaReaderState extends State<MangaReader> {
     super.dispose();
     ServicesBinding.instance.keyboard.removeHandler(handleKeyPress);
   }
-  // TODO: Add this with a debounce
-  // Future<void> startIsolate() async {
-  //   RootIsolateToken rootIsolateToken = RootIsolateToken.instance!;
-  //   BackgroundIsolateBinaryMessenger.ensureInitialized(rootIsolateToken);
-  //   await compute(
-  //       (message) =>
-  //           DatabaseMangaHelpers.setCurrentManga(message[0], message[1]),
-  //       [widget.id, readerController.getCurrentPages()[0]]);
-  // }
 
   @override
   initState() {
@@ -98,9 +90,6 @@ class _MangaReaderState extends State<MangaReader> {
       }).toList(),
     );
     ServicesBinding.instance.keyboard.addHandler(handleKeyPress);
-    // compute((s){},'');
-    // startIsolate();
-
     super.initState();
   }
 

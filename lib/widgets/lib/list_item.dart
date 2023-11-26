@@ -2,9 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:mangakolekt/bloc/library/library_bloc.dart';
 import 'package:mangakolekt/models/book.dart';
-import 'package:mangakolekt/util/database/database_core.dart';
 import 'package:mangakolekt/util/database/database_helpers.dart';
-import 'package:mangakolekt/util/database/database_table.dart';
 import '../../util/files.dart';
 
 class LibListItem extends StatefulWidget {
@@ -30,6 +28,7 @@ class _LibListItemState extends State<LibListItem> {
   Widget build(BuildContext context) {
     return LayoutBuilder(builder: (context, constraints) {
       final theme = Theme.of(context);
+      final GlobalKey _menuKey = GlobalKey();
       return Row(
         children: [
           Container(
@@ -57,18 +56,13 @@ class _LibListItemState extends State<LibListItem> {
             ),
           ),
           PopupMenuButton(
-              color: Theme.of(context).colorScheme.tertiary,
+              color: Theme.of(context).colorScheme.background,
+              key: _menuKey,
+              icon: Icon(
+                Icons.more_vert_rounded,
+                color: Theme.of(context).colorScheme.tertiary,
+              ),
               itemBuilder: (context) => [
-                    // PopupMenuItem<String>(
-                    //   value: "test",
-                    //   child: const Text('Edit'),
-                    //   onTap: () {},
-                    // ),
-                    // PopupMenuItem<String>(
-                    //   value: "test",
-                    //   child: const Text('Refresh'),
-                    //   onTap: () {},
-                    // ),
                     PopupMenuItem<String>(
                       value: "",
                       child: const Text("Delete"),

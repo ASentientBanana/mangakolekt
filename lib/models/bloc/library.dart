@@ -3,6 +3,7 @@ import 'package:mangakolekt/models/book.dart';
 class LibStore {
   BookCover _cover = BookCover(name: "", path: "", bookPath: "", id: 0);
   List<BookCover> _libList = [];
+  String? _modalPath;
 
   BookCover get cover => _cover;
   List<BookCover> get libList => _libList;
