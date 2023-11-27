@@ -24,6 +24,7 @@ class ArchiveController {
   }
 
   static FutureOr<Book?> unpack(List<String> args) async {
+    //file type (eg: zip)
     final type = args[0];
     final pathToBook = args[1];
     final dest = args[2];

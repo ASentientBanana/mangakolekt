@@ -42,20 +42,30 @@ List<BookCover> sortCoversNumeric(List<BookCover> list) {
     });
 }
 
-List<PageEntry> sortCoversPagesNumeric(List<PageEntry> list) {
+List<PageEntry> sortCoversPagesNumeric(List<PageEntry> _list) {
+  final list = [..._list];
   return list
-    ..sort((a, b) {
-      final aNumbers = extractNumbers(a.name);
-      final bNumbers = extractNumbers(b.name);
-      final length = aNumbers.length;
-      for (var i = 0; i < length; i++) {
-        final comparison = aNumbers[i].compareTo(bNumbers[i]);
-        if (comparison != 0) {
-          return comparison;
+    ..sort(
+      (a, b) {
+        final aNumbers = extractNumbers(a.name);
+        final bNumbers = extractNumbers(b.name);
+        if (aNumbers.isEmpty && bNumbers.isNotEmpty) {
+          return 1;
+        } else if (aNumbers.isNotEmpty && bNumbers.isEmpty) {
+          return -1;
+        } else if (aNumbers.isEmpty && bNumbers.isEmpty) {
+          return 0;
         }
-      }
-      return a.name.compareTo(b.name);
-    });
+        final length = aNumbers.length;
+        for (var i = 0; i < length; i++) {
+          final comparison = aNumbers[i].compareTo(bNumbers[i]);
+          if (comparison != 0) {
+            return comparison;
+          }
+        }
+        return a.name.compareTo(b.name);
+      },
+    );
 }
 
 void swap(List list, int i, int j) {

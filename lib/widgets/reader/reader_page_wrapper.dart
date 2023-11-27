@@ -35,14 +35,13 @@ class _ReaderPageWrapperState extends State<ReaderPageWrapper> {
     imageCache.clear();
 
     if (Platform.isLinux || Platform.isWindows) {
-      // print("test 1");
-      book = await compute(
-          ArchiveController.unpack, [bookPath.split('.').last, bookPath, dest]);
-      // print("test 2");
-      // book ??= await compute(getBookFromArchive, bookPath);
-
-      // throwIf(book == null, "Problem loading book");
-      // return Error();
+      final params = [bookPath.split('.').last, bookPath, dest];
+      book = await compute(ArchiveController.unpack, params);
+      // try {
+      // } catch (e) {
+      //   //fallback
+      //   print(e);
+      // }
     } else {
       book = await getBookFromArchive(bookPath);
     }

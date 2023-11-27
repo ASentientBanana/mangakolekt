@@ -16,12 +16,11 @@ class DragAndDropSurface extends StatelessWidget {
   void onDragDoneHandler(DropDoneDetails details, BuildContext context) async {
     try {
       final target = details.files.first;
-      final isFile = target.name.split('.').length == 2;
+      final isFile = target.name.split('.').length > 1;
       if (isFile) {
         _navigationService
             .navigateTo('/reader', {"id": 0, "path": target.path});
       } else {
-        print(target.path);
         context.read<LibraryBloc>().add(ToggleAddToLibModal(path: target.path));
       }
     } catch (e) {

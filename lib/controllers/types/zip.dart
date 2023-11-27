@@ -34,6 +34,7 @@ class ZipBookController extends BaseBookController {
               (element) => p.split(element.path).last.split('.').last == 'cbz')
           .map((event) => event.path)
           .toList();
+      print(targetFiles);
       final output = await ffiUnzipCovers(targetFiles, pathToDir, out);
       return output;
     } else {
@@ -57,20 +58,24 @@ class ZipBookController extends BaseBookController {
     }).toList();
     final fileCount = dirFiles.length;
     for (var e in dirFiles) {
-      final name = p.split(e.path).last;
       final file = File(e.path);
       if (!(await file.exists())) continue;
-      final img = Image.file(file);
-      pages.add(PageEntry(
-        name: name,
-        image: img,
-      ));
+      pages.add(
+        PageEntry(
+          name: p.split(e.path).last,
+          image: Image.file(file),
+        ),
+      );
+    }
+    if (pages.isEmpty) {
+      return null;
     }
     return Book(
-        pages: sortCoversPagesNumeric(pages),
-        pageNumber: fileCount,
-        name: bookName,
-        path: p.dirname(pathToBook));
+      pages: sortCoversPagesNumeric(pages),
+      pageNumber: fileCount,
+      name: bookName,
+      path: p.dirname(pathToBook),
+    );
   }
 
   @override

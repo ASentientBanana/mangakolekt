@@ -2,6 +2,7 @@ import 'dart:ffi'; // For FFI
 import 'dart:io';
 import 'package:ffi/ffi.dart';
 import 'package:flutter/foundation.dart';
+import 'package:mangakolekt/util/util.dart';
 import 'dart:typed_data';
 
 import 'package:path/path.dart';
@@ -50,7 +51,8 @@ DynamicLibrary libForPlatform() {
 
 final dyLib = libForPlatform();
 
-final unziper = dyLib.lookupFunction<UnziperFunc, UnziperFunc>("Unzip");
+final unzipCoversFromDir =
+    dyLib.lookupFunction<UnziperFunc, UnziperFunc>("Unzip_Covers");
 final unzipBook = dyLib.lookupFunction<ExtractImagesFromZipFunction,
     ExtractImagesFromZipFunctionDart>("Unzip_Single_book");
 
@@ -59,12 +61,10 @@ Future<bool> ffiUnzipSingleBook(String _bookPath, String _targetPath) async {
   final targetPath = _targetPath.toNativeUtf8();
   try {
     int err = unzipBook(bookPath, targetPath);
-    print("RETRUNDED: $err");
     if (err != 0) {
       return false;
     }
   } catch (e) {
-    print("BAD FILE");
     print(e);
   }
 
@@ -80,13 +80,14 @@ Future<List<String>> ffiUnzipCovers(
   final Pointer<Utf8> filesStringPtr = filesString.toNativeUtf8();
   final Pointer<Utf8> pathPtr = path.toNativeUtf8();
   final Pointer<Utf8> outPtr = out.toNativeUtf8();
+  var res = unzipCoversFromDir(filesStringPtr.cast<Uint8>(),
+      pathPtr.cast<Uint8>(), outPtr.cast<Uint8>());
 
-  var res = unziper(filesStringPtr.cast<Uint8>(), pathPtr.cast<Uint8>(),
-      outPtr.cast<Uint8>());
   calloc.free(filesStringPtr);
   calloc.free(pathPtr);
   calloc.free(outPtr);
 
   final output = res.cast<Utf8>().toDartString();
+  // calloc.free(res);
   return output.split("&?&").toList();
 }
