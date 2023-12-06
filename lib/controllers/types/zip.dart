@@ -43,39 +43,21 @@ class ZipBookController extends BaseBookController {
     return books;
   }
 
+  // TODO: Decouple the unzip logic from loading the books
   @override
-  Future<Book?> unpack(String pathToBook, String dest) async {
-    List<PageEntry> pages = [];
+  Future<void> unpack(String pathToBook, String dest) async {
     final bookName = p.split(pathToBook).last;
-    final success = await ffiUnzipSingleBook(pathToBook, dest);
-    if (!success) {
-      return null;
+    try {
+      final files = await ffiUnzipSingleBook(pathToBook, dest);
+
+      if (files.isEmpty) {
+        return null;
+      }
+      // await _loadBook(files, bookName, pathToBook);
+    } catch (e) {
+      print("Problbem with ffi");
+      print(e);
     }
-    final dir = Directory(dest);
-    if (!(await dir.exists())) return null;
-    final dirFiles = await dir.list().where((event) {
-      return supportedImageTypes.contains(event.path.split('.').last);
-    }).toList();
-    final fileCount = dirFiles.length;
-    for (var e in dirFiles) {
-      final file = File(e.path);
-      if (!(await file.exists())) continue;
-      pages.add(
-        PageEntry(
-          name: p.split(e.path).last,
-          image: Image.file(file),
-        ),
-      );
-    }
-    if (pages.isEmpty) {
-      return null;
-    }
-    return Book(
-      pages: sortCoversPagesNumeric(pages),
-      pageNumber: fileCount,
-      name: bookName,
-      path: p.dirname(pathToBook),
-    );
   }
 
   @override

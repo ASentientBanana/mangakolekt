@@ -6,7 +6,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:mangakolekt/bloc/library/library_bloc.dart';
 import 'package:mangakolekt/locator.dart';
 import 'package:mangakolekt/services/navigation_service.dart';
-import 'package:mangakolekt/util/files.dart';
 
 class DragAndDropSurface extends StatelessWidget {
   final _navigationService = locator<NavigationService>();

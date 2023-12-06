@@ -10,7 +10,7 @@ List<String> sortNumeric(List<String> list) {
     ..sort((a, b) {
       final aNumbers = extractNumbers(a);
       final bNumbers = extractNumbers(b);
-      if (aNumbers.length == 0 || bNumbers.length == 0) {
+      if (aNumbers.isEmpty || bNumbers.isEmpty) {
         return a.compareTo(b);
       }
       final comparison = aNumbers[0].compareTo(bNumbers[0]);
@@ -23,6 +23,35 @@ List<String> sortNumeric(List<String> list) {
       // }
       return a.compareTo(b);
     });
+}
+
+int parseIntPrefix(String s) {
+  var re = RegExp(r'(-?[0-9]+).*');
+  var match = re.firstMatch(s);
+  if (match == null) {
+    return 1;
+  }
+  return int.parse(match.group(1)!);
+}
+
+int compareIntPrefixes(String a, String b) {
+  var aValue = parseIntPrefix(a);
+  var bValue = parseIntPrefix(b);
+  if (aValue != null && bValue != null) {
+    return aValue - bValue;
+  }
+
+  if (aValue == null && bValue == null) {
+    // If neither string has an integer prefix, sort the strings lexically.
+    return a.compareTo(b);
+  }
+
+  // Sort strings with integer prefixes before strings without.
+  if (aValue == null) {
+    return 1;
+  } else {
+    return -1;
+  }
 }
 
 List<BookCover> sortCoversNumeric(List<BookCover> list) {

@@ -2,6 +2,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:mangakolekt/controllers/archive.dart';
 import 'package:mangakolekt/models/book.dart';
 import 'package:mangakolekt/util/util.dart';
 
@@ -67,18 +68,16 @@ final mockData = [
 ];
 
 void main() {
-  group('Sorting', () {
-    test('Sorting numeric', () {
-      final res = sortNumeric(mockData);
-      expect(res.length, mockData.length);
-    });
-
-    test('Sorting numeric pages', () {
-      final pages =
-          mockData.map((e) => PageEntry(name: e, image: Image.network('src')));
-      final res2 = sortCoversPagesNumeric(pages.toList());
-
-      expect(res2.length, pages.length);
-    });
+  final targets = [
+    "/home/petar/bigboy/Manga/OnePiece/Vol. 93.cbz",
+    "/home/petar/bigboy/Manga/OnePiece/Vol. 94.cbz",
+    "/home/petar/bigboy/Manga/OnePiece/Vol. 95.cbz",
+  ];
+  test("Pages loaded", () async {
+    final book = await ArchiveController.loadBook(
+        '/home/petar/Documents/mangakolekt/current', targets[0]);
+    expect(book!.pageNumber, isNot(0));
+    print("Pages loaded: ${book.pages.length}");
+    print("Pages loaded: ${book.pages[0]}");
   });
 }
