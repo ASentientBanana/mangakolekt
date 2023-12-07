@@ -57,6 +57,9 @@ class _ReaderPageWrapperState extends State<ReaderPageWrapper> {
 
   Future<void> updateBook(String path, int direction) async {
     final dir = Directory(path);
+    if (!await dir.exists()) {
+      return;
+    }
     final _dirContents = (await dir.list().toList());
     final List<String> dirContents = [];
     for (var i = 0; i < _dirContents.length; i++) {

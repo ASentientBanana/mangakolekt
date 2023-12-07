@@ -6,8 +6,6 @@ import 'package:mangakolekt/controllers/types/zip.dart';
 import 'package:mangakolekt/models/book.dart';
 import 'package:mangakolekt/util/util.dart';
 import 'package:path/path.dart';
-import 'package:path_provider/path_provider.dart';
-import 'package:collection/collection.dart';
 
 abstract class BaseBookController {
   bool checkType(String type);
@@ -67,7 +65,7 @@ class ArchiveController {
       }
     }
     dirs = sortNumeric(dirs);
-    files = sortNumeric(files);
+    // files = sortNumeric(files);
     // files = files.sorted(compareIntPrefixes);
     // files.sort(compareNatural);
 
@@ -84,7 +82,8 @@ class ArchiveController {
   }
 
   static Future<Book?> loadBook(String target, String pathToBook) async {
-    final _pages = await _loadPagesRecursive(target);
+    List<String> _pages = sortNumeric(await _loadPagesRecursive(target));
+    _pages = sortNumeric(_pages);
 
     final List<PageEntry> pages = [];
 

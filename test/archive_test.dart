@@ -1,5 +1,6 @@
 // Import the test package and Counter class
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mangakolekt/controllers/archive.dart';
@@ -67,17 +68,40 @@ final mockData = [
   ' ZZZ.png',
 ];
 
-void main() {
-  final targets = [
-    "/home/petar/bigboy/Manga/OnePiece/Vol. 93.cbz",
-    "/home/petar/bigboy/Manga/OnePiece/Vol. 94.cbz",
-    "/home/petar/bigboy/Manga/OnePiece/Vol. 95.cbz",
-  ];
-  test("Pages loaded", () async {
-    final book = await ArchiveController.loadBook(
-        '/home/petar/Documents/mangakolekt/current', targets[0]);
-    expect(book!.pageNumber, isNot(0));
-    print("Pages loaded: ${book.pages.length}");
-    print("Pages loaded: ${book.pages[0]}");
+final targets = [
+  "/home/petar/bigboy/Manga/OnePiece/Vol. 93.cbz",
+  "/home/petar/bigboy/Manga/OnePiece/Vol. 94.cbz",
+  "/home/petar/bigboy/Manga/OnePiece/Vol. 95.cbz",
+  "/home/petar/Documents/Manga/One piece/Vol. 95.cbz"
+];
+
+const unzip_dest = '/home/petar/Documents/mangakolekt/current';
+// void _unzip() {
+//   test("Pages loaded", () async {
+//     final book = await ArchiveController.loadBook(unzip_dest, targets[3]);
+//     print(book?.name);
+//     print(book?.pages.length);
+//     expect(book!.pages.length, isNot(0));
+//   });
+// }
+
+void fileSort() async {
+  test("Testing file sorting", () async {
+    final params = [targets[3].split('.').last, targets[3], unzip_dest];
+    final book = await ArchiveController.unpack(params);
+    final firstItter = book?.pages?.getRange(0, 10).map((e) => e.name).toList();
+
+    if (firstItter != null) {
+      print("RES: ");
+      print(firstItter);
+      final res = sortNumeric(firstItter);
+      print(res);
+    }
+
+    // expect(actual, matcher)
   });
+}
+
+void main() {
+  fileSort();
 }
