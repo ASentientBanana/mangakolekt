@@ -17,10 +17,7 @@ List<String> sortNumeric(List<String> list) {
       if (comparison != 0) {
         return comparison;
       }
-      // for (var i = 0; i < length; i++) {
-      //   if (comparison != 0) {
-      //   }
-      // }
+
       return a.compareTo(b);
     });
 }

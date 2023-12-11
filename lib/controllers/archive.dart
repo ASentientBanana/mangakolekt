@@ -1,11 +1,13 @@
 import 'dart:async';
 import 'dart:io';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:mangakolekt/controllers/types/zip.dart';
 import 'package:mangakolekt/models/book.dart';
 import 'package:mangakolekt/util/util.dart';
 import 'package:path/path.dart';
+import 'package:collection/collection.dart';
 
 abstract class BaseBookController {
   bool checkType(String type);
@@ -35,12 +37,12 @@ class ArchiveController {
     if (controller == null) {
       return null;
     }
-    controller.unpack(pathToBook, dest);
-    //load book here
+    //unzip to the current dir.
+    await controller.unpack(pathToBook, dest);
+    //load book here from current dir
     return await loadBook(dest, pathToBook);
+    // return null;
   }
-
-  static void sortMe(List<String> files) {}
 
   static Future<List<String>> _loadPagesRecursive(String dirPath) async {
     final dir = Directory(dirPath);
@@ -65,12 +67,6 @@ class ArchiveController {
       }
     }
     dirs = sortNumeric(dirs);
-    // files = sortNumeric(files);
-    // files = files.sorted(compareIntPrefixes);
-    // files.sort(compareNatural);
-
-    // Display sorted files
-
     final List<String> dContents = [];
     dContents.addAll(files);
 
@@ -82,20 +78,26 @@ class ArchiveController {
   }
 
   static Future<Book?> loadBook(String target, String pathToBook) async {
-    List<String> _pages = sortNumeric(await _loadPagesRecursive(target));
-    _pages = sortNumeric(_pages);
+    // List<String> _pages = await compute((message) async {
+    // return await _loadPagesRecursive(message);
+    // }, target);
+    final _pages = await _loadPagesRecursive(target);
+    _pages.sort(compareNatural);
+    // // _pages = sortNumeric(_pages);
 
     final List<PageEntry> pages = [];
 
     for (var i = 0; i < _pages.length; i++) {
+      if (i < 0) {
+        continue;
+      }
       final file = File(_pages[i]);
-      if (!await file.exists()) {
+      if (!(await file.exists())) {
         continue;
       }
       pages
           .add(PageEntry(name: split(_pages[i]).last, image: Image.file(file)));
     }
-    print("Loaded book");
     return Book(
         name: split(pathToBook).last,
         pageNumber: pages.length,
@@ -116,14 +118,4 @@ class ArchiveController {
     }
     return controller.unpackCovers;
   }
-
-//   List<String> sortFilesInDirectory(Directory directory) {
-//     List<FileSystemEntity> files = directory.listSync();
-
-//   if (directory.existsSync())
-
-//   } else {
-//     print('Directory not found.');
-//   }
-// }
 }

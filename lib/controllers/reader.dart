@@ -148,6 +148,9 @@ class ReaderController {
   }
 
   List<int> getCurrentPages() {
+    if (pages.isEmpty) {
+      return [];
+    }
     return pageMap[isDoublePageView ? 1 : 0]![currentPageIndex];
   }
 }

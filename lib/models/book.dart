@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:path/path.dart';
+import 'package:path_provider/path_provider.dart';
 
 enum BookReadStatus { read, unread }
 
@@ -33,17 +35,15 @@ class BookCover {
 class PageEntry {
   final String name;
   final Image image;
-  late bool isDouble;
+  bool isDouble = false;
   // final double w;
   // final double h;
 
   PageEntry({
     required this.name,
     required this.image,
-    // required this.h,
-    // required this.w
   }) {
-    isDouble = name[0] == "_";
+    isDouble = name.contains('__wide__');
   }
 }
 
