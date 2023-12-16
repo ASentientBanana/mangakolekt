@@ -98,67 +98,114 @@ class AddToLibraryModalState extends State<AddToLibraryModal> {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
     return Container(
-      height: 400,
-      width: 400,
-      padding: const EdgeInsets.all(20),
+      height: 240,
+      width: 500,
+      padding: const EdgeInsets.symmetric(horizontal: 20),
       decoration: BoxDecoration(
         border: Border.all(width: 1, style: BorderStyle.solid),
-        color: Theme.of(context).colorScheme.background,
+        color: colorScheme.primary,
       ),
       child: Column(
         mainAxisSize: MainAxisSize.min,
+        mainAxisAlignment: MainAxisAlignment.center,
         children: [
           const Text(
             'Enter a name for the lib located at:',
             style: TextStyle(
-              fontWeight: FontWeight.bold,
-              fontSize: 20,
+              // fontWeight: FontWeight.bold,
+              // fontFamily: "HighlandGothic",
+              fontSize: 23,
+              color: Colors.white,
             ),
           ),
           Container(
             padding: const EdgeInsets.only(left: 20),
-            child: Text(widget.selectedDir),
-          ),
-          const SizedBox(height: 10),
-          TextField(
-            controller: textEditingController,
-            decoration: const InputDecoration(
-              border: OutlineInputBorder(),
-              hintText: 'Manga name',
+            child: Text(
+              widget.selectedDir,
+              style: const TextStyle(
+                color: Colors.white70,
+                fontSize: 18,
+              ),
             ),
           ),
           const SizedBox(height: 10),
-          Center(
+          Container(
+            width: 360,
+            padding: const EdgeInsets.only(top: 10),
+            child: TextFormField(
+              controller: textEditingController,
+              showCursor: true,
+              cursorColor: colorScheme.tertiary,
+              decoration: InputDecoration(
+                  hintText: "Enter a label for the lib",
+                  hintStyle: const TextStyle(color: Colors.white60),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.zero,
+                    borderSide:
+                        BorderSide(width: 4, color: colorScheme.tertiary),
+                  ),
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.zero,
+                    borderSide:
+                        BorderSide(width: 4, color: colorScheme.tertiary),
+                  )),
+            ),
+          ),
+          SizedBox(
+            width: 360,
             child: Row(
               children: [
                 Expanded(
-                    child: ElevatedButton(
-                  onPressed:
-                      isSubmitDisabled ? null : () => handleSubmit(context),
-                  child: isSubmitDisabled
-                      ? const Center(
-                          child: SizedBox(
-                            height: 20,
-                            width: 20,
-                            child: CircularProgressIndicator(),
+                  child: ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      elevation: 0, backgroundColor: colorScheme.tertiary,
+                      shape: BeveledRectangleBorder(),
+                      // side: BorderSide(color: colorScheme.secondary)
+                    ),
+                    onPressed:
+                        isSubmitDisabled ? null : () => handleSubmit(context),
+                    child: isSubmitDisabled
+                        ? const Center(
+                            child: SizedBox(
+                              height: 20,
+                              width: 20,
+                              child: CircularProgressIndicator(),
+                            ),
+                          )
+                        : const Text(
+                            "Confirm",
+                            style: TextStyle(
+                                color: Colors.black,
+                                fontWeight: FontWeight.bold),
                           ),
-                        )
-                      : const Text('Add'),
-                )),
+                  ),
+                ),
                 const Padding(
-                  padding: EdgeInsets.all(20),
+                  padding: EdgeInsets.symmetric(horizontal: 5, vertical: 30),
                 ),
                 Expanded(
                   child: ElevatedButton(
-                    onPressed: isSubmitDisabled
-                        ? null
-                        : () {
+                    style: ElevatedButton.styleFrom(
+                      elevation: 0, backgroundColor: Colors.white,
+                      shape: const BeveledRectangleBorder(),
+                      // side: BorderSide(color: colorScheme.secondary)
+                    ),
+                    onPressed: !isSubmitDisabled
+                        ? () {
                             context
                                 .read<LibraryBloc>()
                                 .add(CloseAddToLibModal());
-                          },
-                    child: const Text('Cancel'),
+                          }
+                        : null,
+                    child: const Text(
+                      'Cancel',
+                      style: TextStyle(
+                        color: Colors.black,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
                   ),
                 )
               ],

@@ -85,23 +85,21 @@ const unzip_dest = '/home/petar/Documents/mangakolekt/current';
 //   });
 // }
 
-void fileSort() async {
-  test("Testing file sorting", () async {
-    final params = [targets[3].split('.').last, targets[3], unzip_dest];
-    final book = await ArchiveController.unpack(params);
-    final firstItter = book?.pages?.getRange(0, 10).map((e) => e.name).toList();
-
-    if (firstItter != null) {
-      print("RES: ");
-      print(firstItter);
-      final res = sortNumeric(firstItter);
-      print(res);
-    }
-
-    // expect(actual, matcher)
-  });
-}
-
-void main() {
-  fileSort();
-}
+// void fileSort() async {
+//   test("Testing file sorting", () async {
+//     final params = [targets[3].split('.').last, targets[3], unzip_dest];
+//     final book = await ArchiveController.unpack(params);
+//     final firstItter = book?.pages?.getRange(0, 10).map((e) => e.name).toList();
+//
+//     if (firstItter != null) {
+//       print("RES: ");
+//       print(firstItter);
+//       final res = sortNumeric(firstItter);
+//       print(res);
+//     }
+//
+//     // expect(actual, matcher)
+//   });
+// }
+//
+void main() {}

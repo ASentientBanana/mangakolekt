@@ -43,14 +43,26 @@ class AppWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Basenji',
+      title: 'MangaKolekt',
       theme: ThemeData().copyWith(
-        canvasColor: Colors.red,
+        // canvasColor: Colors.red,
         scrollbarTheme: ScrollbarThemeData().copyWith(
-            thumbColor: const MaterialStatePropertyAll(Color(0xFFc1cc9c))),
-        appBarTheme: AppBarTheme().copyWith(),
-        textTheme: TextTheme()
-            .copyWith(bodyMedium: const TextStyle(color: Color(0xFFc1cc9c))),
+          thumbColor: const MaterialStatePropertyAll(
+            Color(0xFFc1cc9c),
+          ),
+        ),
+        appBarTheme: AppBarTheme(),
+        textTheme:
+            Typography().dense.apply(fontFamily: "HighlandGothic").copyWith(),
+
+        // textTheme: Typography()
+        //     .englishLike
+        //     .apply(fontFamily: "HighlandGothic")
+        //     .copyWith(
+        //       bodyMedium: const TextStyle(
+        //         color: Color(0xFFc1cc9c),
+        //       ),
+        //     ),
         colorScheme: const ColorScheme(
           brightness: Brightness.dark,
           primary: Color(0xFF244769),
