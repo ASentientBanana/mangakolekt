@@ -2,9 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:mangakolekt/bloc/library/library_bloc.dart';
 import 'package:mangakolekt/models/book.dart';
-import 'package:mangakolekt/util/database/database_core.dart';
 import 'package:mangakolekt/util/database/database_helpers.dart';
-import 'package:mangakolekt/util/database/database_table.dart';
 import '../../util/files.dart';
 
 class LibListItem extends StatefulWidget {
@@ -29,43 +27,60 @@ class _LibListItemState extends State<LibListItem> {
   @override
   Widget build(BuildContext context) {
     return LayoutBuilder(builder: (context, constraints) {
-      return Row(
+      final theme = Theme.of(context);
+      final GlobalKey _menuKey = GlobalKey();
+      return Column(
         children: [
-          SizedBox(
-            width:
-                constraints.maxWidth * (constraints.maxWidth > 130 ? 0.7 : 0.5),
-            child: ElevatedButton(
-              style: ButtonStyle(
-                backgroundColor: MaterialStateProperty.all(
-                    Theme.of(context).colorScheme.secondary),
+          Row(
+            children: [
+              Container(
+                height: 40,
+                // padding: EdgeInsets.only(top: 10),
+                decoration: BoxDecoration(
+                  border:
+                      Border.all(color: theme.colorScheme.tertiary, width: 2),
+                ),
+                width: constraints.maxWidth *
+                    (constraints.maxWidth > 130 ? 0.7 : 0.5),
+                child: OutlinedButton(
+                  onPressed: () {
+                    context.read<LibraryBloc>().add(
+                          SetCover(cover: widget.item),
+                        );
+                  },
+                  child: Center(
+                    child: Text(
+                      widget.item.name,
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(
+                        color: theme.colorScheme.tertiary,
+                      ),
+                    ),
+                  ),
+                ),
               ),
-              onPressed: () {
-                context.read<LibraryBloc>().add(
-                      SetCover(cover: widget.item),
-                    );
-              },
-              child: Text(widget.item.name, overflow: TextOverflow.ellipsis),
-            ),
+              PopupMenuButton(
+                color: Theme.of(context).colorScheme.background,
+                key: _menuKey,
+                icon: Icon(
+                  Icons.more_vert_rounded,
+                  color: Theme.of(context).colorScheme.tertiary,
+                ),
+                itemBuilder: (context) => [
+                  PopupMenuItem<String>(
+                    value: "",
+                    child: const Text("Delete"),
+                    onTap: () => handleDeleteFromLib(context),
+                  )
+                ],
+              )
+            ],
           ),
-          PopupMenuButton(
-              color: Theme.of(context).colorScheme.secondary,
-              itemBuilder: (context) => [
-                    // PopupMenuItem<String>(
-                    //   value: "test",
-                    //   child: const Text('Edit'),
-                    //   onTap: () {},
-                    // ),
-                    // PopupMenuItem<String>(
-                    //   value: "test",
-                    //   child: const Text('Refresh'),
-                    //   onTap: () {},
-                    // ),
-                    PopupMenuItem<String>(
-                      value: "",
-                      child: const Text("Delete"),
-                      onTap: () => handleDeleteFromLib(context),
-                    )
-                  ])
+          //margin :D
+          const SizedBox(
+            height: 5,
+            width: 0,
+          )
         ],
       );
     });

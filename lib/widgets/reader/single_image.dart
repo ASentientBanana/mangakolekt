@@ -21,12 +21,6 @@ class _SingleImageState extends State<SingleImage> {
   final _imageScrollController = ScrollController();
 
   @override
-  void initState() {
-    // TODO: implement initState
-    super.initState();
-  }
-
-  @override
   void dispose() {
     _imageScrollController.dispose();
     super.dispose();
@@ -43,6 +37,7 @@ class _SingleImageState extends State<SingleImage> {
   Widget build(BuildContext context) {
     final Widget img = widget.scaleTo == ScaleTo.height
         ? Container(
+            color: Colors.transparent,
             alignment: setAliment(widget.isDouble, widget.index),
             child: widget.image,
           )

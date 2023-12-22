@@ -5,6 +5,52 @@ final regex = RegExp(r'\d+');
 List<int> extractNumbers(String s) =>
     regex.allMatches(s).map((m) => int.parse(m.group(0)!)).toList();
 
+List<String> sortNumeric(List<String> list) {
+  return list
+    ..sort((a, b) {
+      final aNumbers = extractNumbers(a);
+      final bNumbers = extractNumbers(b);
+      if (aNumbers.isEmpty || bNumbers.isEmpty) {
+        return a.compareTo(b);
+      }
+      final comparison = aNumbers[0].compareTo(bNumbers[0]);
+      if (comparison != 0) {
+        return comparison;
+      }
+
+      return a.compareTo(b);
+    });
+}
+
+int parseIntPrefix(String s) {
+  var re = RegExp(r'(-?[0-9]+).*');
+  var match = re.firstMatch(s);
+  if (match == null) {
+    return 1;
+  }
+  return int.parse(match.group(1)!);
+}
+
+int compareIntPrefixes(String a, String b) {
+  var aValue = parseIntPrefix(a);
+  var bValue = parseIntPrefix(b);
+  if (aValue != null && bValue != null) {
+    return aValue - bValue;
+  }
+
+  if (aValue == null && bValue == null) {
+    // If neither string has an integer prefix, sort the strings lexically.
+    return a.compareTo(b);
+  }
+
+  // Sort strings with integer prefixes before strings without.
+  if (aValue == null) {
+    return 1;
+  } else {
+    return -1;
+  }
+}
+
 List<BookCover> sortCoversNumeric(List<BookCover> list) {
   return list
     ..sort((a, b) {
@@ -22,20 +68,30 @@ List<BookCover> sortCoversNumeric(List<BookCover> list) {
     });
 }
 
-List<PageEntry> sortCoversPagesNumeric(List<PageEntry> list) {
+List<PageEntry> sortCoversPagesNumeric(List<PageEntry> _list) {
+  final list = [..._list];
   return list
-    ..sort((a, b) {
-      final aNumbers = extractNumbers(a.name);
-      final bNumbers = extractNumbers(b.name);
-      final length = aNumbers.length;
-      for (var i = 0; i < length; i++) {
-        final comparison = aNumbers[i].compareTo(bNumbers[i]);
-        if (comparison != 0) {
-          return comparison;
+    ..sort(
+      (a, b) {
+        final aNumbers = extractNumbers(a.name);
+        final bNumbers = extractNumbers(b.name);
+        if (aNumbers.isEmpty && bNumbers.isNotEmpty) {
+          return 1;
+        } else if (aNumbers.isNotEmpty && bNumbers.isEmpty) {
+          return -1;
+        } else if (aNumbers.isEmpty && bNumbers.isEmpty) {
+          return 0;
         }
-      }
-      return a.name.compareTo(b.name);
-    });
+        final length = aNumbers.length;
+        for (var i = 0; i < length; i++) {
+          final comparison = aNumbers[i].compareTo(bNumbers[i]);
+          if (comparison != 0) {
+            return comparison;
+          }
+        }
+        return a.name.compareTo(b.name);
+      },
+    );
 }
 
 void swap(List list, int i, int j) {

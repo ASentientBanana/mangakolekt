@@ -3,51 +3,126 @@ import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:mangakolekt/controllers/archive.dart';
+import 'package:mangakolekt/locator.dart';
 import 'package:mangakolekt/models/book.dart';
+import 'package:mangakolekt/services/navigation_service.dart';
+import 'package:mangakolekt/util/util.dart';
+import 'package:path/path.dart';
 import '../../screens/reader.dart';
 import 'package:mangakolekt/util/archive.dart';
 import 'package:mangakolekt/util/files.dart';
-// import 'package:sky_engine/ui/ui.dart' as dart_paint;
-// sky_engine/lib/ui/painting.dart
 
-class ReaderPageWrapper extends StatelessWidget {
-  const ReaderPageWrapper({Key? key}) : super(key: key);
+class ReaderPageWrapper extends StatefulWidget {
+  final String path;
+  final int id;
 
-  Future<Book?> getBook(BuildContext context) async {
-    final bookPath = ModalRoute.of(context)!.settings.arguments as String;
+  const ReaderPageWrapper({Key? key, required this.path, required this.id})
+      : super(key: key);
+
+  @override
+  State<ReaderPageWrapper> createState() => _ReaderPageWrapperState();
+}
+
+class _ReaderPageWrapperState extends State<ReaderPageWrapper> {
+  Future<Book?> _book = Future(() => null);
+  final _navigationService = locator<NavigationService>();
+
+  Future<Book?> getBook(String bookPath) async {
     final dest = await getCurrentDirPath();
     Book? book;
     imageCache.clear();
 
     if (Platform.isLinux || Platform.isWindows) {
-      book = await compute(
-          ArchiveController.unpack, [bookPath.split('.').last, bookPath, dest]);
+      final params = [bookPath.split('.').last, bookPath, dest];
+      book = await compute(ArchiveController.unpack, params);
     } else {
       book = await getBookFromArchive(bookPath);
     }
-
-    final dirList = await Directory(dest).list().toList();
-
-    // print("Size: ${imageData.width}x${imageData.height} = ${imageData.dispose()}");
     return book;
   }
 
   @override
+  void initState() {
+    _book = getBook(widget.path);
+    super.initState();
+  }
+
+  Future<void> updateBook(String path, int direction) async {
+    var pathList = split(path);
+    pathList.removeLast();
+    final _path = joinAll(pathList);
+    final dir = Directory(_path);
+    if (!await dir.exists()) {
+      return;
+    }
+
+    final _dirContents = (await dir.list().toList());
+    final List<String> dirContents = [];
+
+    for (var i = 0; i < _dirContents.length; i++) {
+      if ((await _dirContents[i].stat()).type == FileSystemEntityType.file) {
+        dirContents.add(_dirContents[i].path);
+      }
+    }
+    final target = (await _book);
+    if (target == null) {
+      return;
+    }
+    final sorted = sortNumeric(dirContents);
+    final currentIndex = sorted.indexWhere((e) => e == widget.path);
+
+    if (currentIndex == sorted.length - 1 ||
+        (currentIndex == 0 && direction < 0) ||
+        currentIndex < 0 ||
+        sorted.isEmpty) {
+      return;
+    }
+    _navigationService.pushAndPop(
+        '/reader', {"path": dirContents[currentIndex + direction], "id": 0});
+  }
+
+  @override
   Widget build(BuildContext context) {
-    final _books = getBook(context);
     return FutureBuilder(
-        future: _books,
+        future: _book,
         builder: (context, snapshot) {
           if (!snapshot.hasData) {
-            return const Center(
-              child: SizedBox(
-                width: 40,
-                height: 40,
-                child: CircularProgressIndicator(),
-              ),
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return const Center(
+                child: SizedBox(
+                  width: 40,
+                  height: 40,
+                  child: CircularProgressIndicator(),
+                ),
+              );
+            }
+            return Scaffold(
+              body: InkWell(
+                  onTap: () {
+                    _navigationService.goBack();
+                  },
+                  child: Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(
+                          'Unable to open book',
+                          style:
+                              TextStyle(color: Colors.grey[400], fontSize: 25),
+                        ),
+                        Text(
+                          'Click to go back',
+                          style:
+                              TextStyle(color: Colors.grey[400], fontSize: 17),
+                        )
+                      ],
+                    ),
+                  )),
             );
           }
           return MangaReader(
+            id: widget.id,
+            updateBook: updateBook,
             book: snapshot.data!,
           );
         });

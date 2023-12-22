@@ -35,13 +35,13 @@ class _AddThemeButtonState extends State<AddThemeButton> {
               width: 800,
               height: 600,
               decoration: BoxDecoration(
-                color: theme.colorScheme.secondary,
-                border: Border.all(
-                    color: theme.primaryColor,
-                    style: BorderStyle.solid,
-                    width: 1),
-              ),
-              child:  Column(
+                  // color: theme.colorScheme.secondary,
+                  //   border: Border.all(
+                  //       color: theme.primaryColor,
+                  //       style: BorderStyle.solid,
+                  //       width: 1),
+                  ),
+              child: Column(
                 children: [],
               ),
             ),

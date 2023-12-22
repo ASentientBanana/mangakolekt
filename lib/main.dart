@@ -3,9 +3,12 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:mangakolekt/app.dart';
 import 'package:mangakolekt/bloc/library/library_bloc.dart';
 import 'package:mangakolekt/bloc/theme/theme_bloc.dart';
+import 'package:mangakolekt/locator.dart';
 
 void main() {
+  Paint.enableDithering = true;
   WidgetsFlutterBinding.ensureInitialized();
+  setupLocator();
   runApp(const MyApp());
 }
 

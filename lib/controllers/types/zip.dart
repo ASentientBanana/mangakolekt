@@ -10,7 +10,7 @@ import 'package:mangakolekt/models/book.dart';
 import 'package:mangakolekt/constants.dart';
 import 'package:image/image.dart' as dart_img;
 
-class BookController extends BaseBookController {
+class ZipBookController extends BaseBookController {
   final List<String> fileTypes = ['zip', 'cbz'];
 
   @override
@@ -42,42 +42,21 @@ class BookController extends BaseBookController {
     return books;
   }
 
+  // TODO: Decouple the unzip logic from loading the books
   @override
-  Future<Book?> unpack(String pathToBook, String dest) async {
-    List<PageEntry> pages = [];
+  Future<void> unpack(String pathToBook, String dest) async {
     final bookName = p.split(pathToBook).last;
-    await ffiUnzipSingleBook(pathToBook, dest);
-    final dir = Directory(dest);
-    if (!(await dir.exists())) return null;
-    final dirFiles = await dir.list().where((event) {
-      return supportedImageTypes.contains(event.path.split('.').last);
-    }).toList();
-    final fileCount = dirFiles.length;
-    for (var e in dirFiles) {
-      final name = p.split(e.path).last;
-      final file = File(e.path);
-      // print("Size: ${imageData.width}x${imageData.height}");
-      if (!(await file.exists())) continue;
-      // final img = Image.file(file);
-      final img = Image.file(file);
-      pages.add(PageEntry(name: name, image: img).setIsDouble(false));
-      // final imageData = dart_img.decodeImage(await file.readAsBytes());
+    try {
+      final files = await ffiUnzipSingleBook(pathToBook, dest);
 
-      // if (imageData != null) {
-      //   final img = Image.memory(imageData.buffer.asUint8List());
-
-      //   pages.add(PageEntry(name: name, image: img)
-      //       .setIsDouble(imageData.width > imageData.height));
-      // } else {
-      //   final img = Image.file(file);
-      //   pages.add(PageEntry(name: name, image: img).setIsDouble(false));
-      // }
+      if (files.isEmpty) {
+        return null;
+      }
+      // await _loadBook(files, bookName, pathToBook);
+    } catch (e) {
+      print("Problbem with ffi");
+      print(e);
     }
-    final b = Book(
-        pages: sortCoversPagesNumeric(pages),
-        pageNumber: fileCount,
-        name: bookName);
-    return b;
   }
 
   @override

@@ -1,36 +1,91 @@
-import 'dart:collection';
-
-import 'package:flutter/material.dart';
+import 'package:easy_debounce/easy_throttle.dart';
 import 'package:mangakolekt/models/book.dart';
 import 'package:mangakolekt/models/util.dart';
+import 'package:mangakolekt/util/database/database_helpers.dart';
 
 class ReaderController {
   late List<BookPage> pages;
-  int _pageNumber = 0;
+  late final int id;
+  late final String path;
+  int pageNumber = 0;
   List<int> currentPages = [0];
+  int currentPageIndex = 0;
   bool isDoublePageView = false;
   ScaleTo scaleTo = ScaleTo.height;
   bool isRightToLeftMode = false;
-  HashMap<int, bool> widePages = HashMap();
+  String? bookDirPath;
+  Future<void> Function(String, int)? updateBookCb;
+  Map<int, List<List<int>>> pageMap = {0: [], 1: []};
 
-  ReaderController({required List<BookPage> pageList}) {
+  ReaderController(
+      {required List<BookPage> pageList,
+      required this.path,
+      this.bookDirPath,
+      this.updateBookCb,
+      required this.id}) {
     pages = pageList;
-    _pageNumber = pageList.length;
+    pageNumber = pageList.length;
 
-    // create a list of wide pages
-    // for (var page in pageList) {
-    //   if (page.entry.image.width == null || page.entry.image.height == null) {
-    //     continue;
-    //   }
-    //   if (page.entry.image.width! > page.entry.image.height!) {
-    //     widePages[page.index] = true;
-    //   } else {
-    //     widePages[page.index] = false;
-    //   }
-    // }
+    //Construct lists for single and double view
+    List<List<int>> doubleViewList = [];
+    pageMap[0] = pageList.map((e) => [e.index]).toList();
+    final pagesLen = pageList.length;
+    for (var i = 0; i < pagesLen;) {
+      if (i == pagesLen - 1) {
+        doubleViewList.add([i]);
+        break;
+      }
+      final p = [i, i + 1];
+      if (p.any((element) => pages[element].entry.isDouble)) {
+        //2 wide pages or second page is wide
+        if ((pages[i].entry.isDouble && pages[i + 1].entry.isDouble) ||
+            pages[i + 1].entry.isDouble) {
+          doubleViewList.add([i]);
+          doubleViewList.add([i + 1]);
+          i = i + 2;
+          continue;
+        }
+        // first page is wide
+        if (pages[i].entry.isDouble) {
+          doubleViewList.add([i]);
+          i++;
+          continue;
+        }
+      }
+      i = i + 2;
+      doubleViewList.add(p);
+    }
+    pageMap[1] = doubleViewList;
   }
 
-  toggleScale() {
+  List<int> getPages(int index) {
+    if (isDoublePageView) {
+      return pageMap[1]!.firstWhere((element) => element.contains(index));
+    } else {
+      return pageMap[0]!.firstWhere((element) => element.contains(index));
+    }
+  }
+
+  void goToPage(int index) {
+    if (isDoublePageView) {
+      for (var i = 0; i < pageMap[1]!.length; i++) {
+        if (pageMap[1]![i].contains(index)) {
+          currentPageIndex = i;
+          return;
+        }
+      }
+    }
+    currentPageIndex = index;
+  }
+
+  Future<void> bookAction(int direction) async {
+    if (updateBookCb == null || bookDirPath == null) {
+      return;
+    }
+    updateBookCb!(bookDirPath!, direction);
+  }
+
+  void toggleScale() {
     if (scaleTo == ScaleTo.height) {
       scaleTo = ScaleTo.width;
     } else {
@@ -38,95 +93,68 @@ class ReaderController {
     }
   }
 
-  updatePages(List<BookPage> newPages) {
+  void updatePages(List<BookPage> newPages) {
     pages = newPages;
   }
 
-  incrementPage() {
+  void incrementPage() {
     pageAction(PageAction.next);
   }
 
-  decrementPage() {
+  void decrementPage() {
     pageAction(PageAction.previous);
   }
 
-  checkWideView() {
-    print(widePages);
-  }
-
-  goToPage(int pageIndex) {
-    if (isDoublePageView) {
-      if (pageIndex == _pageNumber - 1) {
-        currentPages[0] = pages[_pageNumber - 2].index;
-        currentPages[1] = pages[_pageNumber - 1].index;
-      } else {
-        currentPages[0] = pages[pageIndex].index;
-        currentPages[1] = pages[pageIndex + 1].index;
-      }
-    } else {
-      currentPages[0] = pages[pageIndex].index;
-    }
-  }
-
-  toggleReadingDirection() {
+  void toggleReadingDirection() {
     isRightToLeftMode = !isRightToLeftMode;
-    currentPages = currentPages.reversed.toList();
   }
 
-  toggleViewMode() {
-    isDoublePageView = !isDoublePageView;
-    if (isDoublePageView) {
-      //check if last page
-      if (currentPages[0] == _pageNumber - 1) {
-        currentPages[0] = _pageNumber - 2;
-        currentPages.add(_pageNumber - 1);
-      } else {
-        currentPages.add(currentPages[0] + 1);
+  void toggleViewMode() {
+    final current = getCurrentPages().first;
+    final mapPointer = isDoublePageView ? 0 : 1;
+    for (var i = 0; i < pageMap[mapPointer]!.length; i++) {
+      if (pageMap[mapPointer]![i].contains(current)) {
+        currentPageIndex = i;
+        isDoublePageView = !isDoublePageView;
+        return;
       }
-    } else {
-      currentPages.removeAt(1);
     }
+  }
+
+  int checkInBounds(PageAction pa) {
+    if (currentPageIndex >= pageMap[isDoublePageView ? 1 : 0]!.length - 1 &&
+        pa == PageAction.next) {
+      return 1;
+    }
+    if (currentPageIndex <= 0 && pa == PageAction.previous) {
+      return -1;
+    }
+    return 0;
   }
 
   void pageAction(PageAction pa) {
-    checkWideView();
-    final pageLen = pages.length;
-    // Direction check
-    final isNext = pa == PageAction.next;
-    if (isNext) {
-      if (currentPages.last == pages.last.index) return;
-    } else {
-      if (currentPages.first == 0) return;
+    final dir = checkInBounds(pa);
+    if (dir != 0) {
+      if (updateBookCb != null) {
+        updateBookCb!(path, dir);
+      }
+      return;
     }
 
-    final dIndex = (isNext ? 2 : -2);
-    final sIndex = (isNext ? 1 : -1);
-
-    if (isDoublePageView) {
-      if (currentPages[1] > 2) {
-        int e1;
-        int e2;
-        if (currentPages[1] == pageLen - 2) {
-          e1 = pageLen - 2;
-          e2 = pageLen - 1;
-        } else {
-          e1 = currentPages[0] + dIndex;
-          e2 = currentPages[1] + dIndex;
-        }
-
-        currentPages.replaceRange(0, 2, [pages[e1].index, pages[e2].index]);
-      } else {
-        currentPages.replaceRange(0, 2, [
-          pages[currentPages[0] + sIndex].index,
-          pages[currentPages[1] + sIndex].index
-        ]);
-      }
+    if (pa == PageAction.next) {
+      currentPageIndex++;
     } else {
-      if (!isNext && currentPages[0] > 0) {
-        currentPages[0] = pages[currentPages[0] + sIndex].index;
-      } else if (isNext && currentPages[0] < pageLen - 1) {
-        currentPages[0] = pages[currentPages[0] + 1].index;
-      }
+      currentPageIndex--;
     }
+    EasyThrottle.throttle('reader', const Duration(seconds: 2), () async {
+      await DatabaseMangaHelpers.setCurrentManga(path, getCurrentPages().first);
+    });
+  }
+
+  List<int> getCurrentPages() {
+    if (pages.isEmpty) {
+      return [];
+    }
+    return pageMap[isDoublePageView ? 1 : 0]![currentPageIndex];
   }
 }

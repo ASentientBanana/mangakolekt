@@ -11,10 +11,11 @@ class LibraryInitial extends LibraryState {}
 
 class LibraryLoaded extends LibraryState {
   final LibStore libStore;
-  const LibraryLoaded({required this.libStore});
+  String modalPath;
+  LibraryLoaded({required this.libStore, required this.modalPath});
 
   @override
-  List<Object> get props => [libStore];
+  List<Object> get props => [libStore, modalPath];
 }
 
 class LibraryLoading extends LibraryState {

@@ -49,12 +49,12 @@ class ThemeStore {
   }
 
   ThemeStore.defaultTheme() {
-    primaryColor = const Color.fromARGB(234, 197, 125, 1);
-    accentColor = const Color.fromARGB(237, 17, 20, 34);
-    backgroundColor = const Color.fromARGB(181, 28, 42, 59);
-    appbarBackground = const Color.fromARGB(206, 36, 48, 58);
-    tertiary = const Color.fromARGB(234, 36, 48, 58);
-    textColor = const Color.fromARGB(256, 0, 0, 0);
+    primaryColor = const Color(0xFF244769);
+    accentColor = const Color(0xFFb5d1f1);
+    backgroundColor = const Color(0xFF081822);
+    appbarBackground = backgroundColor;
+    tertiary = const Color(0xFFc1cc9c);
+    textColor = const Color(0xFFeef5ee);
   }
   static List<ThemeStore> generateDefaultThemes() {
     final green = ThemeStore(

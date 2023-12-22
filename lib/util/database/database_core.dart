@@ -1,33 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:mangakolekt/constants.dart';
 import 'package:mangakolekt/util/database/database_table.dart';
+import 'package:mangakolekt/util/database/table_definitions.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 import 'package:path/path.dart' as p;
 
-//TODO: Add builder later?
 class DatabaseCore {
-  static List<DatabaseTable> tables = [
-    DatabaseTable(name: DatabaseTables.Manga, fields: [
-      DatabaseTableField(
-        name: "id",
-        type: "integer",
-        extra: ["primary", "key"],
-      ),
-      DatabaseTableField(
-        name: 'name',
-        type: 'text',
-        extra: ['unique'],
-      ),
-      DatabaseTableField(name: 'path', type: 'text')
-    ]),
-    DatabaseTable(name: DatabaseTables.MangaMap, fields: [
-      DatabaseTableField(name: "name", type: "text"),
-      DatabaseTableField(name: "path", type: "text"),
-      DatabaseTableField(name: "bookPath", type: "text"),
-      DatabaseTableField(name: "manga_id", type: "INTEGER"),
-    ])
-  ];
+  static List<DatabaseTable> tables = databaseTableDefinitions;
 
   static Future<void> initDatabase() async {
     sqfliteFfiInit();
@@ -35,13 +15,10 @@ class DatabaseCore {
     final dbPath = p.join(appDocumentDir.path, appFolder, dbName);
     var databaseFactory = databaseFactoryFfi;
     var db = await databaseFactory.openDatabase(dbPath);
-    // enable foreign_keys support
-    //For now i cant use it, will be back
-    // await db.execute('PRAGMA foreign_keys = ON');
-    for (var table in DatabaseCore.tables) {
-      await db.execute(table.toSQL());
-    }
 
+    for (var table in DatabaseCore.tables) {
+      await db.execute(table.build());
+    }
     await db.close();
   }
 

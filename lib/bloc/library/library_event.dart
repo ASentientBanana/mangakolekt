@@ -29,6 +29,18 @@ class SetLibs extends LibraryEvent {
   List<Object> get props => [];
 }
 
+class ToggleAddToLibModal extends LibraryEvent {
+  final String path;
+  const ToggleAddToLibModal({required this.path});
+  @override
+  List<Object> get props => [];
+}
+
+class CloseAddToLibModal extends LibraryEvent {
+  @override
+  List<Object> get props => [];
+}
+
 class Reset extends LibraryEvent {
   @override
   List<Object> get props => [];

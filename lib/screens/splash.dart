@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:mangakolekt/bloc/library/library_bloc.dart';
 import 'package:mangakolekt/bloc/theme/theme_bloc.dart';
+import 'package:mangakolekt/models/bloc/theme.dart';
 import 'package:mangakolekt/models/database/library.dart';
 import 'package:mangakolekt/util/database/database_core.dart';
 import 'package:mangakolekt/util/database/database_helpers.dart';
@@ -34,7 +35,9 @@ class _SplashScreenState extends State<SplashScreen> {
     // loading the themes to the store
     await Future.delayed(const Duration(seconds: 1), () {
       //This is only since the compiler doesnt like async + context so its in a callback
-      context.read<ThemeBloc>().add(InitializeTheme(themes: themes, theme: 0));
+      context
+          .read<ThemeBloc>()
+          .add(InitializeTheme(themes: [ThemeStore.defaultTheme()], theme: 0));
       if (mangaList != null) {
         context.read<LibraryBloc>().add(SetLibs(libs: mangaList));
       }
@@ -44,7 +47,6 @@ class _SplashScreenState extends State<SplashScreen> {
 
     createAppDB().then((value) {
       Navigator.pushNamed(context, '/home');
-      // getCoversFromDir();
     });
   }
 

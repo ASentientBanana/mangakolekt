@@ -25,6 +25,14 @@ Future<String?> pickDirectory() async {
   return await FilePicker.platform.getDirectoryPath();
 }
 
+Future<String?> pickFile() async {
+  final file = await FilePicker.platform.pickFiles(allowMultiple: false);
+  if (file != null && file.count > 0) {
+    return file.paths.first;
+  }
+  return null;
+}
+
 Future<void> createAppDB() async {
   // on linux its '/home/petar/Documents'
   final appDocumentDir = await getApplicationDocumentsDirectory();
@@ -113,6 +121,7 @@ Future<List<ThemeStore>> createThemeFile() async {
 
   final f = await File(filePath).create(recursive: true);
   final themes = ThemeStore.generateDefaultThemes();
+
   await f.writeAsString(
       '{ "current": 0, "themes":[${themes.map((e) => jsonEncode(e.toJSON())).join(',')} ]}');
 

@@ -32,3 +32,5 @@ const nextKeyMap = [
 
 const TextStyle TEXT_STYLE_NORMAL = TextStyle(color: Colors.white);
 const TextStyle TEXT_STYLE_DISABLED = TextStyle(color: Colors.grey);
+
+const SIDEBAR_WIDTH = 300.0;

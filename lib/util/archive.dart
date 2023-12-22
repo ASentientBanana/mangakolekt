@@ -31,18 +31,26 @@ Future<Book?> getBookFromArchive(String path) async {
   List<PageEntry> pages = [];
   for (var i = 0; i < len; i++) {
     final entry = archive.files[i];
-    if (entry.isFile) {
-      pageNumber++;
-      pages.add(PageEntry(
-          name: entry.name,
-          image: Image.file(
-            entry.content,
-            fit: BoxFit.contain,
-          )));
+    if (!entry.isFile) {
+      continue;
     }
+    pageNumber++;
+    pages.add(
+      PageEntry(
+        name: entry.name,
+        image: Image.memory(
+          entry.content,
+          fit: BoxFit.contain,
+        ),
+      ),
+    );
   }
 
-  return Book(pages: pages, pageNumber: pageNumber, name: bookName);
+  return Book(
+      pages: pages,
+      pageNumber: pageNumber,
+      name: bookName,
+      path: p.dirname(path));
 }
 
 Future<String> unzipCoverBeta(String path, String out) async {
