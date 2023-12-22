@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:mangakolekt/models/book.dart';
 import 'package:mangakolekt/controllers/reader.dart';
 
 class ListPreview extends StatelessWidget {
@@ -15,51 +14,56 @@ class ListPreview extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ListView(
+    return Scrollbar(
+      trackVisibility: true,
+      radius: Radius.zero,
       controller: scoreController,
-      children: readerController.pages.asMap().entries.map(
-        (e) {
-          final isSelected = readerController
-              .getCurrentPages()
-              .any((element) => (e.value.index == element));
+      child: ListView(
+        controller: scoreController,
+        children: readerController.pages.asMap().entries.map(
+          (e) {
+            final isSelected = readerController
+                .getCurrentPages()
+                .any((element) => (e.value.index == element));
 
-          return Padding(
-              padding: EdgeInsets.only(
-                  bottom: isSelected &&
-                          e.value.index !=
-                              readerController.getCurrentPages().last
-                      ? 0
-                      : 10),
-              child: Column(
-                children: [
-                  Container(
-                    color: isSelected
-                        ? Theme.of(context).colorScheme.tertiary
-                        : Colors.transparent,
-                    width: 100,
-                    height: 100,
-                    child: FractionallySizedBox(
-                      heightFactor: 1,
-                      // height: 100,
-                      child: Center(
-                        child: InkWell(
-                          onTap: () {
-                            if (onTap != null) {
-                              onTap!(e.value.index);
-                            }
-                          },
-                          child: Container(
-                              padding: EdgeInsets.all(isSelected ? 3 : 0),
-                              child: e.value.entry.image),
+            return Padding(
+                padding: EdgeInsets.only(
+                    bottom: isSelected &&
+                            e.value.index !=
+                                readerController.getCurrentPages().last
+                        ? 0
+                        : 10),
+                child: Column(
+                  children: [
+                    Container(
+                      color: isSelected
+                          ? Theme.of(context).colorScheme.tertiary
+                          : Colors.transparent,
+                      width: 100,
+                      height: 100,
+                      child: FractionallySizedBox(
+                        heightFactor: 1,
+                        // height: 100,
+                        child: Center(
+                          child: InkWell(
+                            onTap: () {
+                              if (onTap != null) {
+                                onTap!(e.value.index);
+                              }
+                            },
+                            child: Container(
+                                padding: EdgeInsets.all(isSelected ? 3 : 0),
+                                child: e.value.entry.image),
+                          ),
                         ),
                       ),
                     ),
-                  ),
-                  Text("${e.key + 1}"),
-                ],
-              ));
-        },
-      ).toList(),
+                    Text("${e.key + 1}"),
+                  ],
+                ));
+          },
+        ).toList(),
+      ),
     );
   }
 }

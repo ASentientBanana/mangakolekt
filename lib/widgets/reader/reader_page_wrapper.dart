@@ -7,10 +7,10 @@ import 'package:mangakolekt/locator.dart';
 import 'package:mangakolekt/models/book.dart';
 import 'package:mangakolekt/services/navigation_service.dart';
 import 'package:mangakolekt/util/util.dart';
+import 'package:path/path.dart';
 import '../../screens/reader.dart';
 import 'package:mangakolekt/util/archive.dart';
 import 'package:mangakolekt/util/files.dart';
-import 'package:path_provider/path_provider.dart';
 
 class ReaderPageWrapper extends StatefulWidget {
   final String path;
@@ -26,8 +26,6 @@ class ReaderPageWrapper extends StatefulWidget {
 class _ReaderPageWrapperState extends State<ReaderPageWrapper> {
   Future<Book?> _book = Future(() => null);
   final _navigationService = locator<NavigationService>();
-  // List<String> _books = [];
-  // List<>
 
   Future<Book?> getBook(String bookPath) async {
     final dest = await getCurrentDirPath();
@@ -37,11 +35,6 @@ class _ReaderPageWrapperState extends State<ReaderPageWrapper> {
     if (Platform.isLinux || Platform.isWindows) {
       final params = [bookPath.split('.').last, bookPath, dest];
       book = await compute(ArchiveController.unpack, params);
-      // try {
-      // } catch (e) {
-      //   //fallback
-      //   print(e);
-      // }
     } else {
       book = await getBookFromArchive(bookPath);
     }
@@ -50,18 +43,22 @@ class _ReaderPageWrapperState extends State<ReaderPageWrapper> {
 
   @override
   void initState() {
-    print("Opened id: ${widget.id}");
     _book = getBook(widget.path);
     super.initState();
   }
 
   Future<void> updateBook(String path, int direction) async {
-    final dir = Directory(path);
+    var pathList = split(path);
+    pathList.removeLast();
+    final _path = joinAll(pathList);
+    final dir = Directory(_path);
     if (!await dir.exists()) {
       return;
     }
+
     final _dirContents = (await dir.list().toList());
     final List<String> dirContents = [];
+
     for (var i = 0; i < _dirContents.length; i++) {
       if ((await _dirContents[i].stat()).type == FileSystemEntityType.file) {
         dirContents.add(_dirContents[i].path);

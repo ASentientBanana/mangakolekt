@@ -16,9 +16,23 @@ class LibGrid extends StatefulWidget {
 class _LibGridState extends State<LibGrid> {
   Future<List<BookCover>> _title = Future(() => []);
 
+  int calculateSize(double w) {
+    if (w < 1000) {
+      return 1;
+    } else if (w > 1700) {
+      return 4;
+    } else if (w > 1000 && w < 1400) {
+      return 2;
+    } else if (w > 1400 && w < 1700) {
+      return 3;
+    }
+    return 2;
+  }
+
   @override
   Widget build(BuildContext context) {
     double width = MediaQuery.of(context).size.width;
+
     return Container(
       // color: Colors.orange,
       padding: const EdgeInsets.all(30),
@@ -46,13 +60,18 @@ class _LibGridState extends State<LibGrid> {
               if (l.isEmpty) {
                 return DragAndDropSurface();
               }
-              return GridView.count(
-                  // padding: const EdgeInsets.all(20),
-                  primary: false,
-                  crossAxisCount: width > 1000 ? 2 : 1,
-                  mainAxisSpacing: 100,
-                  crossAxisSpacing: 10,
-                  children: l);
+              return Scrollbar(
+                // controller: _scrollController,
+                radius: Radius.zero,
+                child: GridView.count(
+
+                    // padding: const EdgeInsets.all(20),
+                    primary: true,
+                    crossAxisCount: calculateSize(width),
+                    mainAxisSpacing: 100,
+                    crossAxisSpacing: 10,
+                    children: l),
+              );
             } else {
               return DragAndDropSurface();
             }

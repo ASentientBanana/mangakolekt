@@ -6,6 +6,7 @@ import 'package:mangakolekt/bloc/theme/theme_bloc.dart';
 import 'package:mangakolekt/locator.dart';
 
 void main() {
+  Paint.enableDithering = true;
   WidgetsFlutterBinding.ensureInitialized();
   setupLocator();
   runApp(const MyApp());

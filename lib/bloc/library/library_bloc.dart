@@ -27,7 +27,6 @@ class LibraryBloc extends Bloc<LibraryEvent, LibraryState> {
   void _toggleModal(ToggleAddToLibModal event, Emitter<LibraryState> emit) {
     final state = this.state;
     if (state is LibraryLoaded) {
-      print("The path is : ${event.path}");
       emit(LibraryLoaded(libStore: state.libStore, modalPath: event.path));
     }
   }

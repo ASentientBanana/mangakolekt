@@ -29,46 +29,58 @@ class _LibListItemState extends State<LibListItem> {
     return LayoutBuilder(builder: (context, constraints) {
       final theme = Theme.of(context);
       final GlobalKey _menuKey = GlobalKey();
-      return Row(
+      return Column(
         children: [
-          Container(
-            height: 25,
-            decoration: BoxDecoration(
-              border: Border.all(color: theme.colorScheme.tertiary, width: 2),
-            ),
-            width:
-                constraints.maxWidth * (constraints.maxWidth > 130 ? 0.7 : 0.5),
-            child: OutlinedButton(
-              onPressed: () {
-                context.read<LibraryBloc>().add(
-                      SetCover(cover: widget.item),
-                    );
-              },
-              child: Center(
-                child: Text(
-                  widget.item.name,
-                  overflow: TextOverflow.ellipsis,
-                  style: TextStyle(
-                    color: theme.colorScheme.tertiary,
+          Row(
+            children: [
+              Container(
+                height: 40,
+                // padding: EdgeInsets.only(top: 10),
+                decoration: BoxDecoration(
+                  border:
+                      Border.all(color: theme.colorScheme.tertiary, width: 2),
+                ),
+                width: constraints.maxWidth *
+                    (constraints.maxWidth > 130 ? 0.7 : 0.5),
+                child: OutlinedButton(
+                  onPressed: () {
+                    context.read<LibraryBloc>().add(
+                          SetCover(cover: widget.item),
+                        );
+                  },
+                  child: Center(
+                    child: Text(
+                      widget.item.name,
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(
+                        color: theme.colorScheme.tertiary,
+                      ),
+                    ),
                   ),
                 ),
               ),
-            ),
+              PopupMenuButton(
+                color: Theme.of(context).colorScheme.background,
+                key: _menuKey,
+                icon: Icon(
+                  Icons.more_vert_rounded,
+                  color: Theme.of(context).colorScheme.tertiary,
+                ),
+                itemBuilder: (context) => [
+                  PopupMenuItem<String>(
+                    value: "",
+                    child: const Text("Delete"),
+                    onTap: () => handleDeleteFromLib(context),
+                  )
+                ],
+              )
+            ],
           ),
-          PopupMenuButton(
-              color: Theme.of(context).colorScheme.background,
-              key: _menuKey,
-              icon: Icon(
-                Icons.more_vert_rounded,
-                color: Theme.of(context).colorScheme.tertiary,
-              ),
-              itemBuilder: (context) => [
-                    PopupMenuItem<String>(
-                      value: "",
-                      child: const Text("Delete"),
-                      onTap: () => handleDeleteFromLib(context),
-                    )
-                  ])
+          //margin :D
+          const SizedBox(
+            height: 5,
+            width: 0,
+          )
         ],
       );
     });

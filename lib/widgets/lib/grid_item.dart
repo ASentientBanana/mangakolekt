@@ -13,19 +13,30 @@ class GridItem extends StatefulWidget {
   State<GridItem> createState() => _GridItemState();
 }
 
-class _GridItemState extends State<GridItem> {
+class _GridItemState extends State<GridItem> with TickerProviderStateMixin {
   bool isHovering = false;
   final _navigationService = locator<NavigationService>();
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
     return GridTile(
       footer: Center(
-        child: Text(widget.item.name),
+        child: Container(
+          padding: EdgeInsets.only(top: 100),
+          child: Text(widget.item.name),
+        ),
       ),
-      child: FractionallySizedBox(
-        heightFactor: isHovering ? .82 : 0.8,
-        widthFactor: isHovering ? .82 : 0.8,
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 200),
+        // foregroundDecoration: BoxDecoration(
+        //   border: isHovering
+        //       ? Border(
+        //           bottom: BorderSide(width: 20, color: colorScheme.primary))
+        //       : null,
+        // ),
+        // color: isHovering ? colorScheme.secondary : Colors.transparent,
+        padding: EdgeInsets.all(isHovering ? 20 : 50),
         child: InkWell(
           hoverColor: Colors.transparent,
           onHover: (_isHovering) {
@@ -38,12 +49,10 @@ class _GridItemState extends State<GridItem> {
                 {"path": widget.item.bookPath, "id": widget.item.id});
             // Navigator.pushNamed(context, '/reader', arguments: );
           },
-          child: Container(
-            padding: const EdgeInsets.all(10),
-            child: Image.file(
-              fit: BoxFit.contain,
-              File(widget.item.path),
-            ),
+          // padding: const EdgeInsets.all(10),
+          child: Image.file(
+            fit: BoxFit.contain,
+            File(widget.item.path),
           ),
         ),
       ),

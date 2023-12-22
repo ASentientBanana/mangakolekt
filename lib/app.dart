@@ -46,23 +46,14 @@ class AppWidget extends StatelessWidget {
       title: 'MangaKolekt',
       theme: ThemeData().copyWith(
         // canvasColor: Colors.red,
-        scrollbarTheme: ScrollbarThemeData().copyWith(
+        scrollbarTheme: const ScrollbarThemeData().copyWith(
           thumbColor: const MaterialStatePropertyAll(
             Color(0xFFc1cc9c),
           ),
         ),
-        appBarTheme: AppBarTheme(),
+        appBarTheme: const AppBarTheme(),
         textTheme:
             Typography().dense.apply(fontFamily: "HighlandGothic").copyWith(),
-
-        // textTheme: Typography()
-        //     .englishLike
-        //     .apply(fontFamily: "HighlandGothic")
-        //     .copyWith(
-        //       bodyMedium: const TextStyle(
-        //         color: Color(0xFFc1cc9c),
-        //       ),
-        //     ),
         colorScheme: const ColorScheme(
           brightness: Brightness.dark,
           primary: Color(0xFF244769),

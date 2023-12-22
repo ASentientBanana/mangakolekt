@@ -11,7 +11,6 @@ class CustomBackButton extends StatelessWidget {
     return InkWell(
       onTap: () {
         _navigationService.goBack();
-        print("PRESS BACK");
       },
       child: const Center(
         child: Icon(Icons.arrow_back),

@@ -31,21 +31,25 @@ class DragAndDropSurface extends StatelessWidget {
     return DropTarget(
       onDragDone: ((details) => onDragDoneHandler(details, context)),
       child: Container(
-        child: const Center(
+        child: Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Text(
-                "BASENJI",
-                style: TextStyle(
-                    fontSize: 24,
-                    color: Colors.grey,
-                    fontWeight: FontWeight.bold),
+              Image.asset(
+                "assets/images/logo.png",
+                scale: 2,
               ),
+              // Text(
+              //   "BASENJI",
+              //   style: TextStyle(
+              //       fontSize: 24,
+              //       color: Colors.grey,
+              //       fontWeight: FontWeight.bold),
+              // ),
               Text(
                 "Drag a file or folder to open it or add to a library",
                 style: TextStyle(
-                  color: Colors.grey,
+                  color: Color.fromARGB(255, 71, 82, 89),
                 ),
               )
             ],

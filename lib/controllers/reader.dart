@@ -1,6 +1,4 @@
-import 'package:easy_debounce/easy_debounce.dart';
 import 'package:easy_debounce/easy_throttle.dart';
-import 'package:flutter/foundation.dart';
 import 'package:mangakolekt/models/book.dart';
 import 'package:mangakolekt/models/util.dart';
 import 'package:mangakolekt/util/database/database_helpers.dart';
@@ -29,12 +27,12 @@ class ReaderController {
     pageNumber = pageList.length;
 
     //Construct lists for single and double view
-    List<List<int>> _d = [];
+    List<List<int>> doubleViewList = [];
     pageMap[0] = pageList.map((e) => [e.index]).toList();
     final pagesLen = pageList.length;
     for (var i = 0; i < pagesLen;) {
       if (i == pagesLen - 1) {
-        _d.add([i]);
+        doubleViewList.add([i]);
         break;
       }
       final p = [i, i + 1];
@@ -42,23 +40,22 @@ class ReaderController {
         //2 wide pages or second page is wide
         if ((pages[i].entry.isDouble && pages[i + 1].entry.isDouble) ||
             pages[i + 1].entry.isDouble) {
-          _d.add([i]);
-          _d.add([i + 1]);
+          doubleViewList.add([i]);
+          doubleViewList.add([i + 1]);
           i = i + 2;
           continue;
         }
         // first page is wide
         if (pages[i].entry.isDouble) {
-          _d.add([i]);
+          doubleViewList.add([i]);
           i++;
           continue;
         }
       }
       i = i + 2;
-      _d.add(p);
+      doubleViewList.add(p);
     }
-
-    pageMap[1] = _d;
+    pageMap[1] = doubleViewList;
   }
 
   List<int> getPages(int index) {
@@ -70,6 +67,14 @@ class ReaderController {
   }
 
   void goToPage(int index) {
+    if (isDoublePageView) {
+      for (var i = 0; i < pageMap[1]!.length; i++) {
+        if (pageMap[1]![i].contains(index)) {
+          currentPageIndex = i;
+          return;
+        }
+      }
+    }
     currentPageIndex = index;
   }
 
@@ -97,7 +102,6 @@ class ReaderController {
   }
 
   void decrementPage() {
-    print("prev");
     pageAction(PageAction.previous);
   }
 

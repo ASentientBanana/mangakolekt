@@ -34,7 +34,6 @@ class ZipBookController extends BaseBookController {
               (element) => p.split(element.path).last.split('.').last == 'cbz')
           .map((event) => event.path)
           .toList();
-      print(targetFiles);
       final output = await ffiUnzipCovers(targetFiles, pathToDir, out);
       return output;
     } else {
