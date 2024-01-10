@@ -15,6 +15,17 @@ class LibraryBloc extends Bloc<LibraryEvent, LibraryState> {
     on<RemoveBook>(_removeBook);
     on<ToggleAddToLibModal>(_toggleModal);
     on<CloseAddToLibModal>(_closeModal);
+    on<SearchLib>(_search);
+  }
+
+  void _search(SearchLib event, Emitter<LibraryState> emit) {
+    final state = this.state;
+    if (state is LibraryLoaded) {
+      emit(LibraryLoaded(
+          libStore: state.libStore,
+          modalPath: state.modalPath,
+          search: event.searchTerm));
+    }
   }
 
   void _closeModal(CloseAddToLibModal event, Emitter<LibraryState> emit) {

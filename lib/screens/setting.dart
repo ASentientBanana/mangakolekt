@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:mangakolekt/widgets/settings/theme_grid.dart';
+import 'package:mangakolekt/widgets/settings_old/theme_grid.dart';
 
 class SettingsPage extends StatefulWidget {
   const SettingsPage({super.key});
@@ -18,7 +18,7 @@ class _SettingsPageState extends State<SettingsPage> {
       appBar: AppBar(
         title: const Text("Settings"),
       ),
-      body:  SingleChildScrollView(
+      body: SingleChildScrollView(
         child: Column(
           children: [
             ThemeGreed(),

@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:ffi';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
@@ -32,6 +33,7 @@ class ArchiveController {
     final type = args[0];
     final pathToBook = args[1];
     final dest = args[2];
+    final String? id = args[3];
     final controller = ArchiveController.getTypeController(type);
     if (controller == null) {
       return null;
@@ -39,7 +41,7 @@ class ArchiveController {
     //unzip to the current dir.
     await controller.unpack(pathToBook, dest);
     //load book here from current dir
-    return await loadBook(dest, pathToBook);
+    return await loadBook(dest, pathToBook, id);
     // return null;
   }
 
@@ -76,7 +78,8 @@ class ArchiveController {
     return dContents;
   }
 
-  static Future<Book?> loadBook(String target, String pathToBook) async {
+  static Future<Book?> loadBook(
+      String target, String pathToBook, String? id) async {
     // List<String> _pages = await compute((message) async {
     // return await _loadPagesRecursive(message);
     // }, target);
@@ -98,6 +101,7 @@ class ArchiveController {
           .add(PageEntry(name: split(_pages[i]).last, image: Image.file(file)));
     }
     return Book(
+        id: id != null ? int.tryParse(id) : null,
         name: split(pathToBook).last,
         pageNumber: pages.length,
         pages: pages,

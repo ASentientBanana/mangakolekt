@@ -15,6 +15,8 @@ class LibGrid extends StatefulWidget {
 
 class _LibGridState extends State<LibGrid> {
   Future<List<BookCover>> _title = Future(() => []);
+  String search = '';
+  int? id;
 
   int calculateSize(double w) {
     if (w < 1000) {
@@ -29,6 +31,48 @@ class _LibGridState extends State<LibGrid> {
     return 2;
   }
 
+  List<Widget> filterList(String _search, List<GridItem> list) {
+    if (search.isEmpty) {
+      return list;
+    }
+    return list
+        .where((element) =>
+            element.item.name.toLowerCase().contains(search.toLowerCase()))
+        .toList();
+  }
+
+  bool listenWhenGuard(LibraryState previous, LibraryState current) {
+    if (previous is! LibraryLoaded || current is! LibraryLoaded) {
+      return false;
+    }
+    if (previous.search != current.search) {
+      return true;
+    }
+    if (previous.libStore != current.libStore) {
+      return true;
+    }
+    return false;
+  }
+
+  void listenerCb(BuildContext context, LibraryState state) {
+    if ((state is! LibraryLoaded)) {
+      return;
+    }
+    if (search != state.search) {
+      setState(() {
+        search = state.search;
+      });
+    }
+
+    if (id != state.libStore.cover.id) {
+      setState(() {
+        id = state.libStore.cover.id;
+        _title =
+            DatabaseMangaHelpers.getCoversFromMangaMap(state.libStore.cover.id);
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     double width = MediaQuery.of(context).size.width;
@@ -37,41 +81,24 @@ class _LibGridState extends State<LibGrid> {
       // color: Colors.orange,
       padding: const EdgeInsets.all(30),
       child: BlocListener<LibraryBloc, LibraryState>(
-        listenWhen: (prev, current) {
-          if (prev is LibraryLoaded && current is LibraryLoaded) {
-            return prev.libStore.cover != current.libStore.cover;
-          }
-          return false;
-        },
-        listener: (context, state) {
-          if (state is LibraryLoaded) {
-            setState(() {
-              _title = DatabaseMangaHelpers.getCoversFromMangaMap(
-                  state.libStore.cover.id);
-            });
-          }
-        },
+        listenWhen: listenWhenGuard,
+        listener: listenerCb,
         child: FutureBuilder(
           builder: (context, snapshot) {
-            if (snapshot.hasData) {
-              final l = snapshot.data!.map((e) {
+            if (snapshot.hasData && snapshot.data!.isNotEmpty) {
+              var l = snapshot.data!.map((e) {
                 return GridItem(item: e);
               }).toList();
-              if (l.isEmpty) {
-                return DragAndDropSurface();
-              }
-              return Scrollbar(
-                // controller: _scrollController,
-                radius: Radius.zero,
-                child: GridView.count(
 
-                    // padding: const EdgeInsets.all(20),
+              return Scrollbar(
+                  radius: Radius.zero,
+                  child: GridView.count(
                     primary: true,
                     crossAxisCount: calculateSize(width),
                     mainAxisSpacing: 100,
                     crossAxisSpacing: 10,
-                    children: l),
-              );
+                    children: filterList(search, l),
+                  ));
             } else {
               return DragAndDropSurface();
             }

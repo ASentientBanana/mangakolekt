@@ -1,5 +1,5 @@
-import 'package:mangakolekt/constants.dart';
 import 'package:mangakolekt/models/book.dart';
+import 'package:mangakolekt/models/database/bookmark.dart';
 import 'package:mangakolekt/util/database/database_core.dart';
 import 'package:mangakolekt/util/database/database_table.dart';
 import 'package:mangakolekt/util/util.dart';
@@ -107,5 +107,42 @@ class DatabaseMangaHelpers {
       return;
     }
     // await DatabaseCore.writeToDB(table: DatabaseTables.Reader, data: {});
+  }
+
+  //TODO: Add bookmark and query for this manga, return list of bookmarks
+  static Future<void> addBookmark(
+      {required int manga, required int page, required String book}) async {
+    final db = await DatabaseCore.openDB();
+    await db.insert(DatabaseTables.Bookmarks, {
+      "manga": manga,
+      "page": page,
+      "book": book,
+      "createdAt": DateTime.now().millisecondsSinceEpoch
+    });
+    await db.close();
+  }
+
+  static Future<void> removeBookmark(
+      {required int manga, required int page}) async {
+    await DatabaseCore.deleteFromDB(
+        table: DatabaseTables.Bookmarks,
+        where: 'manga = ? AND page = ?',
+        args: [manga, page]);
+  }
+
+  static Future<Bookmarks> getBookmarks() async {
+    final db = await DatabaseCore.openDB();
+    // grab all of the data
+    final results = await db.rawQuery(
+        "SELECT * FROM ${DatabaseTables.Bookmarks} LEFT JOIN ${DatabaseTables.Manga} ON ${DatabaseTables.Manga}.id = ${DatabaseTables.Bookmarks}.manga;");
+    // close connection
+    await db.close();
+    return Bookmarks.fromMaps(results);
+  }
+
+  static Future<List<int>> getBookmarksForManga(int manga) async {
+    final qRES = await DatabaseCore.queryDB(
+        table: DatabaseTables.Bookmarks, where: "manga = ?", args: [manga]);
+    return qRES.map((e) => e['page'] as int).toList();
   }
 }

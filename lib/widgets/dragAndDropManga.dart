@@ -46,7 +46,7 @@ class DragAndDropSurface extends StatelessWidget {
               //       color: Colors.grey,
               //       fontWeight: FontWeight.bold),
               // ),
-              Text(
+              const Text(
                 "Drag a file or folder to open it or add to a library",
                 style: TextStyle(
                   color: Color.fromARGB(255, 71, 82, 89),

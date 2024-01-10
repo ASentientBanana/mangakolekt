@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:mangakolekt/bloc/theme/theme_bloc.dart';
 import 'package:mangakolekt/models/bloc/theme.dart';
-import 'package:mangakolekt/widgets/settings/theme_button.dart';
+import 'package:mangakolekt/widgets/settings_old/theme_button.dart';
 
 class ThemeGreed extends StatelessWidget {
   const ThemeGreed({super.key});

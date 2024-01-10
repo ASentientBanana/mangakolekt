@@ -45,3 +45,10 @@ class Reset extends LibraryEvent {
   @override
   List<Object> get props => [];
 }
+
+class SearchLib extends LibraryEvent {
+  final String searchTerm;
+  const SearchLib({required this.searchTerm});
+  @override
+  List<Object> get props => [];
+}

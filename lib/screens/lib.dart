@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:mangakolekt/bloc/library/library_bloc.dart';
-import 'package:mangakolekt/locator.dart';
 import 'package:mangakolekt/models/book.dart';
-import 'package:mangakolekt/services/navigation_service.dart';
 import 'package:mangakolekt/widgets/lib/addToLibraryModal.dart';
 import 'package:mangakolekt/widgets/lib/grid.dart';
 import 'package:mangakolekt/widgets/lib/list.dart';
@@ -47,9 +45,10 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
-    return MangaMenuBar(
-        child: Scaffold(
-      body: Container(
+    return Scaffold(
+      backgroundColor: Theme.of(context).colorScheme.background,
+      body: MangaMenuBar(
+          child: Container(
         padding: const EdgeInsets.all(4),
         color: Theme.of(context).colorScheme.background,
         child: Stack(
@@ -62,7 +61,11 @@ class _MyHomePageState extends State<MyHomePage> {
             )
           ],
         ),
-      ),
-    ));
+      )),
+    );
+    // return
+    //
+    // MangaMenuBar(
+    //       child: ),
   }
 }

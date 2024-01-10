@@ -23,56 +23,58 @@ class _LibListState extends State<LibList> {
   }
 
   Widget listBuilder(BuildContext context, LibraryState state) {
-    if (state is LibraryLoaded) {
-      //Check if empty list to remove the side panel
-      if (state.libStore.libList.isEmpty) {
-        return const SizedBox.shrink();
-      }
-      final List<LibListItem> list = [];
-      final numberOfBooks = state.libStore.libList.length;
-
-      for (var i = 0; i < numberOfBooks; i++) {
-        list.add(LibListItem(item: state.libStore.libList[i], index: i - 1));
-      }
-      final colorScheme = Theme.of(context).colorScheme;
-      return Container(
-        padding: const EdgeInsets.all(30),
-        decoration: BoxDecoration(
-          gradient: const RadialGradient(
-            stops: [.01, .99],
-            radius: 2.0,
-            focalRadius: .7,
-            // focal: Alignment.bottomCenter,
-            center: Alignment.bottomLeft,
-            // transform: const GradientRotation(12),
-            colors: [Color.fromARGB(128, 36, 71, 105), Color(0xFF081822)],
-          ),
-          border: Border(
-            right: BorderSide(
-                color: colorScheme.tertiary,
-                style: BorderStyle.solid,
-                width: 2),
-          ),
-        ),
-        child: SizedBox(
-          width: SIDEBAR_WIDTH,
-          // child: ListView(children: list),
-          child: Scrollbar(
-            scrollbarOrientation: ScrollbarOrientation.right,
-            radius: Radius.zero,
-            thumbVisibility: true,
-            controller: _firstController,
-            child: ListView.builder(
-              controller: _firstController,
-              itemCount: list.length ?? 0,
-              // crossAxisAlignment: CrossAxisAlignment.center,
-              itemBuilder: (context, i) => list[i],
-            ),
-          ),
-        ),
-      );
+    if (state is! LibraryLoaded) {
+      return const SizedBox.shrink();
     }
-    return const SizedBox.shrink();
+    //Check if empty list to remove the side panel
+    if (state.libStore.libList.isEmpty) {
+      return const SizedBox.shrink();
+    }
+    final List<LibListItem> list = [];
+    final numberOfBooks = state.libStore.libList.length;
+
+    for (var i = 0; i < numberOfBooks; i++) {
+      list.add(LibListItem(item: state.libStore.libList[i], index: i - 1));
+    }
+    final colorScheme = Theme.of(context).colorScheme;
+    return Container(
+      padding: const EdgeInsets.all(30),
+      decoration: BoxDecoration(
+        gradient: const RadialGradient(
+          stops: [.01, .99],
+          radius: 2.0,
+          focalRadius: .7,
+          // focal: Alignment.bottomCenter,
+          center: Alignment.bottomLeft,
+          // transform: const GradientRotation(12),
+          colors: [Color.fromARGB(128, 36, 71, 105), Color(0xFF081822)],
+        ),
+        border: Border(
+          right: BorderSide(
+              color: colorScheme.tertiary, style: BorderStyle.solid, width: 2),
+        ),
+      ),
+      child: Container(
+        padding: const EdgeInsets.only(top: 20),
+        width: SIDEBAR_WIDTH,
+        // child: ListView(children: list),
+        child: Scrollbar(
+          scrollbarOrientation: ScrollbarOrientation.right,
+          radius: Radius.zero,
+          thumbVisibility: true,
+          controller: _firstController,
+          child: ListView.separated(
+            separatorBuilder: (context, index) => const SizedBox(
+              height: 40,
+            ),
+            controller: _firstController,
+            itemCount: list.length ?? 0,
+            // crossAxisAlignment: CrossAxisAlignment.center,
+            itemBuilder: (context, i) => list[i],
+          ),
+        ),
+      ),
+    );
   }
 
   @override
