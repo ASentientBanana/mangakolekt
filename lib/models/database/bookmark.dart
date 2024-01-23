@@ -18,6 +18,10 @@ class BookmarksData {
 }
 
 class Bookmarks {
+  Bookmarks.Empty() {
+    data = [];
+  }
+
   late final List<BookmarksData> data;
   Bookmarks.fromMaps(List<Map<String, dynamic>> d) {
     // TODO: Kinda ugly, should fix;

@@ -47,52 +47,50 @@ class AddToLibraryModalState extends State<AddToLibraryModal> {
   }
 
   Future<List<String>?> startIsolate() async {
-    final cb = await ArchiveController.unpackCovers(widget.selectedDir);
-    if (cb == null) {
-      return null;
-    }
-    final res = await compute(cb, widget.selectedDir);
+    final res = await compute(
+        (message) => ArchiveController.unpackCovers(message, null),
+        widget.selectedDir);
+    // final res = await compute(ArchiveController.unpackCovers, widget.selectedDir);
     return res;
   }
 
   void handleSubmit(BuildContext context) async {
+    if (!context.mounted) {
+      return;
+    }
+
     final selectedDir = widget.selectedDir;
     setState(() {
       isSubmitDisabled = true;
     });
 
-    if (isSubmitDisabled) {
-      //Format is name;path;bookPath
-      final bookCoverMapStringList = await startIsolate();
+    //Format is name;path;bookPath
+    final bookCoverMapStringList = await startIsolate();
 
-      if (bookCoverMapStringList == null) {
-        return;
-      }
-      // Add manga to Manga table in db
-      final mangaList = await DatabaseMangaHelpers.addManga(
-          path: selectedDir,
-          name: textEditingController.text,
-          returnManga: true);
-
-      if (mangaList == null) {
-        return;
-      }
-
-      final id = mangaList
-          .firstWhere((element) => element.name == textEditingController.text)
-          .id;
-      await DatabaseMangaHelpers.addMangaMapping(bookCoverMapStringList, id);
-
-      if (mangaList.isNotEmpty) {
-        context.read<LibraryBloc>().add(SetLibs(libs: mangaList));
-      }
-      // });
+    if (bookCoverMapStringList == null) {
+      return;
     }
+    // Add manga to Manga table in db
+    final mangaList = await DatabaseMangaHelpers.addManga(
+        path: selectedDir, name: textEditingController.text, returnManga: true);
+
+    if (mangaList == null) {
+      return;
+    }
+
+    final id = mangaList
+        .firstWhere((element) => element.name == textEditingController.text)
+        .id;
+    await DatabaseMangaHelpers.addMangaMapping(bookCoverMapStringList, id);
+
+    if (mangaList.isNotEmpty) {
+      context.read<LibraryBloc>().add(SetLibs(libs: mangaList));
+    }
+    // });
 
     setState(() {
       isSubmitDisabled = false;
     });
-    //TODO: CLOSE MODAL
     context.read<LibraryBloc>().add(CloseAddToLibModal());
   }
 

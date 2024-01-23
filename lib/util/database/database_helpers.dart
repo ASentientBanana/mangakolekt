@@ -51,6 +51,23 @@ class DatabaseMangaHelpers {
     await db.close();
   }
 
+  static Future<void> updateMangaMapping(List<String> mapList, int id) async {
+    final db = await DatabaseCore.openDB();
+    for (var mapString in mapList) {
+      final mList = mapString.split(';');
+      await db.update(
+          DatabaseTables.MangaMap,
+          {
+            'name': mList[0],
+            'path': mList[1],
+            'bookPath': mList[2],
+            'manga_id': id
+          },
+          conflictAlgorithm: ConflictAlgorithm.replace);
+    }
+    await db.close();
+  }
+
   static Future<List<BookCover>?> getManga() async {
     final res = await DatabaseCore.queryDB(table: DatabaseTables.Manga);
 
@@ -144,5 +161,46 @@ class DatabaseMangaHelpers {
     final qRES = await DatabaseCore.queryDB(
         table: DatabaseTables.Bookmarks, where: "manga = ?", args: [manga]);
     return qRES.map((e) => e['page'] as int).toList();
+  }
+
+  static Future<void> batchRemoveLibManga(List<String> manga) async {
+    if (manga.isEmpty) {
+      print("Empty list provided for DELETE");
+      return;
+    }
+    //Construct args string for raw sql query
+    final args = '(${manga.map((e) => '"$e"').join(",")})';
+    final db = await DatabaseCore.openDB();
+    await db.rawQuery("DELETE FROM MangaMap WHERE bookPath IN $args");
+    db.close();
+  }
+
+  static Future<void> batchAddLibManga(List<String> manga, int id) async {
+    if (manga.isEmpty) {
+      print("Empty list provided for INSERT");
+      return;
+    }
+
+    final db = await DatabaseCore.openDB();
+    // create batch
+    final batch = db.batch();
+    //loop and call insert on batch
+
+    for (var mapString in manga) {
+      final mList = mapString.split(';');
+      batch.insert(
+        DatabaseTables.MangaMap,
+        {
+          'name': mList[0],
+          'path': mList[1],
+          'bookPath': mList[2],
+          'manga_id': id
+        },
+      );
+    }
+
+    //commit to db
+    await batch.commit();
+    db.close();
   }
 }

@@ -1,18 +1,32 @@
 import 'dart:async';
-import 'dart:ffi';
 import 'dart:io';
 
+import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
+import 'package:mangakolekt/constants.dart';
 import 'package:mangakolekt/controllers/types/zip.dart';
 import 'package:mangakolekt/models/book.dart';
+import 'package:mangakolekt/util/files.dart';
 import 'package:mangakolekt/util/util.dart';
-import 'package:path/path.dart';
-import 'package:collection/collection.dart';
+import 'package:path/path.dart' as p;
 
 abstract class BaseBookController {
   bool checkType(String type);
   Future<void> unpack(String pathToBook, String dest);
-  Future<List<String>> unpackCovers(String pathToDir);
+  Future<List<String>> unpackCovers(String pathToDir,
+      {required List<String> files, required String out});
+}
+
+class Runner {
+  final String type;
+  final BaseBookController controller;
+  final List<String> files;
+  Runner({required this.controller, required this.files, required this.type});
+  @override
+  operator ==(other) => other is Runner && other.type == type;
+
+  @override
+  int get hashCode => Object.hash(type, type);
 }
 
 class ArchiveController {
@@ -97,28 +111,64 @@ class ArchiveController {
       if (!(await file.exists())) {
         continue;
       }
-      pages
-          .add(PageEntry(name: split(_pages[i]).last, image: Image.file(file)));
+      pages.add(
+          PageEntry(name: p.split(_pages[i]).last, image: Image.file(file)));
     }
     return Book(
         id: id != null ? int.tryParse(id) : null,
-        name: split(pathToBook).last,
+        name: p.split(pathToBook).last,
         pageNumber: pages.length,
         pages: pages,
         path: pathToBook);
   }
 
-  static Future<Future<List<String>> Function(String)?> unpackCovers(
-    String pathToDir,
-  ) async {
-    final dir = Directory(pathToDir);
-    final dirList = (await dir.list().toList());
+  static Future<List<String>?> unpackCovers(
+      String pathToDir, List<String>? files) async {
+    //create dirs
+    final coversDir =
+        Directory(p.join(pathToDir, libFolderName, libFolderCoverFolderName));
+    // // Create expected dirs
+    await coversDir.create(recursive: true);
 
-    final controller =
-        ArchiveController.getTypeController(dirList.last.path.split('.').last);
-    if (controller == null) {
-      return null;
+    final out = p.join(pathToDir, libFolderName, libFolderCoverFolderName);
+
+    final types = <String, Runner>{};
+    final dir = Directory(pathToDir);
+    if (!await dir.exists()) {
+      return [];
     }
-    return controller.unpackCovers;
+    // get a list of files
+    final _files = files ?? (await getFilesFromDir(dir));
+
+    //Build map of types
+    for (var element in _files) {
+      final type = p.extension(element).substring(1);
+
+      if (types[type] == null) {
+        final controller = getTypeController(type);
+        if (controller == null) {
+          continue;
+        }
+        types[type] =
+            Runner(controller: controller, files: [element], type: type);
+        continue;
+      }
+      //if the types is in the types map
+      types[type]?.files.add(element);
+    }
+    //Create covers list and add all the covers
+    final List<String> allCovers = [];
+    for (var key in types.keys) {
+      if (types[key] == null) {
+        continue;
+      }
+      final covers = await types[key]
+          ?.controller
+          .unpackCovers(pathToDir, files: types[key]?.files ?? [], out: out);
+      if (covers != null) {
+        allCovers.addAll(covers);
+      }
+    }
+    return allCovers;
   }
 }

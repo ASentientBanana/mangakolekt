@@ -36,8 +36,27 @@ class _BookmarksBodyState extends State<BookmarksBody> {
   }
 
   Widget builder(BuildContext context, AsyncSnapshot snapshot) {
+    if (snapshot.connectionState == ConnectionState.waiting) {
+      return SizedBox(
+        width: 700,
+        height: 500,
+        child: Center(
+          child: SizedBox(
+            height: 50,
+            width: 50,
+            child: CircularProgressIndicator(
+              color: Theme.of(context).colorScheme.tertiary,
+            ),
+          ),
+        ),
+      );
+    }
+
     if (!snapshot.hasData) {
-      return const CircularProgressIndicator();
+      return BookmarkContent(
+        deleteBookmarkCb: deleteBookmark,
+        bookmarks: Bookmarks.Empty(),
+      );
     }
 
     return BookmarkContent(

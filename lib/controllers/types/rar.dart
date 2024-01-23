@@ -14,7 +14,8 @@ class ZipBookController extends BaseBookController {
   final List<String> fileTypes = ['cbr', 'rar'];
 
   @override
-  Future<List<String>> unpackCovers(String pathToDir) async {
+  Future<List<String>> unpackCovers(String pathToDir,
+      {required List<String> files, required String out}) async {
     return [];
   }
 

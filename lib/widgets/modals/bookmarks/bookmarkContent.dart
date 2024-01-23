@@ -7,7 +7,7 @@ class BookmarkContent extends StatefulWidget {
   final Bookmarks bookmarks;
   final void Function(int, int) deleteBookmarkCb;
 
-  BookmarkContent(
+  const BookmarkContent(
       {Key? key, required this.bookmarks, required this.deleteBookmarkCb})
       : super(key: key);
 

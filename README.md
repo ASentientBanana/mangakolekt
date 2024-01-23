@@ -1,5 +1,5 @@
 # Minimal manga reader made with flutter.
 
-The main purpose of the project is practice with the flutter framework and also creating an open source alternative manga reader.
+This is a open source manga reader written in flutter and golang.
 
-For now only linux is supported but when the MVP is done i will add windows and mac support.
+Currently supported operatin systems are Linux and Windows.

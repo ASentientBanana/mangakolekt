@@ -2,39 +2,22 @@ import 'dart:io';
 
 import 'package:mangakolekt/ffi/ffi_handler.dart';
 import 'package:mangakolekt/util/archive.dart';
-import 'package:mangakolekt/util/util.dart';
 import 'package:path/path.dart' as p;
-import 'package:flutter/material.dart';
 import 'package:mangakolekt/controllers/archive.dart';
-import 'package:mangakolekt/models/book.dart';
 import 'package:mangakolekt/constants.dart';
-import 'package:image/image.dart' as dart_img;
 
 class ZipBookController extends BaseBookController {
   final List<String> fileTypes = ['zip', 'cbz'];
 
   @override
-  Future<List<String>> unpackCovers(String pathToDir) async {
-    final dir = Directory(p.join(pathToDir, libFolderName));
-    final coversDir =
-        Directory(p.join(pathToDir, libFolderName, libFolderCoverFolderName));
-    // // Create expected dirs
-    await dir.create();
-    await coversDir.create();
-
+  Future<List<String>> unpackCovers(String pathToDir,
+      {required List<String> files, required String out}) async {
     List<String> books;
 
     if (Platform.isLinux || Platform.isWindows) {
-      final out = p.join(pathToDir, libFolderName, libFolderCoverFolderName);
       final dirContents = Directory(pathToDir);
       if (!await dirContents.exists()) return [];
-      final targetFiles = await dirContents
-          .list()
-          .where(
-              (element) => p.split(element.path).last.split('.').last == 'cbz')
-          .map((event) => event.path)
-          .toList();
-      final output = await ffiUnzipCovers(targetFiles, pathToDir, out);
+      final output = await ffiUnzipCovers(files, pathToDir, out);
       return output;
     } else {
       books = await getBooksV2(pathToDir);

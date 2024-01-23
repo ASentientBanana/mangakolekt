@@ -3,7 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:mangakolekt/bloc/library/library_bloc.dart';
 import 'package:mangakolekt/models/book.dart';
 import 'package:mangakolekt/util/database/database_helpers.dart';
-import '../../util/files.dart';
+import 'package:mangakolekt/util/lib.dart';
 
 class LibListItem extends StatefulWidget {
   final BookCover item;
@@ -22,6 +22,11 @@ class _LibListItemState extends State<LibListItem> {
     DatabaseMangaHelpers.deleteManga(widget.item.id).then((value) {
       context.read<LibraryBloc>().add(RemoveBook(id: widget.item.id));
     });
+  }
+
+  Future<void> handleRefreshLib(BuildContext context) async {
+    await refreshLib(item: widget.item);
+    // context.read<LibraryBloc>().add(SetLibs(libs: mangaList));
   }
 
   @override
@@ -65,9 +70,12 @@ class _LibListItemState extends State<LibListItem> {
             ),
             itemBuilder: (context) => [
               PopupMenuItem<String>(
-                value: "",
                 child: const Text("Delete"),
                 onTap: () => handleDeleteFromLib(context),
+              ),
+              PopupMenuItem<String>(
+                child: const Text("Refresh"),
+                onTap: () => handleRefreshLib(context),
               )
             ],
           )

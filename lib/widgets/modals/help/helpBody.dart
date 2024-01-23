@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:mangakolekt/locator.dart';
 import 'package:mangakolekt/services/navigation_service.dart';
 import 'package:mangakolekt/widgets/buttons/squareButton.dart';
-import 'package:path/path.dart';
 
 class HelpBody extends StatelessWidget {
   HelpBody({Key? key}) : super(key: key);

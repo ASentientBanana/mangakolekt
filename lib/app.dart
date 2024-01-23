@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:mangakolekt/constants.dart';
 import 'package:mangakolekt/locator.dart';
-import 'package:mangakolekt/screens/lib.dart';
+import 'package:mangakolekt/screens/library.dart';
 import 'package:mangakolekt/screens/splash.dart';
 import 'package:mangakolekt/screens/theme_creator.dart';
 import 'package:mangakolekt/services/navigation_service.dart';
