@@ -25,8 +25,14 @@ class _LibListItemState extends State<LibListItem> {
   }
 
   Future<void> handleRefreshLib(BuildContext context) async {
-    await refreshLib(item: widget.item);
-    // context.read<LibraryBloc>().add(SetLibs(libs: mangaList));
+    if (!context.mounted) {
+      return;
+    }
+    final mangaList = await refreshLib(item: widget.item);
+    if (mangaList != null) {
+      print("object");
+      context.read<LibraryBloc>().add(SetLibs(libs: mangaList));
+    }
   }
 
   @override

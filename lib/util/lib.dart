@@ -63,13 +63,10 @@ Future<RefreshResults?> getRefreshLibPaths(BookCover item) async {
   return refresh;
 }
 
-Future<void> refreshLib({
-  required BookCover item,
-  void Function()? onComplete,
-}) async {
+Future<List<BookCover>?> refreshLib({required BookCover item}) async {
   final RefreshResults? refreshItems = await getRefreshLibPaths(item);
   if (refreshItems == null) {
-    return;
+    return null;
   }
 
   await DatabaseMangaHelpers.batchRemoveLibManga(refreshItems.toDelete);
@@ -80,13 +77,13 @@ Future<void> refreshLib({
             message[0] as String, message[1] as List<String>),
         [item.path, refreshItems.toAdd]);
     if (covers == null) {
-      return;
+      return null;
     }
     await DatabaseMangaHelpers.batchAddLibManga(covers, item.id);
   }
-  if (onComplete != null) {
-    onComplete();
-  }
+  final mangaList = await DatabaseMangaHelpers.getManga();
+
+  return mangaList;
 }
 
 Future<bool> deleteLib(String path) async {
@@ -100,3 +97,8 @@ Future<bool> deleteLib(String path) async {
   }
   return true;
 }
+
+//TODO: implement a cleanup func for the current folder
+Future<void> cleanupCoversFolder(
+  List<String> db,
+) async {}

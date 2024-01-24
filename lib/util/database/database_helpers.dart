@@ -126,7 +126,6 @@ class DatabaseMangaHelpers {
     // await DatabaseCore.writeToDB(table: DatabaseTables.Reader, data: {});
   }
 
-  //TODO: Add bookmark and query for this manga, return list of bookmarks
   static Future<void> addBookmark(
       {required int manga, required int page, required String book}) async {
     final db = await DatabaseCore.openDB();
@@ -165,7 +164,6 @@ class DatabaseMangaHelpers {
 
   static Future<void> batchRemoveLibManga(List<String> manga) async {
     if (manga.isEmpty) {
-      print("Empty list provided for DELETE");
       return;
     }
     //Construct args string for raw sql query
@@ -177,7 +175,6 @@ class DatabaseMangaHelpers {
 
   static Future<void> batchAddLibManga(List<String> manga, int id) async {
     if (manga.isEmpty) {
-      print("Empty list provided for INSERT");
       return;
     }
 

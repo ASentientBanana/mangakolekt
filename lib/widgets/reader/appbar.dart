@@ -22,7 +22,9 @@ class ReaderAppbar extends AppBar {
                 onPressed: () => bookmark(isBookmark),
                 child: Icon(
                   size: 26,
-                  Icons.bookmark_sharp,
+                  isBookmark
+                      ? Icons.bookmark_added_sharp
+                      : Icons.bookmark_outline_sharp,
                   color: isBookmark ? isBookmarkedColor : isNotBookmarkedColor,
                 ),
               ),

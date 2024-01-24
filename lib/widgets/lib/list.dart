@@ -22,7 +22,7 @@ class _LibListState extends State<LibList> {
     super.initState();
   }
 
-  Widget listBuilder(BuildContext context, LibraryState state) {
+  Widget builder(BuildContext context, LibraryState state) {
     if (state is! LibraryLoaded) {
       return const SizedBox.shrink();
     }
@@ -80,7 +80,7 @@ class _LibListState extends State<LibList> {
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<LibraryBloc, LibraryState>(
-      builder: listBuilder,
+      builder: builder,
     );
   }
 }

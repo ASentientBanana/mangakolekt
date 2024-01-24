@@ -1,4 +1,3 @@
-import 'package:flutter/material.dart';
 import 'package:mangakolekt/constants.dart';
 import 'package:mangakolekt/util/database/database_table.dart';
 import 'package:mangakolekt/util/database/table_definitions.dart';

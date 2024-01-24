@@ -22,7 +22,6 @@ class MyApp extends StatelessWidget {
       providers: [
         BlocProvider<LibraryBloc>(
             create: (BuildContext context) => LibraryBloc()),
-        BlocProvider<ThemeBloc>(create: (BuildContext context) => ThemeBloc()),
         BlocProvider<ReaderBloc>(
             create: (BuildContext context) => ReaderBloc()),
       ],
