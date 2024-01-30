@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:mangakolekt/bloc/library/library_bloc.dart';
 import 'package:mangakolekt/models/book.dart';
-import 'package:mangakolekt/widgets/lib/addToLibraryModal.dart';
-import 'package:mangakolekt/widgets/lib/grid.dart';
-import 'package:mangakolekt/widgets/lib/list.dart';
+import 'package:mangakolekt/widgets/library/addToLibraryModal.dart';
+import 'package:mangakolekt/widgets/library/grid.dart';
+import 'package:mangakolekt/widgets/library/list.dart';
 import 'package:mangakolekt/widgets/menuBar.dart';
 
 class MyHomePage extends StatefulWidget {

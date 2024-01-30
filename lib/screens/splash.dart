@@ -45,10 +45,6 @@ class _SplashScreenState extends State<SplashScreen> {
 
     await createCurrentDir();
     // loading the themes to the store
-
-    context
-        .read<ThemeBloc>()
-        .add(InitializeTheme(themes: [ThemeStore.defaultTheme()], theme: 0));
     if (mangaList != null) {
       context.read<LibraryBloc>().add(SetLibs(libs: mangaList));
     }

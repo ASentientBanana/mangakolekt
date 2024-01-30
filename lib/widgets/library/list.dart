@@ -3,7 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:mangakolekt/bloc/library/library_bloc.dart';
 import 'package:mangakolekt/constants.dart';
 import 'package:mangakolekt/util/database/database_helpers.dart';
-import 'package:mangakolekt/widgets/lib/list_item.dart';
+import 'package:mangakolekt/widgets/library/list_item.dart';
 
 class LibList extends StatefulWidget {
   const LibList({super.key});

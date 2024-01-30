@@ -1,33 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:mangakolekt/constants.dart';
-import 'package:mangakolekt/controllers/reader.dart';
+// import 'package:mangakolekt/controllers/reader.dart';
 import 'package:mangakolekt/models/util.dart';
 import 'package:mangakolekt/widgets/appbar/backButton.dart';
 
 class ReaderAppbar extends AppBar {
-  // final bool isBookmark;
-
   ReaderAppbar({
     required Color isBookmarkedColor,
     required Color isNotBookmarkedColor,
     required readerController,
     required isBookmark,
-    required void Function(bool) bookmark,
+    required void Function() bookmark,
     required void Function(VoidCallback) set,
   }) : super(
             title: Text(readerController.book.name),
             leading: CustomBackButton(),
             actions: [
-              TextButton(
-                onPressed: () => bookmark(isBookmark),
-                child: Icon(
-                  size: 26,
-                  isBookmark
-                      ? Icons.bookmark_added_sharp
-                      : Icons.bookmark_outline_sharp,
-                  color: isBookmark ? isBookmarkedColor : isNotBookmarkedColor,
-                ),
-              ),
               TextButton(
                 onPressed: () {
                   set(() {
@@ -75,10 +63,15 @@ class ReaderAppbar extends AppBar {
                       : TEXT_STYLE_NORMAL,
                 ),
               ),
+              TextButton(
+                onPressed: bookmark,
+                child: Icon(
+                  size: 26,
+                  isBookmark
+                      ? Icons.bookmark_added_sharp
+                      : Icons.bookmark_outline_sharp,
+                  color: isBookmark ? isBookmarkedColor : isNotBookmarkedColor,
+                ),
+              ),
             ]);
 }
-
-// AppBar(
-//         title: Text(readerController.book.name),
-//         actions: ,
-//       )

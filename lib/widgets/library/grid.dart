@@ -4,7 +4,7 @@ import 'package:mangakolekt/bloc/library/library_bloc.dart';
 import 'package:mangakolekt/models/book.dart';
 import 'package:mangakolekt/util/database/database_helpers.dart';
 import 'package:mangakolekt/widgets/dragAndDropManga.dart';
-import 'package:mangakolekt/widgets/lib/grid_item.dart';
+import 'package:mangakolekt/widgets/library/grid_item.dart';
 
 class LibGrid extends StatefulWidget {
   const LibGrid({super.key});

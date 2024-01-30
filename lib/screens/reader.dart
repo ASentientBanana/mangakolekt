@@ -4,7 +4,7 @@ import 'package:mangakolekt/controllers/reader.dart';
 import 'package:mangakolekt/constants.dart';
 import 'package:mangakolekt/util/database/database_helpers.dart';
 import 'package:mangakolekt/util/reader.dart';
-import 'package:mangakolekt/widgets/reader/appbar.dart';
+import 'package:mangakolekt/widgets/appbar/readerbar.dart';
 import 'package:mangakolekt/widgets/reader/single_image.dart';
 import 'package:mangakolekt/widgets/reader/list_preview.dart';
 import 'package:flutter/services.dart';
@@ -128,8 +128,10 @@ class _MangaReaderState extends State<MangaReader> {
     super.initState();
   }
 
-  Future<void> bookmark(bool isBookmarked) async {
-    if (!isBookmarked) {
+  Future<void> bookmark() async {
+    final isBookmark =
+        bookmarks.contains(readerController.getCurrentPages().first);
+    if (!isBookmark) {
       await DatabaseMangaHelpers.addBookmark(
           book: readerController.book.name,
           manga: readerController.book.id ?? 0,
@@ -137,7 +139,7 @@ class _MangaReaderState extends State<MangaReader> {
     } else {
       await DatabaseMangaHelpers.removeBookmark(
           manga: readerController.book.id ?? 0,
-          page: readerController.currentPageIndex);
+          page: readerController.getCurrentPages().first);
     }
     final bm = await getBookmarks();
     setState(() {
@@ -175,7 +177,8 @@ class _MangaReaderState extends State<MangaReader> {
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
-    final isBookmark = bookmarks.contains(readerController.currentPageIndex);
+    final isBookmark =
+        bookmarks.contains(readerController.getCurrentPages().first);
     return Scaffold(
       appBar: ReaderAppbar(
           isBookmarkedColor: colorScheme.tertiary,

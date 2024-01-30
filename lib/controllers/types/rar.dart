@@ -1,6 +1,5 @@
 import 'dart:io';
 
-import 'package:mangakolekt/ffi/ffi_handler.dart';
 import 'package:mangakolekt/util/archive.dart';
 import 'package:mangakolekt/util/util.dart';
 import 'package:path/path.dart' as p;

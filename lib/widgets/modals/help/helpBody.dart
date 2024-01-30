@@ -20,15 +20,13 @@ class HelpBody extends StatelessWidget {
               top: -180,
               left: 50,
               child: SizedBox(
-                child: Image.asset("assets/images/FullLogo.png"),
-                // height: 100,
                 width: 550,
+                child: Image.asset("assets/images/FullLogo.png"),
               )),
           const Center(
             child: Padding(
               padding: EdgeInsets.symmetric(horizontal: 98),
-              child: Text(
-                  'assets/images/FullLogo.pngassets/images/FullLogo.pngassets/images/FullLogo.pngassets/images/FullLogo.pngassets/images/FullLogo.pngassets/images/FullLogo.pngassets/images/FullLogo.png'),
+              child: Text('A manga reader for reading .cbz manga files.'),
             ),
           ),
           Positioned(
@@ -40,16 +38,17 @@ class HelpBody extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   mainAxisSize: MainAxisSize.max,
                   children: [
-                    Expanded(
-                        // flex: 1,
-                        child: SquareButton(
-                      backgroundColor: colorScheme.onPrimary,
-                      onPressed: () {},
-                      child: const Text(
-                        "Donate",
-                        style: TextStyle(color: Colors.black),
-                      ),
-                    )),
+                    //TODO: Add in when site is ready
+                    // Expanded(
+                    //     // flex: 1,
+                    //     child: SquareButton(
+                    //   backgroundColor: colorScheme.onPrimary,
+                    //   onPressed: () {},
+                    //   child: const Text(
+                    //     "Donate",
+                    //     style: TextStyle(color: Colors.black),
+                    //   ),
+                    // )),
                     const SizedBox(width: 20),
                     Expanded(
                       // flex: 1,

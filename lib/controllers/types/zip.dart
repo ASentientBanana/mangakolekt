@@ -1,6 +1,8 @@
 import 'dart:io';
 
-import 'package:mangakolekt/ffi/ffi_handler.dart';
+import 'package:mangakolekt/locator.dart';
+import 'package:mangakolekt/models/ffi.dart';
+import 'package:mangakolekt/services/ffiService.dart';
 import 'package:mangakolekt/util/archive.dart';
 import 'package:path/path.dart' as p;
 import 'package:mangakolekt/controllers/archive.dart';
@@ -17,7 +19,8 @@ class ZipBookController extends BaseBookController {
     if (Platform.isLinux || Platform.isWindows) {
       final dirContents = Directory(pathToDir);
       if (!await dirContents.exists()) return [];
-      final output = await ffiUnzipCovers(files, pathToDir, out);
+      final output =
+          await locator<BaseFFIService>().ffiUnzipCovers(files, pathToDir, out);
       return output;
     } else {
       books = await getBooksV2(pathToDir);
@@ -30,7 +33,8 @@ class ZipBookController extends BaseBookController {
   Future<void> unpack(String pathToBook, String dest) async {
     final bookName = p.split(pathToBook).last;
     try {
-      final files = await ffiUnzipSingleBook(pathToBook, dest);
+      final files =
+          await locator<BaseFFIService>().ffiUnzipSingleBook(pathToBook, dest);
 
       if (files.isEmpty) {
         return null;
