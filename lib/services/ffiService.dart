@@ -14,14 +14,12 @@ typedef ExtractImagesFromZipFunction = Pointer<Utf8> Function(
 typedef ExtractImagesFromZipFunctionDart = Pointer<Utf8> Function(
     Pointer<Utf8> zipFilePath, Pointer<Utf8> targetPath);
 
-class FFIService extends BaseFFIService {
-  final DynamicLibrary dyLib;
+class FFIService {
+  // FFIService({required this.dyLib});
 
-  FFIService({required this.dyLib});
-
-  @override
-  Future<List<String>> ffiUnzipSingleBook(
+  static Future<List<String>> ffiUnzipSingleBook(
       String _bookPath, String _targetPath) async {
+    final dyLib = loadService();
     final unzipBook = dyLib.lookupFunction<ExtractImagesFromZipFunction,
         ExtractImagesFromZipFunctionDart>("Unzip_Single_book");
     final bookPath = _bookPath.toNativeUtf8();
@@ -41,8 +39,10 @@ class FFIService extends BaseFFIService {
   }
 
   @override
-  Future<List<String>> ffiUnzipCovers(
+  static Future<List<String>> ffiUnzipCovers(
       List<String> files, String path, String out) async {
+    final dyLib = loadService();
+
     final unzipCoversFromDir =
         dyLib.lookupFunction<UnziperFunc, UnziperFunc>("Unzip_Covers");
 
@@ -63,24 +63,23 @@ class FFIService extends BaseFFIService {
     return output.split("&?&").toList();
   }
 
-  static FFIService loadWindows() {
+  static DynamicLibrary loadWindows() {
     if (kReleaseMode) {
       // I'm on release mode, absolute linking
       final String local_lib =
           join('data', 'flutter_assets', 'assets', 'manga_archive.dll');
       String pathToLib =
           join(Directory(Platform.resolvedExecutable).parent.path, local_lib);
-      return FFIService(dyLib: DynamicLibrary.open(pathToLib));
+      // return FFIService(dyLib: DynamicLibrary.open(pathToLib));
+      return DynamicLibrary.open(pathToLib);
     } else {
       // I'm on debug mode, local linking
       var path = Directory.current.path;
-      return FFIService(
-          dyLib:
-              DynamicLibrary.open(join(path, 'assets', 'manga_archive.dll')));
+      return DynamicLibrary.open(join(path, 'assets', 'manga_archive.dll'));
     }
   }
 
-  static FFIService loadLinux() {
+  static DynamicLibrary loadLinux() {
     final String path;
     if (kReleaseMode) {
       // /home/petar/Projects/mangakolekt/dist/mangakolekt/dist/linux/mangakolekt:
@@ -89,7 +88,7 @@ class FFIService extends BaseFFIService {
     } else {
       path = 'lib/linux/manga_archive.so';
     }
-    return FFIService(dyLib: DynamicLibrary.open(path));
+    return DynamicLibrary.open(path);
   }
 
   //TODO: Add default implementation
@@ -103,7 +102,7 @@ class FFIService extends BaseFFIService {
 //  or a generic PlatformService
 //  for the widest implementation as a generic return
 //
-  static FFIService loadService() {
+  static DynamicLibrary loadService() {
     if (Platform.isLinux) {
       return loadLinux();
     }
