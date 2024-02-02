@@ -4,7 +4,6 @@ import 'package:mangakolekt/app.dart';
 import 'package:mangakolekt/bloc/library/library_bloc.dart';
 import 'package:mangakolekt/bloc/reader/reader_bloc.dart';
 import 'package:mangakolekt/locator.dart';
-// import 'package:mangakolekt/services/setup.dart';
 
 void main() {
   Paint.enableDithering = true;
