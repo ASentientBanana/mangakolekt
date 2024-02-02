@@ -3,7 +3,7 @@ import 'package:mangakolekt/locator.dart';
 import 'package:mangakolekt/models/book.dart';
 import 'dart:io';
 
-import 'package:mangakolekt/services/navigation_service.dart';
+import 'package:mangakolekt/services/navigationService.dart';
 
 class GridItem extends StatefulWidget {
   final BookCover item;

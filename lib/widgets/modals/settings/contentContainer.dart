@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:mangakolekt/locator.dart';
+import 'package:mangakolekt/services/settings.dart';
 
 class SettingsContent extends StatefulWidget {
   const SettingsContent({Key? key}) : super(key: key);
@@ -16,6 +18,8 @@ default direction,
 */
 
 class _SettingsContentState extends State<SettingsContent> {
+  final settingsService = locator<SettingsService>();
+
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
@@ -24,7 +28,7 @@ class _SettingsContentState extends State<SettingsContent> {
         children: [
           Padding(
             padding: const EdgeInsets.only(left: 30, top: 20),
-            child: Column(children: [
+            child: Row(children: [
               Row(
                 children: [
                   const Text("Double page"),
@@ -32,10 +36,20 @@ class _SettingsContentState extends State<SettingsContent> {
                     checkColor: colorScheme.tertiary,
                     fillColor:
                         MaterialStateProperty.all(colorScheme.background),
-                    value: true,
-                    onChanged: (bool? value) {},
+                    value: settingsService.settings.isDoublePageView,
+                    onChanged: (bool? value) {
+                      setState(() {
+                        if (value == null) {
+                          return;
+                        }
+                        settingsService.settings.isDoublePageView = value;
+                      });
+                    },
                   )
                 ],
+              ),
+              VerticalDivider(
+                width: 10,
               ),
               Row(
                 children: [
@@ -44,8 +58,15 @@ class _SettingsContentState extends State<SettingsContent> {
                     checkColor: colorScheme.tertiary,
                     fillColor:
                         MaterialStateProperty.all(colorScheme.background),
-                    value: true,
-                    onChanged: (bool? value) {},
+                    value: settingsService.settings.isRtL,
+                    onChanged: (bool? value) {
+                      setState(() {
+                        if (value == null) {
+                          return;
+                        }
+                        settingsService.settings.isRtL = value;
+                      });
+                    },
                   )
                 ],
               ),

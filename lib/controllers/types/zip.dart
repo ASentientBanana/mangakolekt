@@ -20,7 +20,7 @@ class ZipBookController extends BaseBookController {
       final dirContents = Directory(pathToDir);
       if (!await dirContents.exists()) return [];
       final output =
-          await locator<BaseFFIService>().ffiUnzipCovers(files, pathToDir, out);
+          await locator<FFIService>().ffiUnzipCovers(files, pathToDir, out);
       return output;
     } else {
       books = await getBooksV2(pathToDir);
@@ -34,7 +34,7 @@ class ZipBookController extends BaseBookController {
     final bookName = p.split(pathToBook).last;
     try {
       final files =
-          await locator<BaseFFIService>().ffiUnzipSingleBook(pathToBook, dest);
+          await locator<FFIService>().ffiUnzipSingleBook(pathToBook, dest);
 
       if (files.isEmpty) {
         return null;

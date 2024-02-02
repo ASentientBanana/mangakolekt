@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:mangakolekt/locator.dart';
-import 'package:mangakolekt/services/navigation_service.dart';
+import 'package:mangakolekt/services/navigationService.dart';
 
 class OpenBookError extends StatelessWidget {
   OpenBookError({Key? key}) : super(key: key);

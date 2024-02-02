@@ -4,7 +4,7 @@ import 'package:mangakolekt/locator.dart';
 import 'package:mangakolekt/screens/library.dart';
 import 'package:mangakolekt/screens/splash.dart';
 import 'package:mangakolekt/screens/theme_creator.dart';
-import 'package:mangakolekt/services/navigation_service.dart';
+import 'package:mangakolekt/services/navigationService.dart';
 import 'package:mangakolekt/util/util.dart';
 import 'package:mangakolekt/screens/reader_page_wrapper.dart';
 

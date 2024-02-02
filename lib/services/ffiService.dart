@@ -63,7 +63,7 @@ class FFIService extends BaseFFIService {
     return output.split("&?&").toList();
   }
 
-  static loadWindows() {
+  static FFIService loadWindows() {
     if (kReleaseMode) {
       // I'm on release mode, absolute linking
       final String local_lib =
@@ -80,7 +80,7 @@ class FFIService extends BaseFFIService {
     }
   }
 
-  static loadLinux() {
+  static FFIService loadLinux() {
     final String path;
     if (kReleaseMode) {
       // /home/petar/Projects/mangakolekt/dist/mangakolekt/dist/linux/mangakolekt:
@@ -92,12 +92,18 @@ class FFIService extends BaseFFIService {
     return FFIService(dyLib: DynamicLibrary.open(path));
   }
 
+  //TODO: Add default implementation
+  static loadUnsupported() {
+    // Temp solution for the compiler
+    return loadLinux();
+  }
+
 //
 //  loadService returns a platform specific native ffiService
-//  or a generic UnsupportedNativePlatformService
+//  or a generic PlatformService
 //  for the widest implementation as a generic return
 //
-  static BaseFFIService loadService() {
+  static FFIService loadService() {
     if (Platform.isLinux) {
       return loadLinux();
     }
@@ -105,6 +111,7 @@ class FFIService extends BaseFFIService {
       return loadWindows();
     }
 
-    return UnsupportedNativePlatformService();
+    return loadUnsupported();
+    // return UnsupportedNativePlatformService();
   }
 }

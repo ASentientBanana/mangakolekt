@@ -5,7 +5,7 @@ import 'package:mangakolekt/locator.dart';
 import 'package:mangakolekt/models/book.dart';
 import 'package:mangakolekt/screens/openBookError.dart';
 import 'package:mangakolekt/screens/reader.dart';
-import 'package:mangakolekt/services/navigation_service.dart';
+import 'package:mangakolekt/services/navigationService.dart';
 import 'package:mangakolekt/util/reader.dart';
 import 'package:mangakolekt/widgets/loadingDog.dart';
 

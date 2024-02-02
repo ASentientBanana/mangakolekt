@@ -108,18 +108,26 @@ class DatabaseMangaHelpers {
 
   static Future<void> setCurrentManga(String manga, int page) async {
     try {
+      final now = DateTime.now().millisecondsSinceEpoch;
       final db = await DatabaseCore.openDB();
       //check for results
       final qRes = await db
           .query(DatabaseTables.Reader, where: 'manga = ?', whereArgs: [manga]);
       if (qRes.isEmpty) {
-        await DatabaseCore.writeToDB(
-            table: DatabaseTables.Reader,
-            data: {"manga": manga, "currentPage": page, "doublePageView": 0});
+        await DatabaseCore.writeToDB(table: DatabaseTables.Reader, data: {
+          "manga": manga,
+          "currentPage": page,
+          "doublePageView": 0,
+          'updated_at': now
+        });
         return;
       }
-      await db.update(DatabaseTables.Reader,
-          {"manga": manga, "currentPage": page, "doublePageView": 0});
+      await db.update(DatabaseTables.Reader, {
+        "manga": manga,
+        "currentPage": page,
+        "doublePageView": 0,
+        'updated_at': now
+      });
     } catch (e) {
       return;
     }
@@ -199,5 +207,14 @@ class DatabaseMangaHelpers {
     //commit to db
     await batch.commit();
     db.close();
+  }
+
+  Future<void> getLatestManga() async {
+    final db = await DatabaseCore.openDB();
+    // "SELECT * FROM ${DatabaseTables.Bookmarks} LEFT JOIN ${DatabaseTables.Manga} ON ${DatabaseTables.Manga}.id = ${DatabaseTables.Bookmarks}.manga;");
+
+    final results = db.query(DatabaseTables.Reader,
+        where: 'updated_at IS NOT NULL ORDER BY updated_at DESC');
+    print(results);
   }
 }

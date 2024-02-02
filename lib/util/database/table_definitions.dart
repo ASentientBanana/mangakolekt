@@ -23,6 +23,7 @@ final databaseTableDefinitions = [
       .addPrimaryKey()
       .add(DatabaseTableField(name: 'doublePageView', type: DatabaseTypes.Int))
       .add(DatabaseTableField(name: 'currentPage', type: DatabaseTypes.Int))
+      .add(DatabaseTableField(name: 'updated_at', type: DatabaseTypes.Int))
       .add(DatabaseTableField(name: 'manga', type: DatabaseTypes.Text)),
   // Bookmarks table
   DatabaseTable(name: DatabaseTables.Bookmarks)
@@ -30,5 +31,5 @@ final databaseTableDefinitions = [
       .add(DatabaseTableField(name: 'manga', type: DatabaseTypes.Int))
       .add(DatabaseTableField(name: 'page', type: DatabaseTypes.Int))
       .add(DatabaseTableField(name: 'book', type: DatabaseTypes.Text))
-      .add(DatabaseTableField(name: 'createdAt', type: DatabaseTypes.Int))
+      .add(DatabaseTableField(name: 'created_at', type: DatabaseTypes.Int))
 ];
