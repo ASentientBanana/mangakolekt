@@ -107,17 +107,6 @@ class _MangaReaderState extends State<MangaReader> {
     if (map['next'] != null) {
       widget.readerController.nextBookPath = map['next']!;
     }
-    // compute((message) async {
-    //   return await checkForNextBook(message);
-    // }, widget.readerController.book.path)
-    //     .then((map) {
-    //   if (map['prev'] != null) {
-    //     widget.readerController.prevBookPath = map['prev']!;
-    //   }
-    //   if (map['next'] != null) {
-    //     widget.readerController.nextBookPath = map['next']!;
-    //   }
-    // });
   }
 
   @override

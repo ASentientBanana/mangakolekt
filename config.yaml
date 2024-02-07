@@ -1,0 +1,6 @@
+name: NativeArchiveLib
+description: Bindings to `headers/manga_archive.h`.
+output: "lib/generated/generated_bindings.dart"
+headers:
+  entry-points:
+    - "headers/manga_archive.h"

@@ -21,10 +21,10 @@ final databaseTableDefinitions = [
   // Reader table
   DatabaseTable(name: DatabaseTables.Reader)
       .addPrimaryKey()
-      .add(DatabaseTableField(name: 'doublePageView', type: DatabaseTypes.Int))
       .add(DatabaseTableField(name: 'currentPage', type: DatabaseTypes.Int))
       .add(DatabaseTableField(name: 'updated_at', type: DatabaseTypes.Int))
-      .add(DatabaseTableField(name: 'manga', type: DatabaseTypes.Text)),
+      .add(DatabaseTableField(name: 'manga', type: DatabaseTypes.Text))
+      .add(DatabaseTableField(name: 'name', type: DatabaseTypes.Text)),
   // Bookmarks table
   DatabaseTable(name: DatabaseTables.Bookmarks)
       .addPrimaryKey()

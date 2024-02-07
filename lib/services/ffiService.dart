@@ -2,7 +2,6 @@ import 'dart:ffi'; // For FFI
 import 'dart:io';
 import 'package:ffi/ffi.dart';
 import 'package:flutter/foundation.dart';
-import 'package:mangakolekt/models/ffi.dart';
 
 import 'package:path/path.dart';
 
@@ -38,7 +37,6 @@ class FFIService {
     }
   }
 
-  @override
   static Future<List<String>> ffiUnzipCovers(
       List<String> files, String path, String out) async {
     final dyLib = loadService();
@@ -92,9 +90,15 @@ class FFIService {
   }
 
   //TODO: Add default implementation
-  static loadUnsupported() {
+  static DynamicLibrary loadUnsupported() {
     // Temp solution for the compiler
     return loadLinux();
+  }
+
+  static DynamicLibrary loadAndroid() {
+    // Temp solution for the compiler
+    const path = 'manga_archive.so';
+    return DynamicLibrary.open(path);
   }
 
 //
@@ -108,6 +112,9 @@ class FFIService {
     }
     if (Platform.isWindows) {
       return loadWindows();
+    }
+    if (Platform.isAndroid) {
+      return loadAndroid();
     }
 
     return loadUnsupported();
