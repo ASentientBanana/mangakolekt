@@ -30,12 +30,11 @@ class ZipBookController extends BaseBookController {
   // TODO: Decouple the unzip logic from loading the books
   @override
   Future<void> unpack(String pathToBook, String dest) async {
-    final bookName = p.split(pathToBook).last;
     try {
       final files = await FFIService.ffiUnzipSingleBook(pathToBook, dest);
 
       if (files.isEmpty) {
-        return null;
+        return;
       }
       // await _loadBook(files, bookName, pathToBook);
     } catch (e) {

@@ -27,7 +27,7 @@ class FFIService {
     try {
       final filesString = unzipBook(bookPath, targetPath);
       List<String> dartStrings = filesString.toDartString().split("?&?");
-      calloc.free(filesString);
+      // calloc.free(filesString);
       calloc.free(bookPath);
       calloc.free(targetPath);
       return dartStrings;
@@ -36,9 +36,9 @@ class FFIService {
       calloc.free(targetPath);
       return [];
     }
+    
   }
 
-  @override
   static Future<List<String>> ffiUnzipCovers(
       List<String> files, String path, String out) async {
     final dyLib = loadService();
@@ -66,16 +66,14 @@ class FFIService {
   static DynamicLibrary loadWindows() {
     if (kReleaseMode) {
       // I'm on release mode, absolute linking
-      final String local_lib =
-          join('data', 'flutter_assets', 'assets', 'manga_archive.dll');
       String pathToLib =
-          join(Directory(Platform.resolvedExecutable).parent.path, local_lib);
+          join(Directory(Platform.resolvedExecutable).parent.path,"manga_archive.dll");
       // return FFIService(dyLib: DynamicLibrary.open(pathToLib));
       return DynamicLibrary.open(pathToLib);
     } else {
       // I'm on debug mode, local linking
       var path = Directory.current.path;
-      return DynamicLibrary.open(join(path, 'assets', 'manga_archive.dll'));
+      return DynamicLibrary.open(join(path,'lib','dev_lib','manga_archive.dll'));
     }
   }
 

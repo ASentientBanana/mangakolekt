@@ -47,7 +47,7 @@ class ArchiveController {
     final type = args[0];
     final pathToBook = args[1];
     final dest = args[2];
-    final String? id = args[3];
+    final String id = args[3];
     final controller = ArchiveController.getTypeController(type);
     if (controller == null) {
       return null;
@@ -55,7 +55,8 @@ class ArchiveController {
     //unzip to the current dir.
     await controller.unpack(pathToBook, dest);
     //load book here from current dir
-    return await loadBook(dest, pathToBook, id);
+    final book = await loadBook(dest, pathToBook, id);
+    return book;
     // return null;
   }
 

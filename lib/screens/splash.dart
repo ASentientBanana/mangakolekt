@@ -1,16 +1,13 @@
-// This is to remove waring in the file, the needed checks were added.
-// ignore_for_file: use_build_context_synchronously
 
-import 'package:flutter/foundation.dart';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:mangakolekt/bloc/library/library_bloc.dart';
-import 'package:mangakolekt/bloc/theme/theme_bloc.dart';
-import 'package:mangakolekt/models/bloc/theme.dart';
 import 'package:mangakolekt/util/database/database_core.dart';
 import 'package:mangakolekt/util/database/database_helpers.dart';
 import 'package:mangakolekt/util/files.dart';
 import 'package:mangakolekt/widgets/loadingDog.dart';
+
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({Key? key}) : super(key: key);
@@ -31,11 +28,12 @@ class _SplashScreenState extends State<SplashScreen> {
   }
 
   // init function to create, load and read any data before opening home page
-  Future<void> initApp(BuildContext context) async {
+  Future<void> initApp() async {
     //generating the theme file if not missing and reading if there
     // final themes = await checkThemeFile();
-
-    if (!context.mounted) {
+    
+    try {
+        if (!context.mounted) {
       return;
     }
 
@@ -45,19 +43,34 @@ class _SplashScreenState extends State<SplashScreen> {
 
     await createCurrentDir();
     // loading the themes to the store
-    if (mangaList != null) {
+    if (mangaList != null  && context.mounted) {
       context.read<LibraryBloc>().add(SetLibs(libs: mangaList));
     }
 
     await createLogFile();
     await createAppDB();
 
+    if (!context.mounted) return;
     Navigator.pushNamed(context, '/home');
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content:  Text(
+          e.toString(),
+          style: const TextStyle(color: Colors.white),
+        ),
+        backgroundColor: Theme.of(context).colorScheme.background,
+      ),
+    );
+    }
+  
   }
 
   @override
   void initState() {
-    initApp(context);
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+      initApp();
+    });
     super.initState();
   }
 }

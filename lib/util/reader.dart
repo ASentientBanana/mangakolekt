@@ -9,18 +9,31 @@ import 'package:mangakolekt/util/files.dart';
 import 'package:path/path.dart' as p;
 import 'package:collection/collection.dart';
 
-Future<Book?> getBook(String bookPath, int? id) async {
+Future<Book?> getBook(BuildContext context, String bookPath, int? id) async {
   final dest = await getCurrentDirPath();
   Book? book;
   imageCache.clear();
 
   if (Platform.isLinux || Platform.isWindows) {
-    final params = [bookPath.split('.').last, bookPath, dest, id.toString()];
-    book = await compute(ArchiveController.unpack, params);
+    try {
+      final params = [bookPath.split('.').last, bookPath, dest, id.toString()];
+      book = await compute(ArchiveController.unpack, params);
+      print("Got book");
+      print(book?.pages.length);
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            e.toString(),
+            style: const TextStyle(color: Colors.white),
+          ),
+          backgroundColor: Theme.of(context).colorScheme.background,
+        ),
+      );
+    }
   } else {
     book = await getBookFromArchive(bookPath);
   }
-
   return book;
 }
 

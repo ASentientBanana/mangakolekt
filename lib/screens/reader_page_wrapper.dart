@@ -36,8 +36,11 @@ class _ReaderPageWrapperState extends State<ReaderPageWrapper> {
 
   @override
   void initState() {
-    _book = getBook(widget.path, widget.id);
-
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+     setState(() {
+        _book = getBook(context, widget.path, widget.id);
+     });
+    });
     super.initState();
   }
 
