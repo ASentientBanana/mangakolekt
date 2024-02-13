@@ -2,49 +2,80 @@ import 'dart:ffi'; // For FFI
 import 'dart:io';
 import 'package:ffi/ffi.dart';
 import 'package:flutter/foundation.dart';
-import 'package:mangakolekt/models/ffi.dart';
+import 'package:mangakolekt/constants.dart';
+import 'package:mangakolekt/types/ffi.dart';
+import 'package:mangakolekt/generated/archive_ffi.dart' as nb;
 
 import 'package:path/path.dart';
-
-typedef UnziperFunc = Pointer<Uint8> Function(
-    Pointer<Uint8> filesString, Pointer<Uint8> path, Pointer<Uint8> output);
-typedef ExtractImagesFromZipFunction = Pointer<Utf8> Function(
-    Pointer<Utf8> zipFilePath, Pointer<Utf8> targetPath);
-
-typedef ExtractImagesFromZipFunctionDart = Pointer<Utf8> Function(
-    Pointer<Utf8> zipFilePath, Pointer<Utf8> targetPath);
 
 class FFIService {
   // FFIService({required this.dyLib});
 
+  static Future<void> checkLibDir(String path) async {
+    //Append lib folder name to the path
+    final fullPath = join(path, libFolderName);
+    final dyLib = loadService();
+    if (dyLib == null) {
+      return;
+    }
+    final nativeBindings = nb.NativeLibrary(dyLib);
+
+    final fullPathPtr = fullPath.toNativeUtf8().cast<Char>();
+    nativeBindings.Check_For_Lib_dir(fullPathPtr);
+    calloc.free(fullPathPtr);
+  }
+
   static Future<List<String>> ffiUnzipSingleBook(
       String _bookPath, String _targetPath) async {
     final dyLib = loadService();
-    final unzipBook = dyLib.lookupFunction<ExtractImagesFromZipFunction,
-        ExtractImagesFromZipFunctionDart>("Unzip_Single_book");
-    final bookPath = _bookPath.toNativeUtf8();
-    final targetPath = _targetPath.toNativeUtf8();
-    try {
-      final filesString = unzipBook(bookPath, targetPath);
-      List<String> dartStrings = filesString.toDartString().split("?&?");
-      // calloc.free(filesString);
-      calloc.free(bookPath);
-      calloc.free(targetPath);
-      return dartStrings;
-    } catch (e) {
-      calloc.free(bookPath);
-      calloc.free(targetPath);
+    if (dyLib == null) {
       return [];
     }
-    
+    final nativeBindings = nb.NativeLibrary(dyLib);
+    final pBookPath = _bookPath.toNativeUtf8().cast<Char>();
+    final pTargetPath = _targetPath.toNativeUtf8().cast<Char>();
+
+    try {
+      final pFiles =
+          await nativeBindings.Unzip_Single_book(pBookPath, pTargetPath);
+      final files = pFiles.toString().split("?&?");
+      calloc.free(pFiles);
+      calloc.free(pBookPath);
+      calloc.free(pTargetPath);
+      return files;
+    } catch (e) {
+      calloc.free(pBookPath);
+      calloc.free(pTargetPath);
+      return [];
+    }
+    // final unzipBook = dyLib.lookupFunction<ExtractImagesFromZipFunction,
+    //     ExtractImagesFromZipFunctionDart>("Unzip_Single_book", isLeaf: true);
+    // final bookPath = _bookPath.toNativeUtf8();
+    // final targetPath = _targetPath.toNativeUtf8();
+    // try {
+    //   final filesString = unzipBook(bookPath, targetPath);
+    //   List<String> dartStrings = filesString.toDartString().split("?&?");
+    //   // calloc.free(filesString);
+    //   calloc.free(bookPath);
+    //   calloc.free(targetPath);
+    //   return dartStrings;
+    // } catch (e) {
+    //   calloc.free(bookPath);
+    //   calloc.free(targetPath);
+    //   return [];
+    // }
   }
 
   static Future<List<String>> ffiUnzipCovers(
       List<String> files, String path, String out) async {
     final dyLib = loadService();
 
-    final unzipCoversFromDir =
-        dyLib.lookupFunction<UnziperFunc, UnziperFunc>("Unzip_Covers");
+    if (dyLib == null) {
+      return [];
+    }
+
+    final unzipCoversFromDir = dyLib
+        .lookupFunction<UnziperFunc, UnziperFunc>("Unzip_Covers", isLeaf: true);
 
     final filesString = files.join("&&");
 
@@ -66,14 +97,16 @@ class FFIService {
   static DynamicLibrary loadWindows() {
     if (kReleaseMode) {
       // I'm on release mode, absolute linking
-      String pathToLib =
-          join(Directory(Platform.resolvedExecutable).parent.path,"manga_archive.dll");
+      String pathToLib = join(
+          Directory(Platform.resolvedExecutable).parent.path,
+          "manga_archive.dll");
       // return FFIService(dyLib: DynamicLibrary.open(pathToLib));
       return DynamicLibrary.open(pathToLib);
     } else {
       // I'm on debug mode, local linking
       var path = Directory.current.path;
-      return DynamicLibrary.open(join(path,'lib','dev_lib','manga_archive.dll'));
+      return DynamicLibrary.open(
+          join(path, 'lib', 'dev_lib', 'manga_archive.dll'));
     }
   }
 
@@ -91,8 +124,14 @@ class FFIService {
 
   //TODO: Add default implementation
   static loadUnsupported() {
+    print("Platform unsuported");
+    // throw Error.safeToString("Platform unsuported");
     // Temp solution for the compiler
     return loadLinux();
+  }
+
+  static DynamicLibrary loadAndroid() {
+    return DynamicLibrary.executable();
   }
 
 //
@@ -100,15 +139,18 @@ class FFIService {
 //  or a generic PlatformService
 //  for the widest implementation as a generic return
 //
-  static DynamicLibrary loadService() {
+  static DynamicLibrary? loadService() {
     if (Platform.isLinux) {
       return loadLinux();
     }
     if (Platform.isWindows) {
       return loadWindows();
     }
+    if (Platform.isAndroid) {
+      return loadAndroid();
+    }
 
-    return loadUnsupported();
+    return null;
     // return UnsupportedNativePlatformService();
   }
 }

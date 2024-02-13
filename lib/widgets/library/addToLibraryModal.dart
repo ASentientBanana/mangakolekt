@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:mangakolekt/bloc/library/library_bloc.dart';
 import 'package:mangakolekt/controllers/archive.dart';
+import 'package:mangakolekt/services/ffiService.dart';
 import 'package:mangakolekt/util/database/database_helpers.dart';
 import 'package:mangakolekt/util/files.dart';
 import 'dart:isolate';
@@ -47,23 +48,21 @@ class AddToLibraryModalState extends State<AddToLibraryModal> {
 
   Future<List<String>?> startIsolate() async {
     try {
-    final res = await compute(
-        (message) => ArchiveController.unpackCovers(message, null),
-        widget.selectedDir);
-    // final res = await compute(ArchiveController.unpackCovers, widget.selectedDir);
-    return res;
-      
+      final res = await compute(
+          (message) => ArchiveController.unpackCovers(message, null),
+          widget.selectedDir);
+      return res;
     } catch (e) {
-       ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content:  Text(
-          e.toString(),
-          style: const TextStyle(color: Colors.white),
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            e.toString(),
+            style: const TextStyle(color: Colors.white),
+          ),
+          backgroundColor: Theme.of(context).colorScheme.background,
         ),
-        backgroundColor: Theme.of(context).colorScheme.background,
-      ),
-    );
-    return [];
+      );
+      return [];
     }
   }
 
@@ -76,6 +75,8 @@ class AddToLibraryModalState extends State<AddToLibraryModal> {
     setState(() {
       isSubmitDisabled = true;
     });
+
+    await FFIService.checkLibDir(widget.selectedDir);
 
     //Format is name;path;bookPath
     final bookCoverMapStringList = await startIsolate();
@@ -125,8 +126,6 @@ class AddToLibraryModalState extends State<AddToLibraryModal> {
           const Text(
             'Enter a name for the lib located at:',
             style: TextStyle(
-              // fontWeight: FontWeight.bold,
-              // fontFamily: "HighlandGothic",
               fontSize: 23,
               color: Colors.white,
             ),

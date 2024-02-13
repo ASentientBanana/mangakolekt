@@ -91,7 +91,6 @@ class DatabaseMangaHelpers {
       return null;
     }
     final res = await DatabaseCore.queryDB(table: DatabaseTables.Manga);
-    // query: 'SELECT * FROM Manga WHERE name = "Holyland";');
     if (res.isEmpty) {
       return null;
     }
@@ -141,7 +140,7 @@ class DatabaseMangaHelpers {
       "manga": manga,
       "page": page,
       "book": book,
-      "createdAt": DateTime.now().millisecondsSinceEpoch
+      "created_at": DateTime.now().millisecondsSinceEpoch
     });
     await db.close();
   }

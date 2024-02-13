@@ -41,21 +41,22 @@ class Bookmarks {
           "name": e["name"],
           "path": e["path"],
           "bookmarks": [
-            Bookmark(page: e["page"], book: e["book"], date: e["createdAt"])
+            Bookmark(
+                page: e["page"], book: e["book"], date: e["created_at"] ?? 0)
           ]
         };
       } else {
         (map[e["id"].toString()]["bookmarks"] as List<Bookmark>).add(
-            Bookmark(page: e["page"], book: e["book"], date: e["createdAt"]));
+            Bookmark(page: e["page"], book: e["book"], date: e["created_at"]));
       }
     }
-    print(map);
+
     data = map.entries
         .map((e) => BookmarksData(
             bookmarks: e.value["bookmarks"] as List<Bookmark>,
-            id: e.value["id"],
-            path: e.value["path"],
-            name: e.value["name"]))
+            id: e.value["id"] ?? 0,
+            path: e.value["path"] ?? 'No path found',
+            name: e.value["name"] ?? 'Manga'))
         .toList();
   }
 }

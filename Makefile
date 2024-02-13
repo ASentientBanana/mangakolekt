@@ -1,5 +1,7 @@
 build-linux:
-	bash build_scripts/build/linux.sh
+	bash build_scripts/linux.sh
 
-win:
+windows-msix:
 	dart run msix:create
+windows-zip:
+	.\build_scripts/windows.ps1
