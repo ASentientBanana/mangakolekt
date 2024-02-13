@@ -131,7 +131,8 @@ class FFIService {
   }
 
   static DynamicLibrary loadAndroid() {
-    return DynamicLibrary.executable();
+    const path = 'manga_archive.so';
+    return DynamicLibrary.open(path);
   }
 
 //

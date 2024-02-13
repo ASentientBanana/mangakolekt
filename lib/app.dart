@@ -5,11 +5,27 @@ import 'package:mangakolekt/screens/library.dart';
 import 'package:mangakolekt/screens/splash.dart';
 import 'package:mangakolekt/screens/theme_creator.dart';
 import 'package:mangakolekt/services/navigationService.dart';
+import 'package:mangakolekt/util/database/database_helpers.dart';
 import 'package:mangakolekt/util/util.dart';
 import 'package:mangakolekt/screens/reader_page_wrapper.dart';
 
-class AppWidget extends StatelessWidget {
+class AppWidget extends StatefulWidget {
   const AppWidget({super.key});
+
+  static const defaultTextStyle = TextStyle(
+      fontFamily: "HighlandGothic", color: Color.fromARGB(255, 238, 245, 238));
+
+  @override
+  State<AppWidget> createState() => _AppWidgetState();
+}
+
+class _AppWidgetState extends State<AppWidget> {
+  @override
+  void initState() {
+    DatabaseMangaHelpers.getLatestManga();
+
+    super.initState();
+  }
 
   Route<Widget>? onRouteGenerateHandler(RouteSettings settings) {
     switch (settings.name) {
@@ -38,9 +54,6 @@ class AppWidget extends StatelessWidget {
     return null;
   }
 
-  static const defaultTextStyle = TextStyle(
-      fontFamily: "HighlandGothic", color: Color.fromARGB(255, 238, 245, 238));
-
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -56,12 +69,12 @@ class AppWidget extends StatelessWidget {
         appBarTheme: const AppBarTheme(),
         textTheme:
             Typography().dense.apply(fontFamily: "HighlandGothic").copyWith(
-                  titleMedium: defaultTextStyle,
-                  titleLarge: defaultTextStyle,
-                  displayLarge: defaultTextStyle,
-                  displayMedium: defaultTextStyle,
-                  bodyLarge: defaultTextStyle,
-                  bodyMedium: defaultTextStyle,
+                  titleMedium: AppWidget.defaultTextStyle,
+                  titleLarge: AppWidget.defaultTextStyle,
+                  displayLarge: AppWidget.defaultTextStyle,
+                  displayMedium: AppWidget.defaultTextStyle,
+                  bodyLarge: AppWidget.defaultTextStyle,
+                  bodyMedium: AppWidget.defaultTextStyle,
                 ),
         colorScheme: const ColorScheme(
           brightness: Brightness.dark,

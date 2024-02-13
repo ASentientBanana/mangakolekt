@@ -1,12 +1,9 @@
 import 'dart:io';
 
-import 'package:mangakolekt/locator.dart';
-import 'package:mangakolekt/models/ffi.dart';
 import 'package:mangakolekt/services/ffiService.dart';
 import 'package:mangakolekt/util/archive.dart';
 import 'package:path/path.dart' as p;
 import 'package:mangakolekt/controllers/archive.dart';
-import 'package:mangakolekt/constants.dart';
 
 class ZipBookController extends BaseBookController {
   final List<String> fileTypes = ['zip', 'cbz'];
