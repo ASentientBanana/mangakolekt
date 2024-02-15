@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:mangakolekt/constants.dart';
 import 'package:mangakolekt/util/database/database_table.dart';
 import 'package:mangakolekt/util/database/table_definitions.dart';
@@ -12,6 +14,12 @@ class DatabaseCore {
     sqfliteFfiInit();
     final appDocumentDir = await getApplicationDocumentsDirectory();
     final dbPath = p.join(appDocumentDir.path, appFolder, dbName);
+    final fDb = File(dbPath);
+
+    if (!await fDb.exists()) {
+      await fDb.create();
+    }
+
     var databaseFactory = databaseFactoryFfi;
     var db = await databaseFactory.openDatabase(dbPath);
 

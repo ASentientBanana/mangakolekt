@@ -14,12 +14,12 @@ Future<Book?> getBook(BuildContext context, String bookPath, int? id) async {
   Book? book;
   imageCache.clear();
 
-  if (Platform.isLinux || Platform.isWindows) {
+  if (Platform.isLinux || Platform.isWindows || Platform.isAndroid) {
     try {
       final params = [bookPath.split('.').last, bookPath, dest, id.toString()];
       book = await compute(ArchiveController.unpack, params);
       print("Got book");
-      print(book?.pages.length);
+      print(book?.pages[0]);
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(

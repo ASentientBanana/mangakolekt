@@ -1,5 +1,5 @@
 build-linux:
-	bash build_scripts/linux.sh
+	bash ./build_scripts/linux.sh
 
 windows-msix:
 	dart run msix:create

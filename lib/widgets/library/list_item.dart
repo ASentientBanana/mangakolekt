@@ -1,9 +1,14 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:mangakolekt/bloc/library/library_bloc.dart';
+import 'package:mangakolekt/constants.dart';
 import 'package:mangakolekt/models/book.dart';
 import 'package:mangakolekt/util/database/database_helpers.dart';
+import 'package:path/path.dart' as p;
 import 'package:mangakolekt/util/lib.dart';
+import 'package:path_provider/path_provider.dart';
 
 class LibListItem extends StatefulWidget {
   final BookCover item;
@@ -30,7 +35,6 @@ class _LibListItemState extends State<LibListItem> {
     }
     final mangaList = await refreshLib(item: widget.item);
     if (mangaList != null) {
-      print("object");
       context.read<LibraryBloc>().add(SetLibs(libs: mangaList));
     }
   }
@@ -51,7 +55,7 @@ class _LibListItemState extends State<LibListItem> {
             width:
                 constraints.maxWidth * (constraints.maxWidth > 130 ? 0.7 : 0.5),
             child: OutlinedButton(
-              onPressed: () {
+              onPressed: () async {
                 context.read<LibraryBloc>().add(
                       SetCover(cover: widget.item),
                     );

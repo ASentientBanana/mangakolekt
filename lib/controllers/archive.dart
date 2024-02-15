@@ -98,6 +98,7 @@ class ArchiveController {
     // List<String> _pages = await compute((message) async {
     // return await _loadPagesRecursive(message);
     // }, target);
+    print("`Looking in`: $target");
     final _pages = await _loadPagesRecursive(target);
     _pages.sort(compareNatural);
     // // _pages = sortNumeric(_pages);
