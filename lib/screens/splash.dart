@@ -5,6 +5,7 @@ import 'package:mangakolekt/util/database/database_core.dart';
 import 'package:mangakolekt/util/database/database_helpers.dart';
 import 'package:mangakolekt/util/files.dart';
 import 'package:mangakolekt/widgets/loadingDog.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({Key? key}) : super(key: key);
@@ -28,6 +29,7 @@ class _SplashScreenState extends State<SplashScreen> {
   Future<void> initApp() async {
     //generating the theme file if not missing and reading if there
     // final themes = await checkThemeFile();
+
     try {
       if (!context.mounted) {
         return;
@@ -35,8 +37,16 @@ class _SplashScreenState extends State<SplashScreen> {
 
       await DatabaseCore.initDatabase();
 
+      final statusses = await [
+        Permission.photos,
+        Permission.videos,
+        Permission.audio,
+        Permission.accessMediaLocation
+      ].request();
+
       final mangaList = await DatabaseMangaHelpers.getManga();
 
+      await createGlobalCoversDir();
       await createCurrentDir();
       // loading the themes to the store
       if (mangaList != null && context.mounted) {

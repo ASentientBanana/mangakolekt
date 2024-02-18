@@ -4144,6 +4144,21 @@ class NativeLibrary {
           'Check_For_Lib_dir');
   late final _Check_For_Lib_dir =
       _Check_For_Lib_dirPtr.asFunction<void Function(ffi.Pointer<ffi.Char>)>();
+
+  ffi.Pointer<ffi.Char> Get_Files_From_Dir(
+    ffi.Pointer<ffi.Char> _path,
+  ) {
+    return _Get_Files_From_Dir(
+      _path,
+    );
+  }
+
+  late final _Get_Files_From_DirPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Pointer<ffi.Char> Function(
+              ffi.Pointer<ffi.Char>)>>('Get_Files_From_Dir');
+  late final _Get_Files_From_Dir = _Get_Files_From_DirPtr.asFunction<
+      ffi.Pointer<ffi.Char> Function(ffi.Pointer<ffi.Char>)>();
 }
 
 final class __fsid_t extends ffi.Struct {
@@ -4617,8 +4632,8 @@ final class GoSlice extends ffi.Struct {
   external int cap;
 }
 
-typedef GoInt = GoInt64;
-typedef GoInt64 = ffi.LongLong;
+typedef GoInt = GoInt32;
+typedef GoInt32 = ffi.Int;
 
 const int _STDIO_H = 1;
 

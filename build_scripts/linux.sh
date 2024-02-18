@@ -23,7 +23,7 @@ ARM_COMPILER="/usr/bin/aarch64-linux-gnu-gcc"
 architectures["amd64"]="x86_64"
 architectures["386"]="x86"
 # ARM
-# architectures["arm"]="armeabi-v7a"
+architectures["arm"]="armeabi-v7a"
 architectures["arm64"]="arm64-v8a"
 
 verify(){
@@ -39,7 +39,6 @@ compile(){
 
     arch=$1
     echo "Compliing for $arch"
-
     if [ "$arch" = "amd64" ]; then
     CGO_ENABLED=1 GOOS="linux" GOARCH="$arch" go build -buildmode=c-shared -o "$BUILD_TARGET" "main.go"
     elif [ "$arch" = "386" ]; then

@@ -1,5 +1,12 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.example.mangakolekt">
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" android:maxSdkVersion="32" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" android:maxSdkVersion="32"/>        
+    <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />        
+    <uses-permission android:name="android.permission.READ_MEDIA_VIDEO"  />        
+    <uses-permission android:name="android.permission.READ_MEDIA_AUDIO"  />        
+        <!-- android:requestLegacyExternalStorage="true" -->
+
    <application
         android:label="mangakolekt"
         android:name="${applicationName}"

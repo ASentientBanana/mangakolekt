@@ -12,12 +12,9 @@ class ZipBookController extends BaseBookController {
   Future<List<String>> unpackCovers(String pathToDir,
       {required List<String> files, required String out}) async {
     List<String> books;
-
-    if (Platform.isLinux || Platform.isWindows) {
-      final dirContents = Directory(pathToDir);
-      if (!await dirContents.exists()) return [];
-      final output = await FFIService.ffiUnzipCovers(files, pathToDir, out);
-      return output;
+    print("STARTING UNPACKING COVERS");
+    if (Platform.isLinux || Platform.isWindows || Platform.isAndroid) {
+      books = await FFIService.ffiUnzipCovers(files, pathToDir, out);
     } else {
       books = await getBooksV2(pathToDir);
     }

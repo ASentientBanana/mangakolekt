@@ -3,9 +3,9 @@ import 'dart:io';
 
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
-import 'package:mangakolekt/constants.dart';
 import 'package:mangakolekt/controllers/types/zip.dart';
 import 'package:mangakolekt/models/book.dart';
+import 'package:mangakolekt/services/ffiService.dart';
 import 'package:mangakolekt/util/files.dart';
 import 'package:mangakolekt/util/util.dart';
 import 'package:path/path.dart' as p;
@@ -127,12 +127,7 @@ class ArchiveController {
   static Future<List<String>?> unpackCovers(
       String pathToDir, List<String>? files) async {
     //create dirs
-    final coversDir =
-        Directory(p.join(pathToDir, libFolderName, libFolderCoverFolderName));
-    // // Create expected dirs
-    await coversDir.create(recursive: true);
-
-    final out = p.join(pathToDir, libFolderName, libFolderCoverFolderName);
+    final out = await getGlobalCoversDir();
 
     final types = <String, Runner>{};
     final dir = Directory(pathToDir);
@@ -140,8 +135,7 @@ class ArchiveController {
       return [];
     }
     // get a list of files
-    final _files = files ?? (await getFilesFromDir(dir));
-
+    final _files = files ?? (await FFIService.ffiGetDirContents(pathToDir));
     //Build map of types
     for (var element in _files) {
       final type = p.extension(element).substring(1);
@@ -158,6 +152,7 @@ class ArchiveController {
       //if the types is in the types map
       types[type]?.files.add(element);
     }
+
     //Create covers list and add all the covers
     final List<String> allCovers = [];
     for (var key in types.keys) {
@@ -167,6 +162,7 @@ class ArchiveController {
       final covers = await types[key]
           ?.controller
           .unpackCovers(pathToDir, files: types[key]?.files ?? [], out: out);
+      print(covers);
       if (covers != null) {
         allCovers.addAll(covers);
       }

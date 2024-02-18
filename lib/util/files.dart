@@ -101,6 +101,21 @@ Future<void> createCurrentDir() async {
   }
 }
 
+Future<void> createGlobalCoversDir() async {
+  final appDocs = await getApplicationDocumentsDirectory();
+  final path = p.join(appDocs.path, 'covers');
+  final d = Directory(path);
+  if (!(await d.exists())) {
+    await d.create();
+  }
+}
+
+Future<String> getGlobalCoversDir() async {
+  final appDocs = await getApplicationDocumentsDirectory();
+  final path = p.join(appDocs.path, 'covers');
+  return path;
+}
+
 Future<void> emptyCurrentDir() async {
   final dirPath = await getApplicationDocumentsDirectory();
   final path = p.join(dirPath.path, appFolder, currentFolder);
@@ -116,6 +131,7 @@ Future<void> emptyCurrentDir() async {
 Future<List<String>> getFilesFromDir(Directory dir) async {
   final list = await dir.list().toList();
   final List<String> files = [];
+  print("Number of files ${list.length} in ${dir.path}");
   for (var i = 0; i < list.length; i++) {
     if ((await list[i].stat()).type == FileSystemEntityType.file) {
       files.add(list[i].path);

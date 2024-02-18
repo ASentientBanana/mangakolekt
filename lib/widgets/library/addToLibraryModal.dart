@@ -48,11 +48,17 @@ class AddToLibraryModalState extends State<AddToLibraryModal> {
 
   Future<List<String>?> startIsolate() async {
     try {
-      final res = await compute(
-          (message) => ArchiveController.unpackCovers(message, null),
-          widget.selectedDir);
+      // final res = await compute(
+      //     (message) => ArchiveController.unpackCovers(message, null),
+      //     widget.selectedDir);
+      final res =
+          await ArchiveController.unpackCovers(widget.selectedDir, null);
       return res;
     } catch (e) {
+      print(e);
+      if (!context.mounted) {
+        return [];
+      }
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(
@@ -76,10 +82,12 @@ class AddToLibraryModalState extends State<AddToLibraryModal> {
       isSubmitDisabled = true;
     });
 
-    await FFIService.checkLibDir(widget.selectedDir);
+    // await FFIService.checkLibDir(widget.selectedDir);
 
     //Format is name;path;bookPath
     final bookCoverMapStringList = await startIsolate();
+
+    print(bookCoverMapStringList);
 
     if (bookCoverMapStringList == null) {
       return;
@@ -97,7 +105,7 @@ class AddToLibraryModalState extends State<AddToLibraryModal> {
         .id;
     await DatabaseMangaHelpers.addMangaMapping(bookCoverMapStringList, id);
 
-    if (mangaList.isNotEmpty) {
+    if (mangaList.isNotEmpty && context.mounted) {
       context.read<LibraryBloc>().add(SetLibs(libs: mangaList));
     }
     // });

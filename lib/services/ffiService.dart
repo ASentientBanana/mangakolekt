@@ -11,6 +11,23 @@ import 'package:path/path.dart';
 class FFIService {
   // FFIService({required this.dyLib});
 
+  static Future<List<String>> ffiGetDirContents(String dirPath) async {
+    final dyLib = loadService();
+    if (dyLib == null) {
+      return [];
+    }
+    final nativeBindings = nb.NativeLibrary(dyLib);
+    final pDirPath = dirPath.toNativeUtf8().cast<Char>();
+    final filesString = nativeBindings.Get_Files_From_Dir(pDirPath);
+    final files = filesString.cast<Utf8>().toDartString();
+    print("Found in dart: ");
+    print(files);
+
+    calloc.free(filesString);
+    calloc.free(pDirPath);
+    return [];
+  }
+
   static Future<void> checkLibDir(String path) async {
     //Append lib folder name to the path
     final fullPath = join(path, libFolderName);
@@ -38,7 +55,8 @@ class FFIService {
     try {
       final pFiles =
           await nativeBindings.Unzip_Single_book(pBookPath, pTargetPath);
-      final files = pFiles.toString().split("?&?");
+      final files = pFiles.cast<Utf8>().toDartString().split("?&?");
+
       calloc.free(pFiles);
       calloc.free(pBookPath);
       calloc.free(pTargetPath);
