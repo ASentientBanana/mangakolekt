@@ -1,32 +1,30 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_file_dialog/flutter_file_dialog.dart';
 import 'package:mangakolekt/bloc/library/library_bloc.dart';
 import 'package:mangakolekt/controllers/archive.dart';
-import 'package:mangakolekt/services/ffiService.dart';
+import 'package:mangakolekt/locator.dart';
+import 'package:mangakolekt/services/navigationService.dart';
 import 'package:mangakolekt/util/database/database_helpers.dart';
 import 'package:mangakolekt/util/files.dart';
-import 'dart:isolate';
+import 'package:mangakolekt/util/util.dart';
 
-import 'package:permission_handler/permission_handler.dart';
-
-class AddToLibraryModal extends StatefulWidget {
+class CreateLibBody extends StatefulWidget {
   final String selectedDir;
 
-  const AddToLibraryModal({super.key, required this.selectedDir});
+  const CreateLibBody({super.key, required this.selectedDir});
 
   @override
-  AddToLibraryModalState createState() => AddToLibraryModalState();
+  CreateLibBodyState createState() => CreateLibBodyState();
 }
 
-class AddToLibraryModalState extends State<AddToLibraryModal> {
+class CreateLibBodyState extends State<CreateLibBody> {
   final TextEditingController textEditingController = TextEditingController();
 
   double numberOfFiles = 0;
   double maxNumberOfFiles = 1;
   bool isSubmitDisabled = false;
+
+  final _navigationService = locator<NavigationService>();
 
   void incrementProgress() {
     setState(() {
@@ -98,21 +96,23 @@ class AddToLibraryModalState extends State<AddToLibraryModal> {
 
     if (mangaList.isNotEmpty && context.mounted) {
       context.read<LibraryBloc>().add(SetLibs(libs: mangaList));
-      context.read<LibraryBloc>().add(CloseAddToLibModal());
     }
-
+    closeModal();
     setState(() {
       isSubmitDisabled = false;
     });
+  }
+
+  void closeModal() {
+    _navigationService.goBack();
   }
 
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
     return Container(
-      height: 240,
-      width: 500,
-      padding: const EdgeInsets.symmetric(horizontal: 20),
+      // width: 500,
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
       decoration: BoxDecoration(
         border: Border.all(width: 1, style: BorderStyle.solid),
         color: colorScheme.primary,
@@ -121,10 +121,10 @@ class AddToLibraryModalState extends State<AddToLibraryModal> {
         mainAxisSize: MainAxisSize.min,
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          const Text(
+          Text(
             'Enter a name for the lib located at:',
             style: TextStyle(
-              fontSize: 23,
+              fontSize: isMobile() ? 18 : 23,
               color: Colors.white,
             ),
           ),
@@ -132,9 +132,9 @@ class AddToLibraryModalState extends State<AddToLibraryModal> {
             padding: const EdgeInsets.only(left: 20),
             child: Text(
               widget.selectedDir,
-              style: const TextStyle(
+              style: TextStyle(
                 color: Colors.white70,
-                fontSize: 18,
+                fontSize: isMobile() ? 12 : 18,
               ),
             ),
           ),
@@ -200,13 +200,7 @@ class AddToLibraryModalState extends State<AddToLibraryModal> {
                       shape: const BeveledRectangleBorder(),
                       // side: BorderSide(color: colorScheme.secondary)
                     ),
-                    onPressed: !isSubmitDisabled
-                        ? () {
-                            context
-                                .read<LibraryBloc>()
-                                .add(CloseAddToLibModal());
-                          }
-                        : null,
+                    onPressed: !isSubmitDisabled ? closeModal : null,
                     child: const Text(
                       'Cancel',
                       style: TextStyle(

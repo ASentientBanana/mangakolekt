@@ -12,6 +12,7 @@ class FFIService {
   // FFIService({required this.dyLib});
 
   static Future<List<String>> ffiGetDirContents(String dirPath) async {
+    List<String> files = [];
     final dyLib = loadService();
     if (dyLib == null) {
       return [];
@@ -19,13 +20,13 @@ class FFIService {
     final nativeBindings = nb.NativeLibrary(dyLib);
     final pDirPath = dirPath.toNativeUtf8().cast<Char>();
     final filesString = nativeBindings.Get_Files_From_Dir(pDirPath);
-    final files = filesString.cast<Utf8>().toDartString();
+    files = filesString.cast<Utf8>().toDartString().split("&&");
     print("Found in dart: ");
     print(files);
 
     calloc.free(filesString);
     calloc.free(pDirPath);
-    return [];
+    return files;
   }
 
   static Future<void> checkLibDir(String path) async {

@@ -1,13 +1,19 @@
+import 'dart:io';
+
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_file_dialog/flutter_file_dialog.dart';
 import 'package:mangakolekt/bloc/library/library_bloc.dart';
 import 'package:mangakolekt/locator.dart';
 import 'package:mangakolekt/services/navigationService.dart';
 import 'package:mangakolekt/util/files.dart';
 import 'package:mangakolekt/widgets/modals/bookmarks.dart';
+import 'package:mangakolekt/widgets/modals/createLib.dart';
 import 'package:mangakolekt/widgets/modals/help.dart';
 import 'package:mangakolekt/widgets/modals/settings.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 class MangaMenuBar extends StatelessWidget {
   Widget child;
@@ -30,11 +36,12 @@ class MangaMenuBar extends StatelessWidget {
   }
 
   Future<void> pickDirHandler(BuildContext context) async {
-    final dir = await pickDirectory();
-    if (dir != null && context.mounted) {
-      // TODO: FIX WARRNING ABOUT CONTEXT
-      context.read<LibraryBloc>().add(ToggleAddToLibModal(path: dir));
+    final dir = await FilePicker.platform.getDirectoryPath();
+    if (dir == null || !context.mounted) {
+      return;
     }
+    showCreateLibDialog(context, dir);
+    //  dir
   }
 
   @override

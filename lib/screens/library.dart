@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:mangakolekt/bloc/library/library_bloc.dart';
@@ -47,21 +49,23 @@ class _MyHomePageState extends State<MyHomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Theme.of(context).colorScheme.background,
-      body: MangaMenuBar(
-          child: Container(
-        padding: const EdgeInsets.all(4),
-        color: Theme.of(context).colorScheme.background,
-        child: Stack(
-          children: [
-            const Row(
-              children: [LibList(), Expanded(child: LibGrid())],
+      body: SafeArea(
+          top: (Platform.isAndroid || Platform.isIOS),
+          child: MangaMenuBar(
+              child: Container(
+            padding: const EdgeInsets.all(4),
+            color: Theme.of(context).colorScheme.background,
+            child: Stack(
+              children: [
+                const Row(
+                  children: [LibList(), Expanded(child: LibGrid())],
+                ),
+                BlocBuilder<LibraryBloc, LibraryState>(
+                  builder: modalBuilder,
+                )
+              ],
             ),
-            BlocBuilder<LibraryBloc, LibraryState>(
-              builder: modalBuilder,
-            )
-          ],
-        ),
-      )),
+          ))),
     );
     // return
     //

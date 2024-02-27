@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:mangakolekt/bloc/library/library_bloc.dart';
@@ -27,9 +29,6 @@ class _SplashScreenState extends State<SplashScreen> {
 
   // init function to create, load and read any data before opening home page
   Future<void> initApp() async {
-    //generating the theme file if not missing and reading if there
-    // final themes = await checkThemeFile();
-
     try {
       if (!context.mounted) {
         return;
@@ -37,21 +36,22 @@ class _SplashScreenState extends State<SplashScreen> {
 
       await DatabaseCore.initDatabase();
 
-      final statusses = await [
-        Permission.photos,
-        Permission.videos,
-        Permission.audio,
-        Permission.accessMediaLocation
-      ].request();
+      if (Platform.isAndroid || Platform.isIOS) {
+        final statusses = await [
+          Permission.photos,
+          Permission.videos,
+          Permission.audio,
+        ].request();
+      }
 
-      final mangaList = await DatabaseMangaHelpers.getManga();
+      // final mangaList = await DatabaseMangaHelpers.getManga();
 
       await createGlobalCoversDir();
       await createCurrentDir();
       // loading the themes to the store
-      if (mangaList != null && context.mounted) {
-        context.read<LibraryBloc>().add(SetLibs(libs: mangaList));
-      }
+      // if (mangaList != null && context.mounted) {
+      //   context.read<LibraryBloc>().add(SetLibs(libs: mangaList));
+      // }
 
       await createLogFile();
       await createAppDB();
@@ -59,7 +59,6 @@ class _SplashScreenState extends State<SplashScreen> {
       if (!context.mounted) return;
       Navigator.pushNamed(context, '/home');
     } catch (e) {
-      print(e);
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           behavior: SnackBarBehavior.fixed,

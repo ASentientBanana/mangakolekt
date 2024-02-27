@@ -34,6 +34,9 @@ Future<void> registerBookToLib(String libPath, bookPath) async {}
 Future<int> getNumberOfFiles(String path) async {
   final dir = Directory(path);
   int filesCount = 0;
+  if (!(await dir.exists())) {
+    return filesCount;
+  }
   final contents = await dir.list().toList();
   final len = contents.length;
   for (var i = 0; i < len; i++) {

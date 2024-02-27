@@ -128,14 +128,16 @@ class ArchiveController {
       String pathToDir, List<String>? files) async {
     //create dirs
     final out = await getGlobalCoversDir();
-
+    print("Starting unpack process");
     final types = <String, Runner>{};
     final dir = Directory(pathToDir);
     if (!await dir.exists()) {
       return [];
     }
+
     // get a list of files
-    final _files = files ?? (await FFIService.ffiGetDirContents(pathToDir));
+    // final _files = files ?? (await FFIService.ffiGetDirContents(pathToDir));
+    final _files = files ?? (await getFilesFromDir(dir));
     //Build map of types
     for (var element in _files) {
       final type = p.extension(element).substring(1);
@@ -162,6 +164,7 @@ class ArchiveController {
       final covers = await types[key]
           ?.controller
           .unpackCovers(pathToDir, files: types[key]?.files ?? [], out: out);
+      print("covers::");
       print(covers);
       if (covers != null) {
         allCovers.addAll(covers);
