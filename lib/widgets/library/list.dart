@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:mangakolekt/bloc/library/library_bloc.dart';
 import 'package:mangakolekt/constants.dart';
+import 'package:mangakolekt/models/library.dart';
 import 'package:mangakolekt/util/database/database_helpers.dart';
 import 'package:mangakolekt/widgets/library/listItem.dart';
 
@@ -19,7 +20,7 @@ class _LibListState extends State<LibList> {
 
   @override
   void initState() {
-    db = DatabaseMangaHelpers.getManga();
+    // db = DatabaseMangaHelpers.getCovers(id:);
     super.initState();
   }
 
@@ -28,14 +29,14 @@ class _LibListState extends State<LibList> {
       return const SizedBox.shrink();
     }
     //Check if empty list to remove the side panel
-    if (state.libStore.libList.isEmpty) {
+    if (state.libStore.libElements.isEmpty) {
       return const SizedBox.shrink();
     }
     final List<LibListItem> list = [];
-    final numberOfBooks = state.libStore.libList.length;
+    final numberOfBooks = state.libStore.libElements.length;
 
     for (var i = 0; i < numberOfBooks; i++) {
-      list.add(LibListItem(item: state.libStore.libList[i], index: i - 1));
+      list.add(LibListItem(item: state.libStore.libElements[i], index: i));
     }
     final colorScheme = Theme.of(context).colorScheme;
     return Stack(
@@ -84,17 +85,17 @@ class _LibListState extends State<LibList> {
             ),
           ),
         ),
-        Positioned(
-          child: ElevatedButton(
-            onPressed: () {
-              print("click");
-              setState(() {
-                hidden = !hidden;
-              });
-            },
-            child: const Icon(Icons.arrow_back),
-          ),
-        ),
+        // Positioned(
+        //   child: ElevatedButton(
+        //     onPressed: () {
+        //       print("click");
+        //       setState(() {
+        //         hidden = !hidden;
+        //       });
+        //     },
+        //     child: const Icon(Icons.arrow_back),
+        //   ),
+        // ),
       ],
     );
   }

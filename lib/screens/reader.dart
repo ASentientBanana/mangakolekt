@@ -79,9 +79,14 @@ class _MangaReaderState extends State<MangaReader> {
 
   Future<List<int>> getBookmarks() async {
     if (readerController.book.id != null) {
-      return await DatabaseMangaHelpers.getBookmarksForManga(
-          readerController.book.id!);
+      final bookmarks = await DatabaseMangaHelpers.getBookmarks(
+          path: readerController.book.path);
+
+      if (bookmarks.data.isNotEmpty) {
+        return bookmarks.data.first.bookmarks.map((e) => e.page).toList();
+      }
     }
+
     return [];
   }
 
@@ -122,8 +127,8 @@ class _MangaReaderState extends State<MangaReader> {
         bookmarks.contains(readerController.getCurrentPages().first);
     if (!isBookmark) {
       await DatabaseMangaHelpers.addBookmark(
-          book: readerController.book.name,
-          manga: readerController.book.id ?? 0,
+          book: readerController.book.id ?? -1,
+          path: readerController.book.path,
           page: readerController.getCurrentPages().first);
     } else {
       await DatabaseMangaHelpers.removeBookmark(
@@ -148,17 +153,19 @@ class _MangaReaderState extends State<MangaReader> {
     final List<Widget> pages = [];
 
     for (var i = 0; i < pageIndexes.length; i++) {
-      pages.add(Expanded(
-        // flex: 1,
-        child: Listener(
-          onPointerDown: handleMouseClick,
-          child: SingleImage(
-              isDouble: readerController.getCurrentPages().length == 2,
-              index: i,
-              image: readerController.pages[pageIndexes[i]].entry.image,
-              scaleTo: readerController.scaleTo),
+      pages.add(
+        Expanded(
+          // flex: 1,
+          child: Listener(
+            onPointerDown: handleMouseClick,
+            child: SingleImage(
+                isDouble: readerController.getCurrentPages().length == 2,
+                index: i,
+                image: readerController.pages[pageIndexes[i]].entry.image,
+                scaleTo: readerController.scaleTo),
+          ),
         ),
-      ));
+      );
     }
     return pages;
   }

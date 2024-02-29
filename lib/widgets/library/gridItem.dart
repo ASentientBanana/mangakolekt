@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:mangakolekt/locator.dart';
 import 'package:mangakolekt/models/book.dart';
 import 'dart:io';
+
+import 'package:mangakolekt/services/navigationService.dart';
 
 class GridItem extends StatefulWidget {
   final BookCover item;
@@ -12,7 +15,7 @@ class GridItem extends StatefulWidget {
 
 class _GridItemState extends State<GridItem> with TickerProviderStateMixin {
   bool isHovering = false;
-  // final _navigationService = locator<NavigationService>();
+  final _navigationService = locator<NavigationService>();
 
   @override
   Widget build(BuildContext context) {
@@ -36,8 +39,8 @@ class _GridItemState extends State<GridItem> with TickerProviderStateMixin {
           },
           onTap: () {
             print("GOTTEM:: ${widget.item.path}");
-            // _navigationService.navigateTo('/reader',
-            //     {"path": widget.item.bookPath, "id": widget.item.id});
+            _navigationService.navigateTo('/reader',
+                {"path": widget.item.bookPath, "id": widget.item.id});
           },
           child: Image.file(
             fit: BoxFit.contain,

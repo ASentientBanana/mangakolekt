@@ -44,14 +44,14 @@ class _SplashScreenState extends State<SplashScreen> {
         ].request();
       }
 
-      // final mangaList = await DatabaseMangaHelpers.getManga();
-
+      final mangaList = await DatabaseMangaHelpers.getAllBooksFromLibrary();
       await createGlobalCoversDir();
       await createCurrentDir();
       // loading the themes to the store
-      // if (mangaList != null && context.mounted) {
-      //   context.read<LibraryBloc>().add(SetLibs(libs: mangaList));
-      // }
+      if (context.mounted) {
+        // REFACTOR:
+        context.read<LibraryBloc>().add(SetLibs(libs: mangaList));
+      }
 
       await createLogFile();
       await createAppDB();

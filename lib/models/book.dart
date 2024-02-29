@@ -23,6 +23,19 @@ class BookCover {
   String get mapString => "$name;$path;$bookPath";
   // return BookCover(name: bookName, path: out, bookPath: path);
 
+  static BookCover? fromMap(Map<String, dynamic> map) {
+    final name = map['name'];
+    final path = map['cover'];
+    final bookPath = map['path'];
+    final id = map['id'];
+
+    if (name == null || path == null || bookPath == null || id == null) {
+      return null;
+    }
+
+    return BookCover(name: name, path: path, bookPath: bookPath, id: id);
+  }
+
   BookCover.formString(String s) {
     final stringArr = s.split(';');
     name = stringArr[0];

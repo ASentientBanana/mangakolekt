@@ -80,22 +80,14 @@ class CreateLibBodyState extends State<CreateLibBody> {
     }
 
     // Add manga to Manga table in db
-    final mangaList = await DatabaseMangaHelpers.addManga(
-        path: widget.selectedDir,
-        name: textEditingController.text,
-        returnManga: true);
-
-    if (mangaList == null) {
-      return;
-    }
-
-    final id = mangaList
-        .firstWhere((element) => element.name == textEditingController.text)
-        .id;
-    await DatabaseMangaHelpers.addMangaMapping(coversPathList, id);
-
+    // REFACTOR:
+    final id = await DatabaseMangaHelpers.addLibrary(
+        name: textEditingController.text, books: coversPathList);
+    final mangaList = await DatabaseMangaHelpers.getAllBooksFromLibrary();
+    final index = mangaList.indexWhere((element) => element.id == id);
     if (mangaList.isNotEmpty && context.mounted) {
       context.read<LibraryBloc>().add(SetLibs(libs: mangaList));
+      context.read<LibraryBloc>().add(SetCurrentLib(index: index));
     }
     closeModal();
     setState(() {

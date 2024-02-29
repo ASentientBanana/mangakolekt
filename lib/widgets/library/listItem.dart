@@ -5,13 +5,14 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:mangakolekt/bloc/library/library_bloc.dart';
 import 'package:mangakolekt/constants.dart';
 import 'package:mangakolekt/models/book.dart';
+import 'package:mangakolekt/models/library.dart';
 import 'package:mangakolekt/util/database/database_helpers.dart';
 import 'package:path/path.dart' as p;
 import 'package:mangakolekt/util/lib.dart';
 import 'package:path_provider/path_provider.dart';
 
 class LibListItem extends StatefulWidget {
-  final BookCover item;
+  final LibraryElement item;
   final int index;
 
   const LibListItem({Key? key, required this.item, required this.index})
@@ -23,20 +24,20 @@ class LibListItem extends StatefulWidget {
 
 class _LibListItemState extends State<LibListItem> {
   void handleDeleteFromLib(BuildContext context) async {
-    await deleteLib(widget.item.path);
-    DatabaseMangaHelpers.deleteManga(widget.item.id).then((value) {
-      context.read<LibraryBloc>().add(RemoveBook(id: widget.item.id));
-    });
+    // await deleteLib(widget.item.path);
+    // DatabaseMangaHelpers.deleteManga(widget.item.id).then((value) {
+    //   context.read<LibraryBloc>().add(RemoveBook(id: widget.item.id));
+    // });
   }
 
   Future<void> handleRefreshLib(BuildContext context) async {
     if (!context.mounted) {
       return;
     }
-    final mangaList = await refreshLib(item: widget.item);
-    if (mangaList != null) {
-      context.read<LibraryBloc>().add(SetLibs(libs: mangaList));
-    }
+    // final mangaList = await refreshLib(item: widget.item);
+    // if (mangaList != null) {
+    //   context.read<LibraryBloc>().add(SetLibs(libs: mangaList));
+    // }
   }
 
   @override
@@ -57,7 +58,7 @@ class _LibListItemState extends State<LibListItem> {
             child: OutlinedButton(
               onPressed: () async {
                 context.read<LibraryBloc>().add(
-                      SetCover(cover: widget.item),
+                      SetCurrentLib(index: widget.index),
                     );
               },
               child: Center(

@@ -132,3 +132,13 @@ Route<Widget> pageRouteBuilderWrapper(RouteSettings settings, Widget page) {
 bool isMobile() {
   return (Platform.isAndroid || Platform.isIOS);
 }
+
+bool validateMap(Map map, List<String> keys) {
+  for (var i = 0; i < keys.length; i++) {
+    if (map[keys[i]] == null) {
+      return false;
+    }
+  }
+
+  return true;
+}

@@ -48,8 +48,8 @@ class DatabaseTableField {
 }
 
 class DatabaseTables {
-  static String Manga = "Manga";
-  static String MangaMap = "Covers";
+  static String Library = "Library";
+  static String Book = "Books";
   static String Reader = "Reader";
   static String Bookmarks = "Bookmarks";
 }

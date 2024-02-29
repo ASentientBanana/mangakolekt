@@ -1,155 +1,134 @@
 import 'package:mangakolekt/models/book.dart';
 import 'package:mangakolekt/models/database/bookmark.dart';
+import 'package:mangakolekt/models/library.dart';
 import 'package:mangakolekt/util/database/database_core.dart';
 import 'package:mangakolekt/util/database/database_table.dart';
 import 'package:mangakolekt/util/util.dart';
-import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 
 class DatabaseMangaHelpers {
   static getAllManga() {
     DatabaseCore.readFromDB(
-        query: "Select * FROM TABLE ${DatabaseTables.Manga}");
+        query: "Select * FROM TABLE ${DatabaseTables.Book}");
   }
 
-  static Future<List<BookCover>> getCoversFromMangaMap(int manga_id) async {
-    final res = await DatabaseCore.queryDB(
-        table: DatabaseTables.MangaMap,
-        where: "manga_id = ?",
-        args: [manga_id],
-        orderBy: "name");
-
-    return sortCoversNumeric(List.generate(
-        res.length,
-        (index) => BookCover(
-            name: res[index]['name'] as String,
-            path: res[index]['path'] as String,
-            bookPath: res[index]['bookPath'] as String,
-            id: res[index]['manga_id'] as int)));
-  }
-
-  static Future<void> deleteManga(int id) async {
-    await DatabaseCore.deleteFromDB(
-        table: DatabaseTables.Manga, where: 'id = ?', args: [id]);
-    await DatabaseCore.deleteFromDB(
-        table: DatabaseTables.MangaMap, where: 'manga_id = ?', args: [id]);
-  }
-
-  static Future<void> addMangaMapping(List<String> mapList, int id) async {
+  static Future<List<LibraryElement>> getAllBooksFromLibrary() async {
+    final Map<int, LibraryElement> libraryMap = {};
     final db = await DatabaseCore.openDB();
-    for (var mapString in mapList) {
-      final mList = mapString.split(';');
-      await db.insert(
-          DatabaseTables.MangaMap,
-          {
-            'name': mList[0],
-            'path': mList[1],
-            'bookPath': mList[2],
-            'manga_id': id
-          },
-          conflictAlgorithm: ConflictAlgorithm.replace);
+    final res = await db.rawQuery(
+        "SELECT ${DatabaseTables.Book}.library as id, ${DatabaseTables.Book}.id as book_id, path, cover, ${DatabaseTables.Book}.name as book_name, ${DatabaseTables.Library}.name as library_name FROM ${DatabaseTables.Book} RIGHT JOIN ${DatabaseTables.Library} ON ${DatabaseTables.Library}.id = ${DatabaseTables.Book}.library;");
+
+    //Construct lib element map
+    for (var i = 0; i < res.length; i++) {
+      final element = res[i];
+      //check
+      if (element['id'] == null) {
+        continue;
+      }
+
+      if (libraryMap[element['id']] == null) {
+        libraryMap[element['id'] as int] = LibraryElement(
+            id: element['id'] as int, name: element['library_name'] as String);
+      }
+
+      //validate map to see if all fields are present
+      final isValid = validateMap(element, [
+        "id",
+        "book_id",
+        "path",
+        "cover",
+        "book_name",
+        "library_name",
+      ]);
+
+      if (!isValid) {
+        continue;
+      }
+
+      libraryMap[element['id']]!.books.add(
+            BookCover(
+                id: element["book_id"] as int,
+                name: element["book_name"] as String,
+                path: element["cover"] as String,
+                bookPath: element["path"] as String),
+          );
     }
-    await db.close();
+    return libraryMap.entries.map((e) => e.value).toList();
   }
 
-  static Future<void> updateMangaMapping(List<String> mapList, int id) async {
+  static Future<int> addLibrary(
+      {required List<String> books, required String name}) async {
     final db = await DatabaseCore.openDB();
-    for (var mapString in mapList) {
-      final mList = mapString.split(';');
-      await db.update(
-          DatabaseTables.MangaMap,
-          {
-            'name': mList[0],
-            'path': mList[1],
-            'bookPath': mList[2],
-            'manga_id': id
-          },
-          conflictAlgorithm: ConflictAlgorithm.replace);
+
+    final id = await db.insert(DatabaseTables.Library, {"name": name});
+
+    // create batch
+    final batch = db.batch();
+    //loop and call insert on batch
+
+    for (var mapString in books) {
+      final mListItem = mapString.split(';');
+
+      batch.insert(
+        DatabaseTables.Book,
+        {
+          'name': mListItem[0],
+          "cover": mListItem[1],
+          "path": mListItem[2],
+          "library": id
+        },
+      );
     }
+    //commit to db
+    await batch.commit();
+    // final res = await db.query(DatabaseTables.Book);
+
     await db.close();
+    return id;
   }
 
-  static Future<List<BookCover>?> getManga() async {
-    final res = await DatabaseCore.queryDB(table: DatabaseTables.Manga);
-
-    return List.generate(
-      res.length,
-      (index) => BookCover(
-          id: res[index]["id"] as int,
-          name: res[index]["name"] as String,
-          path: res[index]["path"] as String,
-          bookPath: ""),
-    );
-  }
-
-  static Future<List<BookCover>?> addManga(
-      {required String name,
-      required String path,
-      bool returnManga = false}) async {
-    await DatabaseCore.writeToDB(
-        table: DatabaseTables.Manga, data: {"name": name, "path": path});
-    if (!returnManga) {
-      return null;
-    }
-    final res = await DatabaseCore.queryDB(table: DatabaseTables.Manga);
-    if (res.isEmpty) {
-      return null;
-    }
-
-    return List.generate(
-      res.length,
-      (index) => BookCover(
-          id: res[index]["id"] as int,
-          name: res[index]["name"] as String,
-          path: res[index]["path"] as String,
-          bookPath: ""),
-    );
-  }
-
-  static Future<void> setCurrentManga(
-      String manga, int page, String name) async {
+  static Future<void> setCurrentlyReading(String path, int page) async {
     try {
-      final now = DateTime.now().millisecondsSinceEpoch;
+      // final now = DateTime.now().millisecondsSinceEpoch;
       final db = await DatabaseCore.openDB();
 
-      // final sql =
-      // 'INSERT OR REPLACE INTO ${DatabaseTables.Reader} (manga ,currentPage ,doublePageView ,updated_at) VALUES (${manga} ,${page} ,${0} ,${now})';
-      // await db.rawQuery(sql);
-      //check for results
-      // await db.query(DatabaseTables.Reader, where: '');
-      final qRes = await db
-          .query(DatabaseTables.Reader, where: 'manga = ?', whereArgs: [manga]);
-      if (qRes.isEmpty) {
-        await DatabaseCore.writeToDB(table: DatabaseTables.Reader, data: {
-          "manga": manga,
-          "currentPage": page,
-          'updated_at': now,
-          "name": name
-        });
-        return;
-      }
-      await db.update(
-          DatabaseTables.Reader,
-          {
-            "manga": manga,
-            "currentPage": page,
-            'updated_at': now,
-            "name": name
-          },
-          where: "manga = ?",
-          whereArgs: [manga]);
+      await db.delete(DatabaseTables.Reader);
+
+      await db.insert(DatabaseTables.Reader, {"path": path, "page": page});
+
+      db.close();
     } catch (e) {
       return;
     }
-    // await DatabaseCore.writeToDB(table: DatabaseTables.Reader, data: {});
+  }
+
+  static Future<Bookmarks> getBookmarks({String? path}) async {
+    try {
+      if (path == null) {
+        final db = await DatabaseCore.openDB();
+        final results = await db.rawQuery(
+            "SELECT * FROM ${DatabaseTables.Bookmarks} LEFT JOIN ${DatabaseTables.Book} ON ${DatabaseTables.Book}.id = ${DatabaseTables.Bookmarks}.book;");
+
+        print(results);
+        db.close();
+        return Bookmarks.fromMaps(results);
+      }
+
+      final results = await DatabaseCore.queryDB(
+          table: DatabaseTables.Bookmarks, where: "path=?", args: [path]);
+      return Bookmarks.fromMaps(results);
+    } catch (e) {
+      print(e);
+      return Bookmarks.Empty();
+    }
   }
 
   static Future<void> addBookmark(
-      {required int manga, required int page, required String book}) async {
+      {required int book, required int page, required String path}) async {
     final db = await DatabaseCore.openDB();
     await db.insert(DatabaseTables.Bookmarks, {
-      "manga": manga,
-      "page": page,
       "book": book,
+      "page": page,
+      "path": path,
       "created_at": DateTime.now().millisecondsSinceEpoch
     });
     await db.close();
@@ -161,83 +140,5 @@ class DatabaseMangaHelpers {
         table: DatabaseTables.Bookmarks,
         where: 'manga = ? AND page = ?',
         args: [manga, page]);
-  }
-
-  static Future<Bookmarks> getBookmarks() async {
-    final db = await DatabaseCore.openDB();
-    // grab all of the data
-    final results = await db.rawQuery(
-        "SELECT * FROM ${DatabaseTables.Bookmarks} LEFT JOIN ${DatabaseTables.Manga} ON ${DatabaseTables.Manga}.id = ${DatabaseTables.Bookmarks}.manga;");
-    // close connection
-    await db.close();
-    return Bookmarks.fromMaps(results);
-  }
-
-  static Future<List<int>> getBookmarksForManga(int manga) async {
-    final qRES = await DatabaseCore.queryDB(
-        table: DatabaseTables.Bookmarks, where: "manga = ?", args: [manga]);
-    return qRES.map((e) => e['page'] as int).toList();
-  }
-
-  static Future<void> batchRemoveLibManga(List<String> manga) async {
-    if (manga.isEmpty) {
-      return;
-    }
-    //Construct args string for raw sql query
-    final args = '(${manga.map((e) => '"$e"').join(",")})';
-    final db = await DatabaseCore.openDB();
-    await db.rawQuery("DELETE FROM MangaMap WHERE bookPath IN $args");
-    db.close();
-  }
-
-  static Future<void> batchAddLibManga(List<String> manga, int id) async {
-    if (manga.isEmpty) {
-      return;
-    }
-
-    final db = await DatabaseCore.openDB();
-    // create batch
-    final batch = db.batch();
-    //loop and call insert on batch
-
-    for (var mapString in manga) {
-      final mList = mapString.split(';');
-      batch.insert(
-        DatabaseTables.MangaMap,
-        {
-          'name': mList[0],
-          'path': mList[1],
-          'bookPath': mList[2],
-          'manga_id': id
-        },
-      );
-    }
-
-    //commit to db
-    await batch.commit();
-    db.close();
-  }
-
-  static Future<void> getLatestManga() async {
-    final db = await DatabaseCore.openDB();
-    // "SELECT * FROM ${DatabaseTables.Bookmarks} LEFT JOIN ${DatabaseTables.Manga} ON ${DatabaseTables.Manga}.id = ${DatabaseTables.Bookmarks}.manga;");
-
-    // final sql =
-    //     'SELECT name, currentPage, path, updated_at FROM Reader LEFT JOIN MangaMap ON MangaMap.bookPath = Reader.manga WHERE updated_at  IS NOT NULL ORDER BY updated_at DESC LIMIT 1;';
-
-    try {
-      final results = await db.query(DatabaseTables.Reader,
-          where: 'updated_at IS NOT NULL', orderBy: 'updated_at', limit: 1);
-      // final results = await db.query(DatabaseTables.Reader,
-      //     where:
-      //         '');
-      print("got");
-      print(results);
-    } catch (e) {
-      print(e);
-    }
-    if (db.isOpen) {
-      // db.close();
-    }
   }
 }

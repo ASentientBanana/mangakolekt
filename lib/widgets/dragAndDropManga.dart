@@ -6,6 +6,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:mangakolekt/bloc/library/library_bloc.dart';
 import 'package:mangakolekt/services/navigationService.dart';
 import 'package:mangakolekt/locator.dart';
+import 'package:mangakolekt/widgets/modals/createLib.dart';
 
 class DragAndDropSurface extends StatelessWidget {
   final _navigationService = locator<NavigationService>();
@@ -20,7 +21,7 @@ class DragAndDropSurface extends StatelessWidget {
         _navigationService
             .navigateTo('/reader', {"id": 0, "path": target.path});
       } else {
-        context.read<LibraryBloc>().add(ToggleAddToLibModal(path: target.path));
+        showCreateLibDialog(context, target.path);
       }
     } catch (e) {
       print("Error ocurred during drag and drop action: \n");

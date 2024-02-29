@@ -1,3 +1,5 @@
+import 'package:mangakolekt/util/util.dart';
+
 class Bookmark {
   final int page;
   final int date;
@@ -6,57 +8,86 @@ class Bookmark {
 }
 
 class BookmarksData {
-  final String name;
-  final String path;
-  final int id;
-  final List<Bookmark> bookmarks;
-  const BookmarksData(
+  late final String name;
+  late final String path;
+  late final int id;
+  late final List<Bookmark> bookmarks;
+
+  BookmarksData(
       {required this.path,
       required this.bookmarks,
       required this.id,
       required this.name});
+
+  BookmarksData.Empty() {
+    name = '';
+    path = '';
+    id = -1;
+    bookmarks = [];
+  }
 }
 
 class Bookmarks {
+  late final List<BookmarksData> data;
+
   Bookmarks.Empty() {
     data = [];
   }
 
-  late final List<BookmarksData> data;
-  Bookmarks.fromMaps(List<Map<String, dynamic>> d) {
-    // TODO: Kinda ugly, should fix;
+  Bookmarks.fromMaps(List<Map<String, dynamic>> _maps) {
     // Reformat the data to look like
     /*
       [
-        {id, name, bookmarks:{ page, date, book }, }
+        {id, name, bookmarks:[{ page, date, book }], }
       ]
     */
     final map = {};
-
-    for (var e in d) {
-      final element = map[e['id'].toString()];
-      if (element == null) {
-        map[e["id"].toString()] = {
-          "id": e["id"],
-          "name": e["name"],
-          "path": e["path"],
-          "bookmarks": [
-            Bookmark(
-                page: e["page"], book: e["book"], date: e["created_at"] ?? 0)
-          ]
-        };
-      } else {
-        (map[e["id"].toString()]["bookmarks"] as List<Bookmark>).add(
-            Bookmark(page: e["page"], book: e["book"], date: e["created_at"]));
+    for (var element in _maps) {
+      final isValid = validateMap(
+        element,
+        ["id", "name", "page", "path", "created_at"],
+      );
+      if (!isValid) {
+        continue;
       }
+
+      if (map[element['id']] == null) {
+        map[element['id']] = {
+          "id": element["id"],
+          "name": element["name"],
+          "bookmarks": [],
+          "path": element["path"],
+        };
+      }
+
+      map[element["id"]]['bookmarks'].add(
+        Bookmark(
+            page: element["page"],
+            book: element["path"],
+            date: element["created_at"]),
+      );
     }
 
     data = map.entries
-        .map((e) => BookmarksData(
-            bookmarks: e.value["bookmarks"] as List<Bookmark>,
-            id: e.value["id"] ?? 0,
-            path: e.value["path"] ?? 'No path found',
-            name: e.value["name"] ?? 'Manga'))
+        .map(
+          (e) {
+            if (!validateMap(e.value, ["bookmarks", "id", "name", "path"])) {
+              return BookmarksData.Empty();
+            }
+            return BookmarksData(
+              path: e.value["path"],
+              //REFACTOR:
+              //Very bad, compiler, temp solution for the compiler
+              bookmarks: (e.value["bookmarks"] as List<dynamic>)
+                  .map((e) => e as Bookmark)
+                  .toList(),
+              id: e.value["id"],
+              name: e.value["name"],
+            );
+          },
+        )
+        // id is set to -1 on invalid elements
+        .where((element) => element.id != -1)
         .toList();
   }
 }
