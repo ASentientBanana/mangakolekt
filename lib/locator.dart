@@ -1,8 +1,13 @@
 import 'package:get_it/get_it.dart';
-import 'package:mangakolekt/services/navigation_service.dart';
+import 'package:mangakolekt/models/ffi.dart';
+import 'package:mangakolekt/services/ffiService.dart';
+import 'package:mangakolekt/services/navigationService.dart';
+import 'package:mangakolekt/services/settings.dart';
 
 GetIt locator = GetIt.instance;
 
-void setupLocator() {
-  locator.registerLazySingleton(() => NavigationService());
+setupServices() {
+  locator.registerLazySingleton<NavigationService>(() => NavigationService());
+  // locator.registerSingleton<FFIService>(FFIService.loadService());
+  locator.registerLazySingleton<SettingsService>(() => SettingsService());
 }

@@ -1,5 +1,6 @@
-# Minimal manga reader made with flutter.
+# Mangkolekt
 
-The main purpose of the project is practice with the flutter framework and also creating an open source alternative manga reader.
+A lightweight manga reader made with flutter and go.
+Currently Windows, Linux and android are supported.
 
-For now only linux is supported but when the MVP is done i will add windows and mac support.
+## Building

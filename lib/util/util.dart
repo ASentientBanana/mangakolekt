@@ -59,9 +59,13 @@ List<BookCover> sortCoversNumeric(List<BookCover> list) {
       final length = aNumbers.length;
       for (var i = 0; i < length; i++) {
         // print("$aNumbers - $bNumbers");
-        final comparison = aNumbers[i].compareTo(bNumbers[i]);
-        if (comparison != 0) {
-          return comparison;
+        try {
+          final comparison = aNumbers[i].compareTo(bNumbers[i]);
+          if (comparison != 0) {
+            return comparison;
+          }
+        } catch (e) {
+          return a.name.compareTo(b.name);
         }
       }
       return a.name.compareTo(b.name);

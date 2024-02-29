@@ -52,12 +52,20 @@ class Book {
   final String name;
   final List<PageEntry> pages;
   final String path;
+  final int? id;
 
   Book(
       {required this.name,
       required this.pageNumber,
       required this.pages,
-      required this.path});
+      required this.path,
+      this.id});
+
+  List<BookPage> getPageList() {
+    return pages.asMap().entries.map((e) {
+      return BookPage(entry: e.value, index: e.key);
+    }).toList();
+  }
 }
 
 class BookPage {

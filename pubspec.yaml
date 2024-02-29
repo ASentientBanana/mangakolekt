@@ -20,7 +20,7 @@ publish_to: "none" # Remove this line if you wish to publish to pub.dev
 version: 1.0.0+1
 
 environment:
-  sdk: ">=2.18.6 <3.0.0"
+  sdk: ">=3.0.0 <3.16.9"
 
 # Dependencies specify other packages that your package needs in order to work.
 # To automatically upgrade your package dependencies to the latest versions
@@ -46,12 +46,15 @@ dependencies:
   menu_bar: ^0.5.3
   path: ^1.8.3
   path_provider: ^2.0.12
+  permission_handler: ^11.0.1
   sqflite_common_ffi: ^2.3.0+2
+  sqlite3_flutter_libs: ^0.5.20
   uuid: ^3.0.7
   vm_service: ^11.5.0
   yaml: ^3.1.1
 
 dev_dependencies:
+  ffigen: ^9.0.1
   flutter_lints: ^2.0.0
   flutter_test:
     sdk: flutter
@@ -103,3 +106,8 @@ msix_config:
   identity_name: yepex.mangakolekt
   msix_version: 1.0.0.0
   assets_directory_path: "assets"
+ffigen:
+  output: "lib/generated/archive_ffi.dart"
+  headers:
+    entry-points:
+      - "./unzip/build/linux/manga_archive.h"

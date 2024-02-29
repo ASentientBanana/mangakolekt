@@ -5,9 +5,10 @@ abstract class ReaderState extends Equatable {
   List<Object> get props => [];
 }
 
-class ThemeLoaded extends ReaderState {
-  // const ThemeLoaded();
+class ReaderLoaded extends ReaderState {
+  final List<int> bookmarks;
+  ReaderLoaded({required this.bookmarks});
 
   @override
-  List<Object> get props => [];
+  List<Object> get props => [bookmarks];
 }

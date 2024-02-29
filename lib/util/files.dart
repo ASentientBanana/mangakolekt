@@ -1,25 +1,10 @@
 import 'dart:convert';
 import 'dart:io';
 import 'package:file_picker/file_picker.dart';
-import 'package:flutter/material.dart';
 import 'package:mangakolekt/models/bloc/theme.dart';
-import 'package:mangakolekt/models/book.dart';
 import 'package:path_provider/path_provider.dart';
-import './util.dart';
 import '../constants.dart';
-import './archive.dart';
 import 'package:path/path.dart' as p;
-
-String Function(String) getMapFilePath =
-    (String path) => p.join(path, appFolder, appMapFile);
-
-Future<List<File>> getFileListFromDir(String path) async {
-  Directory d = Directory(path);
-  var files = d.list();
-  return files.map((elem) {
-    return File(elem.path);
-  }).toList();
-}
 
 Future<String?> pickDirectory() async {
   return await FilePicker.platform.getDirectoryPath();
@@ -58,40 +43,6 @@ Future<int> getNumberOfFiles(String path) async {
     }
   }
   return filesCount;
-}
-
-Future<bool> deleteLibbyIndex(String libString, int index) async {
-  //template name;path;bookPath
-  //check if app mapFile and lib mapFile exist;
-  final appDocumentDir = await getApplicationDocumentsDirectory();
-  final mapFile = File(getMapFilePath(appDocumentDir.path));
-
-  if (await mapFile.exists()) {
-    final contents = await mapFile.readAsString();
-    final contentList = contents.split('\n');
-    contentList.removeAt(index);
-    final newContents = contentList.join('\n');
-    await mapFile.writeAsString(newContents);
-  }
-  final libDir = Directory(p.join(libString.split(';')[1], libFolderName));
-  if (await libDir.exists()) {
-    await libDir.delete(
-      recursive: true,
-    );
-  }
-  return true;
-}
-
-Future<bool> deleteLib(String path) async {
-  //template name;path;bookPath
-  //check if app mapFile and lib mapFile exist;
-
-  // final libDir = Directory("$path/$libFolderName");
-  final libDir = Directory(p.join(path, libFolderName));
-  if (await libDir.exists()) {
-    await libDir.delete(recursive: true);
-  }
-  return true;
 }
 
 Future<void> createLogFile() async {
@@ -150,6 +101,21 @@ Future<void> createCurrentDir() async {
   }
 }
 
+Future<void> createGlobalCoversDir() async {
+  final appDocs = await getApplicationDocumentsDirectory();
+  final path = p.join(appDocs.path, 'covers');
+  final d = Directory(path);
+  if (!(await d.exists())) {
+    await d.create();
+  }
+}
+
+Future<String> getGlobalCoversDir() async {
+  final appDocs = await getApplicationDocumentsDirectory();
+  final path = p.join(appDocs.path, 'covers');
+  return path;
+}
+
 Future<void> emptyCurrentDir() async {
   final dirPath = await getApplicationDocumentsDirectory();
   final path = p.join(dirPath.path, appFolder, currentFolder);
@@ -160,4 +126,16 @@ Future<void> emptyCurrentDir() async {
   }
   await d.delete(recursive: true);
   await d.create();
+}
+
+Future<List<String>> getFilesFromDir(Directory dir) async {
+  final list = await dir.list().toList();
+  final List<String> files = [];
+  print("Number of files ${list.length} in ${dir.path}");
+  for (var i = 0; i < list.length; i++) {
+    if ((await list[i].stat()).type == FileSystemEntityType.file) {
+      files.add(list[i].path);
+    }
+  }
+  return files;
 }

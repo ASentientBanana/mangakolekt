@@ -3,14 +3,18 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:mangakolekt/bloc/library/library_bloc.dart';
 import 'package:mangakolekt/locator.dart';
-import 'package:mangakolekt/services/navigation_service.dart';
+import 'package:mangakolekt/services/navigationService.dart';
 import 'package:mangakolekt/util/files.dart';
+import 'package:mangakolekt/widgets/modals/bookmarks.dart';
+import 'package:mangakolekt/widgets/modals/help.dart';
+import 'package:mangakolekt/widgets/modals/settings.dart';
 
 class MangaMenuBar extends StatelessWidget {
   Widget child;
   MangaMenuBar({Key? key, required this.child}) : super(key: key);
 
   final _navigationService = locator<NavigationService>();
+  final textEditingController = TextEditingController();
 
   Future<void> pickFileHandler() async {
     final file = await pickFile();
@@ -27,22 +31,10 @@ class MangaMenuBar extends StatelessWidget {
 
   Future<void> pickDirHandler(BuildContext context) async {
     final dir = await pickDirectory();
-    if (dir != null) {
+    if (dir != null && context.mounted) {
       // TODO: FIX WARRNING ABOUT CONTEXT
       context.read<LibraryBloc>().add(ToggleAddToLibModal(path: dir));
     }
-  }
-
-  void showInProgressMessage(BuildContext context) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: const Text(
-          "In progress",
-          style: TextStyle(color: Colors.white),
-        ),
-        backgroundColor: Theme.of(context).colorScheme.background,
-      ),
-    );
   }
 
   @override
@@ -52,38 +44,87 @@ class MangaMenuBar extends StatelessWidget {
       children: [
         Row(mainAxisSize: MainAxisSize.min, children: [
           Expanded(
+              flex: 8,
               child: MenuBar(
-            style: MenuStyle(
-                backgroundColor:
-                    MaterialStatePropertyAll(colorScheme.background)),
-            children: [
-              SubmenuButton(
-                menuChildren: [
-                  MenuItemButton(
-                    onPressed: pickFileHandler,
-                    child: const Text("Open"),
+                style: MenuStyle(
+                    backgroundColor:
+                        MaterialStatePropertyAll(colorScheme.background)),
+                children: [
+                  SubmenuButton(
+                    menuChildren: [
+                      MenuItemButton(
+                        onPressed: pickFileHandler,
+                        child: const Text("Open"),
+                      ),
+                      MenuItemButton(
+                        onPressed: () => pickDirHandler(context),
+                        child: const Text("Add library"),
+                      ),
+                      MenuItemButton(
+                        onPressed: quitHandler,
+                        child: const Text("Quit"),
+                      )
+                    ],
+                    child: const Text("File"),
                   ),
                   MenuItemButton(
-                    onPressed: () => pickDirHandler(context),
-                    child: const Text("Add library"),
+                    onPressed: () => showSettingsDialog(context),
+                    child: const Text("Settings"),
                   ),
                   MenuItemButton(
-                    onPressed: quitHandler,
-                    child: const Text("Quit"),
-                  )
+                    onPressed: () => showBookmarksDialog(context),
+                    child: const Text("Bookmarks"),
+                  ),
+                  MenuItemButton(
+                    onPressed: () => showHelpDialog(context),
+                    child: const Text("Help"),
+                  ),
                 ],
-                child: const Text("File"),
-              ),
-              MenuItemButton(
-                onPressed: () => showInProgressMessage(context),
-                child: const Text("Bookmarks"),
-              ),
-              MenuItemButton(
-                onPressed: () => showInProgressMessage(context),
-                child: const Text("Help"),
-              ),
-            ],
-          ))
+              )),
+          Expanded(
+            flex: 2,
+            child: Stack(
+              children: [
+                Container(
+                  height: 32,
+                  padding: EdgeInsets.only(right: 15),
+                  child: Material(
+                      child: TextField(
+                    style: const TextStyle(fontSize: 13),
+                    decoration: InputDecoration(
+                      contentPadding: EdgeInsets.symmetric(horizontal: 5),
+                      hintText: "Search books",
+                      hintStyle: TextStyle(color: colorScheme.onPrimary),
+                      fillColor: colorScheme.background,
+                      filled: true,
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.zero,
+                        borderSide:
+                            BorderSide(width: 1, color: colorScheme.onPrimary),
+                      ),
+                      enabledBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.zero,
+                        borderSide:
+                            BorderSide(width: 1, color: colorScheme.onPrimary),
+                      ),
+                    ),
+                    onChanged: (s) {
+                      context.read<LibraryBloc>().add(SearchLib(searchTerm: s));
+                    },
+                    controller: textEditingController,
+                  )),
+                ),
+                Positioned(
+                  top: 4,
+                  right: 25,
+                  child: Icon(
+                    Icons.search_sharp,
+                    color: colorScheme.onPrimary,
+                  ),
+                ),
+              ],
+            ),
+          )
         ]),
         Expanded(
           child: child,
@@ -91,34 +132,4 @@ class MangaMenuBar extends StatelessWidget {
       ],
     );
   }
-
-  // @override
-  // Widget build(BuildContext context) {
-  //   return MenuBarWidget(
-  //     barButtons: [
-  //       BarButton(
-  //         text: Text("File"),
-  //         submenu: SubMenu(menuItems: [
-  //           MenuButton(
-  //             text: const Text("Open"),
-  //             onTap: pickFileHandler,
-  //           ),
-  //           MenuButton(
-  //             text: const Text("Add library"),
-  //             onTap: () => pickDirHandler(context),
-  //           ),
-  //           const MenuButton(text: Text("Recent")),
-  //           const MenuButton(text: Text("Bookmars")),
-  //         ]),
-  //       ),
-  //       BarButton(
-  //         text: Text("Settings"),
-  //         submenu: SubMenu(menuItems: [
-  //           MenuButton(text: Text("Do smtin")),
-  //         ]),
-  //       ),
-  //     ],
-  //     child: child,
-  //   );
-  // }
 }

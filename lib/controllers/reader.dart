@@ -5,31 +5,25 @@ import 'package:mangakolekt/util/database/database_helpers.dart';
 
 class ReaderController {
   late List<BookPage> pages;
-  late final int id;
-  late final String path;
-  int pageNumber = 0;
+  late final Book book;
+
   List<int> currentPages = [0];
   int currentPageIndex = 0;
   bool isDoublePageView = false;
   ScaleTo scaleTo = ScaleTo.height;
   bool isRightToLeftMode = false;
   String? bookDirPath;
-  Future<void> Function(String, int)? updateBookCb;
+  String? nextBookPath;
+  String? prevBookPath;
+  void Function(String, Object?)? openBook;
   Map<int, List<List<int>>> pageMap = {0: [], 1: []};
 
-  ReaderController(
-      {required List<BookPage> pageList,
-      required this.path,
-      this.bookDirPath,
-      this.updateBookCb,
-      required this.id}) {
-    pages = pageList;
-    pageNumber = pageList.length;
-
+  ReaderController({required this.book}) {
+    pages = book.getPageList();
     //Construct lists for single and double view
     List<List<int>> doubleViewList = [];
-    pageMap[0] = pageList.map((e) => [e.index]).toList();
-    final pagesLen = pageList.length;
+    pageMap[0] = pages.map((e) => [e.index]).toList();
+    final pagesLen = pages.length;
     for (var i = 0; i < pagesLen;) {
       if (i == pagesLen - 1) {
         doubleViewList.add([i]);
@@ -76,13 +70,6 @@ class ReaderController {
       }
     }
     currentPageIndex = index;
-  }
-
-  Future<void> bookAction(int direction) async {
-    if (updateBookCb == null || bookDirPath == null) {
-      return;
-    }
-    updateBookCb!(bookDirPath!, direction);
   }
 
   void toggleScale() {
@@ -132,12 +119,32 @@ class ReaderController {
     return 0;
   }
 
+  void checkBookBoundaries(int dir) {
+    if (openBook == null) {
+      return;
+    }
+    if (nextBookPath != null && dir > 0) {
+      openBook!('/reader', {
+        "id": 0,
+        "path": nextBookPath,
+        "initialPage": 0,
+      });
+      return;
+    }
+    if (prevBookPath != null && dir < 0) {
+      openBook!('/reader', {
+        "id": 0,
+        "path": prevBookPath,
+        "initialPage": 0,
+      });
+      return;
+    }
+  }
+
   void pageAction(PageAction pa) {
     final dir = checkInBounds(pa);
     if (dir != 0) {
-      if (updateBookCb != null) {
-        updateBookCb!(path, dir);
-      }
+      checkBookBoundaries(dir);
       return;
     }
 
@@ -146,8 +153,10 @@ class ReaderController {
     } else {
       currentPageIndex--;
     }
-    EasyThrottle.throttle('reader', const Duration(seconds: 2), () async {
-      await DatabaseMangaHelpers.setCurrentManga(path, getCurrentPages().first);
+    EasyThrottle.throttle('reader', const Duration(seconds: 1), () async {
+      print(getCurrentPages().first);
+      await DatabaseMangaHelpers.setCurrentManga(
+          book.path, getCurrentPages().first, book.name);
     });
   }
 

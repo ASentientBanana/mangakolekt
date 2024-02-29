@@ -30,21 +30,24 @@ class _SingleImageState extends State<SingleImage> {
     if (!isDouble) {
       return Alignment.center;
     }
+    // This is to keep the images together when in double page view
     return index == 0 ? Alignment.centerRight : Alignment.centerLeft;
   }
 
   @override
   Widget build(BuildContext context) {
-    final Widget img = widget.scaleTo == ScaleTo.height
-        ? Container(
-            color: Colors.transparent,
-            alignment: setAliment(widget.isDouble, widget.index),
-            child: widget.image,
-          )
-        : SingleChildScrollView(
-            controller: _imageScrollController,
-            child: Image(image: widget.image.image, fit: BoxFit.cover),
-          );
-    return Container(child: img);
+    //Check scaling type
+    if (!widget.isDouble && widget.scaleTo == ScaleTo.width) {
+      return SingleChildScrollView(
+        controller: _imageScrollController,
+        child: Image(image: widget.image.image, fit: BoxFit.cover),
+      );
+    }
+    return Container(
+      //Colors for debug purposes
+      // color: widget.index == 0 ? Colors.blue : Colors.red,
+      alignment: setAliment(widget.isDouble, widget.index),
+      child: widget.image,
+    );
   }
 }

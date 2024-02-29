@@ -1,19 +1,31 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:mangakolekt/bloc/theme/theme_bloc.dart';
+import 'package:mangakolekt/constants.dart';
 import 'package:mangakolekt/locator.dart';
-import 'package:mangakolekt/models/bloc/theme.dart';
-import 'package:mangakolekt/screens/lib.dart';
-import 'package:mangakolekt/screens/setting.dart';
+import 'package:mangakolekt/screens/library.dart';
 import 'package:mangakolekt/screens/splash.dart';
 import 'package:mangakolekt/screens/theme_creator.dart';
-import 'package:mangakolekt/services/navigation_service.dart';
-import 'package:mangakolekt/util/theme.dart';
+import 'package:mangakolekt/services/navigationService.dart';
+import 'package:mangakolekt/util/database/database_helpers.dart';
 import 'package:mangakolekt/util/util.dart';
-import 'package:mangakolekt/widgets/reader/reader_page_wrapper.dart';
+import 'package:mangakolekt/screens/reader_page_wrapper.dart';
 
-class AppWidget extends StatelessWidget {
+class AppWidget extends StatefulWidget {
   const AppWidget({super.key});
+
+  static const defaultTextStyle = TextStyle(
+      fontFamily: "HighlandGothic", color: Color.fromARGB(255, 238, 245, 238));
+
+  @override
+  State<AppWidget> createState() => _AppWidgetState();
+}
+
+class _AppWidgetState extends State<AppWidget> {
+  @override
+  void initState() {
+    DatabaseMangaHelpers.getLatestManga();
+
+    super.initState();
+  }
 
   Route<Widget>? onRouteGenerateHandler(RouteSettings settings) {
     switch (settings.name) {
@@ -22,6 +34,7 @@ class AppWidget extends StatelessWidget {
         return pageRouteBuilderWrapper(
             settings,
             ReaderPageWrapper(
+              initialPage: args['initialPage'],
               path: args["path"],
               id: args["id"],
             ));
@@ -30,7 +43,8 @@ class AppWidget extends StatelessWidget {
       case "/":
         return pageRouteBuilderWrapper(settings, const SplashScreen());
       case "/settings":
-        return pageRouteBuilderWrapper(settings, const SettingsPage());
+      // return DialogRoute(context: , builder: builder)
+      // return pageRouteBuilderWrapper(settings, const SettingsPage());
       case "/theme_creator":
         return pageRouteBuilderWrapper(settings, const ThemeCreatorPage());
       default:
@@ -43,6 +57,7 @@ class AppWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      debugShowCheckedModeBanner: false,
       title: 'MangaKolekt',
       theme: ThemeData().copyWith(
         // canvasColor: Colors.red,
@@ -53,17 +68,24 @@ class AppWidget extends StatelessWidget {
         ),
         appBarTheme: const AppBarTheme(),
         textTheme:
-            Typography().dense.apply(fontFamily: "HighlandGothic").copyWith(),
+            Typography().dense.apply(fontFamily: "HighlandGothic").copyWith(
+                  titleMedium: AppWidget.defaultTextStyle,
+                  titleLarge: AppWidget.defaultTextStyle,
+                  displayLarge: AppWidget.defaultTextStyle,
+                  displayMedium: AppWidget.defaultTextStyle,
+                  bodyLarge: AppWidget.defaultTextStyle,
+                  bodyMedium: AppWidget.defaultTextStyle,
+                ),
         colorScheme: const ColorScheme(
           brightness: Brightness.dark,
-          primary: Color(0xFF244769),
+          primary: MangaColors.primary,
           onPrimary: Color(0xFFeef5ee),
           secondary: Color(0xFFb5d1f1),
           onSecondary: Color(0xFFc1cc9c),
-          error: Color(0xFF244769),
+          error: MangaColors.primary,
           onError: Color(0xFFc1cc9c),
-          background: Color(0xFF081822),
-          onBackground: Color(0xFFeef5ee),
+          background: MangaColors.background,
+          onBackground: MangaColors.background,
           surface: Color(0xFF081822),
           onSurface: Color(0xFFeef5ee),
           tertiary: Color(0xFFc1cc9c),

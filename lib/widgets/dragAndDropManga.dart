@@ -2,8 +2,8 @@ import 'package:desktop_drop/desktop_drop.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:mangakolekt/bloc/library/library_bloc.dart';
+import 'package:mangakolekt/services/navigationService.dart';
 import 'package:mangakolekt/locator.dart';
-import 'package:mangakolekt/services/navigation_service.dart';
 
 class DragAndDropSurface extends StatelessWidget {
   final _navigationService = locator<NavigationService>();
@@ -46,7 +46,7 @@ class DragAndDropSurface extends StatelessWidget {
               //       color: Colors.grey,
               //       fontWeight: FontWeight.bold),
               // ),
-              Text(
+              const Text(
                 "Drag a file or folder to open it or add to a library",
                 style: TextStyle(
                   color: Color.fromARGB(255, 71, 82, 89),
