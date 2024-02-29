@@ -19,7 +19,7 @@ class _GridItemState extends State<GridItem> with TickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
+    // final colorScheme = Theme.of(context).colorScheme;
     return GridTile(
       footer: Center(
         child: Container(
@@ -38,6 +38,7 @@ class _GridItemState extends State<GridItem> with TickerProviderStateMixin {
             });
           },
           onTap: () {
+            print("GOTTEM:: ${widget.item.path}");
             _navigationService.navigateTo('/reader',
                 {"path": widget.item.bookPath, "id": widget.item.id});
           },

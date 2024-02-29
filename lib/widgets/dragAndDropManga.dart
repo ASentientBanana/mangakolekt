@@ -1,9 +1,12 @@
+import 'dart:io';
+
 import 'package:desktop_drop/desktop_drop.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:mangakolekt/bloc/library/library_bloc.dart';
 import 'package:mangakolekt/services/navigationService.dart';
 import 'package:mangakolekt/locator.dart';
+import 'package:mangakolekt/widgets/modals/createLib.dart';
 
 class DragAndDropSurface extends StatelessWidget {
   final _navigationService = locator<NavigationService>();
@@ -18,7 +21,7 @@ class DragAndDropSurface extends StatelessWidget {
         _navigationService
             .navigateTo('/reader', {"id": 0, "path": target.path});
       } else {
-        context.read<LibraryBloc>().add(ToggleAddToLibModal(path: target.path));
+        showCreateLibDialog(context, target.path);
       }
     } catch (e) {
       print("Error ocurred during drag and drop action: \n");
@@ -30,22 +33,15 @@ class DragAndDropSurface extends StatelessWidget {
   Widget build(BuildContext context) {
     return DropTarget(
       onDragDone: ((details) => onDragDoneHandler(details, context)),
-      child: Container(
+      child: SizedBox(
         child: Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Image.asset(
                 "assets/images/logo.png",
-                scale: 2,
+                scale: Platform.isAndroid ? 3 : 2,
               ),
-              // Text(
-              //   "BASENJI",
-              //   style: TextStyle(
-              //       fontSize: 24,
-              //       color: Colors.grey,
-              //       fontWeight: FontWeight.bold),
-              // ),
               const Text(
                 "Drag a file or folder to open it or add to a library",
                 style: TextStyle(

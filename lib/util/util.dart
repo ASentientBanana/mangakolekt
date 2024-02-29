@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:mangakolekt/models/book.dart';
 
@@ -125,4 +127,18 @@ Route<Widget> pageRouteBuilderWrapper(RouteSettings settings, Widget page) {
     pageBuilder: (_, __, ___) => page,
     transitionsBuilder: (_, a, __, c) => FadeTransition(opacity: a, child: c),
   );
+}
+
+bool isMobile() {
+  return (Platform.isAndroid || Platform.isIOS);
+}
+
+bool validateMap(Map map, List<String> keys) {
+  for (var i = 0; i < keys.length; i++) {
+    if (map[keys[i]] == null) {
+      return false;
+    }
+  }
+
+  return true;
 }

@@ -1,20 +1,26 @@
-import 'package:mangakolekt/models/book.dart';
+import 'package:mangakolekt/models/library.dart';
 
 class LibStore {
-  BookCover _cover = BookCover(name: "", path: "", bookPath: "", id: 0);
-  List<BookCover> _libList = [];
-  String? _modalPath;
+  late List<LibraryElement> _libElements;
+  int? libIndex;
 
-  BookCover get cover => _cover;
-  List<BookCover> get libList => _libList;
+  List<LibraryElement> get libElements => _libElements;
 
-  LibStore({required BookCover cover, required List<BookCover> list}) {
-    _cover = cover;
-    _libList = list;
+  LibStore({required List<LibraryElement> element, int? index}) {
+    _libElements = element;
+    libIndex = index;
   }
 
   LibStore.initial() {
-    _cover = BookCover(name: "", path: "", bookPath: "", id: 0);
-    _libList = [];
+    _libElements = [];
   }
+
+  // @override
+  // operator ==(other) =>
+  //     other is LibStore &&
+  //     (other.libIndex == libIndex &&
+  //         other._libElements.length == _libElements.length);
+
+  // @override
+  // int get hashCode => Object.hash(libIndex, _libElements.length);
 }

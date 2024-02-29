@@ -22,7 +22,7 @@ class AppWidget extends StatefulWidget {
 class _AppWidgetState extends State<AppWidget> {
   @override
   void initState() {
-    DatabaseMangaHelpers.getLatestManga();
+    // DatabaseMangaHelpers.getLatestManga();
 
     super.initState();
   }

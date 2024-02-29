@@ -154,9 +154,8 @@ class ReaderController {
       currentPageIndex--;
     }
     EasyThrottle.throttle('reader', const Duration(seconds: 1), () async {
-      print(getCurrentPages().first);
-      await DatabaseMangaHelpers.setCurrentManga(
-          book.path, getCurrentPages().first, book.name);
+      await DatabaseMangaHelpers.setCurrentlyReading(
+          book.path, getCurrentPages().first);
     });
   }
 

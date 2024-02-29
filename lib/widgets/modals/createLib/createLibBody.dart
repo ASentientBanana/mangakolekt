@@ -1,30 +1,30 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:mangakolekt/bloc/library/library_bloc.dart';
 import 'package:mangakolekt/controllers/archive.dart';
-import 'package:mangakolekt/services/ffiService.dart';
+import 'package:mangakolekt/locator.dart';
+import 'package:mangakolekt/services/navigationService.dart';
 import 'package:mangakolekt/util/database/database_helpers.dart';
 import 'package:mangakolekt/util/files.dart';
-import 'dart:isolate';
+import 'package:mangakolekt/util/util.dart';
 
-class AddToLibraryModal extends StatefulWidget {
+class CreateLibBody extends StatefulWidget {
   final String selectedDir;
 
-  const AddToLibraryModal({super.key, required this.selectedDir});
+  const CreateLibBody({super.key, required this.selectedDir});
 
   @override
-  AddToLibraryModalState createState() => AddToLibraryModalState();
+  CreateLibBodyState createState() => CreateLibBodyState();
 }
 
-void getNumberOfPages(SendPort send) async {}
-
-class AddToLibraryModalState extends State<AddToLibraryModal> {
+class CreateLibBodyState extends State<CreateLibBody> {
   final TextEditingController textEditingController = TextEditingController();
 
   double numberOfFiles = 0;
   double maxNumberOfFiles = 1;
   bool isSubmitDisabled = false;
+
+  final _navigationService = locator<NavigationService>();
 
   void incrementProgress() {
     setState(() {
@@ -48,14 +48,10 @@ class AddToLibraryModalState extends State<AddToLibraryModal> {
 
   Future<List<String>?> startIsolate() async {
     try {
-      // final res = await compute(
-      //     (message) => ArchiveController.unpackCovers(message, null),
-      //     widget.selectedDir);
       final res =
           await ArchiveController.unpackCovers(widget.selectedDir, null);
       return res;
     } catch (e) {
-      print(e);
       if (!context.mounted) {
         return [];
       }
@@ -73,56 +69,42 @@ class AddToLibraryModalState extends State<AddToLibraryModal> {
   }
 
   void handleSubmit(BuildContext context) async {
-    if (!context.mounted) {
-      return;
-    }
-
-    final selectedDir = widget.selectedDir;
     setState(() {
       isSubmitDisabled = true;
     });
 
-    // await FFIService.checkLibDir(widget.selectedDir);
+    final coversPathList = await startIsolate();
 
-    //Format is name;path;bookPath
-    final bookCoverMapStringList = await startIsolate();
-
-    print(bookCoverMapStringList);
-
-    if (bookCoverMapStringList == null) {
+    if (coversPathList == null) {
       return;
     }
+
     // Add manga to Manga table in db
-    final mangaList = await DatabaseMangaHelpers.addManga(
-        path: selectedDir, name: textEditingController.text, returnManga: true);
-
-    if (mangaList == null) {
-      return;
-    }
-
-    final id = mangaList
-        .firstWhere((element) => element.name == textEditingController.text)
-        .id;
-    await DatabaseMangaHelpers.addMangaMapping(bookCoverMapStringList, id);
-
+    // REFACTOR:
+    final id = await DatabaseMangaHelpers.addLibrary(
+        name: textEditingController.text, books: coversPathList);
+    final mangaList = await DatabaseMangaHelpers.getAllBooksFromLibrary();
+    final index = mangaList.indexWhere((element) => element.id == id);
     if (mangaList.isNotEmpty && context.mounted) {
       context.read<LibraryBloc>().add(SetLibs(libs: mangaList));
+      context.read<LibraryBloc>().add(SetCurrentLib(index: index));
     }
-    // });
-
+    closeModal();
     setState(() {
       isSubmitDisabled = false;
     });
-    context.read<LibraryBloc>().add(CloseAddToLibModal());
+  }
+
+  void closeModal() {
+    _navigationService.goBack();
   }
 
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
     return Container(
-      height: 240,
-      width: 500,
-      padding: const EdgeInsets.symmetric(horizontal: 20),
+      // width: 500,
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
       decoration: BoxDecoration(
         border: Border.all(width: 1, style: BorderStyle.solid),
         color: colorScheme.primary,
@@ -131,10 +113,10 @@ class AddToLibraryModalState extends State<AddToLibraryModal> {
         mainAxisSize: MainAxisSize.min,
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          const Text(
+          Text(
             'Enter a name for the lib located at:',
             style: TextStyle(
-              fontSize: 23,
+              fontSize: isMobile() ? 18 : 23,
               color: Colors.white,
             ),
           ),
@@ -142,9 +124,9 @@ class AddToLibraryModalState extends State<AddToLibraryModal> {
             padding: const EdgeInsets.only(left: 20),
             child: Text(
               widget.selectedDir,
-              style: const TextStyle(
+              style: TextStyle(
                 color: Colors.white70,
-                fontSize: 18,
+                fontSize: isMobile() ? 12 : 18,
               ),
             ),
           ),
@@ -179,7 +161,7 @@ class AddToLibraryModalState extends State<AddToLibraryModal> {
                   child: ElevatedButton(
                     style: ElevatedButton.styleFrom(
                       elevation: 0, backgroundColor: colorScheme.tertiary,
-                      shape: BeveledRectangleBorder(),
+                      shape: const BeveledRectangleBorder(),
                       // side: BorderSide(color: colorScheme.secondary)
                     ),
                     onPressed:
@@ -187,7 +169,7 @@ class AddToLibraryModalState extends State<AddToLibraryModal> {
                     child: isSubmitDisabled
                         ? const Center(
                             child: SizedBox(
-                              height: 20,
+                              // height: 20,
                               width: 20,
                               child: CircularProgressIndicator(),
                             ),
@@ -210,13 +192,7 @@ class AddToLibraryModalState extends State<AddToLibraryModal> {
                       shape: const BeveledRectangleBorder(),
                       // side: BorderSide(color: colorScheme.secondary)
                     ),
-                    onPressed: !isSubmitDisabled
-                        ? () {
-                            context
-                                .read<LibraryBloc>()
-                                .add(CloseAddToLibModal());
-                          }
-                        : null,
+                    onPressed: !isSubmitDisabled ? closeModal : null,
                     child: const Text(
                       'Cancel',
                       style: TextStyle(

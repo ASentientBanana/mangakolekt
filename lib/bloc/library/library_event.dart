@@ -23,22 +23,17 @@ class RemoveBook extends LibraryEvent {
 }
 
 class SetLibs extends LibraryEvent {
-  final List<BookCover> libs;
+  final List<LibraryElement> libs;
   const SetLibs({required this.libs});
   @override
-  List<Object> get props => [];
+  List<Object> get props => [libs];
 }
 
-class ToggleAddToLibModal extends LibraryEvent {
-  final String path;
-  const ToggleAddToLibModal({required this.path});
+class SetCurrentLib extends LibraryEvent {
+  final int index;
+  const SetCurrentLib({required this.index});
   @override
-  List<Object> get props => [];
-}
-
-class CloseAddToLibModal extends LibraryEvent {
-  @override
-  List<Object> get props => [];
+  List<Object> get props => [index];
 }
 
 class Reset extends LibraryEvent {
@@ -50,5 +45,5 @@ class SearchLib extends LibraryEvent {
   final String searchTerm;
   const SearchLib({required this.searchTerm});
   @override
-  List<Object> get props => [];
+  List<Object> get props => [searchTerm];
 }

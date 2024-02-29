@@ -2,8 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:mangakolekt/bloc/library/library_bloc.dart';
 import 'package:mangakolekt/constants.dart';
+import 'package:mangakolekt/models/library.dart';
 import 'package:mangakolekt/util/database/database_helpers.dart';
-import 'package:mangakolekt/widgets/library/list_item.dart';
+import 'package:mangakolekt/widgets/library/listItem.dart';
 
 class LibList extends StatefulWidget {
   const LibList({super.key});
@@ -15,10 +16,11 @@ class LibList extends StatefulWidget {
 class _LibListState extends State<LibList> {
   Future db = Future(() => null);
   final ScrollController _firstController = ScrollController();
+  bool hidden = false;
 
   @override
   void initState() {
-    db = DatabaseMangaHelpers.getManga();
+    // db = DatabaseMangaHelpers.getCovers(id:);
     super.initState();
   }
 
@@ -27,53 +29,74 @@ class _LibListState extends State<LibList> {
       return const SizedBox.shrink();
     }
     //Check if empty list to remove the side panel
-    if (state.libStore.libList.isEmpty) {
+    if (state.libStore.libElements.isEmpty) {
       return const SizedBox.shrink();
     }
     final List<LibListItem> list = [];
-    final numberOfBooks = state.libStore.libList.length;
+    final numberOfBooks = state.libStore.libElements.length;
 
     for (var i = 0; i < numberOfBooks; i++) {
-      list.add(LibListItem(item: state.libStore.libList[i], index: i - 1));
+      list.add(LibListItem(item: state.libStore.libElements[i], index: i));
     }
     final colorScheme = Theme.of(context).colorScheme;
-    return Container(
-      padding: const EdgeInsets.all(30),
-      decoration: BoxDecoration(
-        gradient: const RadialGradient(
-          stops: [.01, .99],
-          radius: 2.0,
-          focalRadius: .7,
-          // focal: Alignment.bottomCenter,
-          center: Alignment.bottomLeft,
-          // transform: const GradientRotation(12),
-          colors: [Color.fromARGB(128, 36, 71, 105), Color(0xFF081822)],
-        ),
-        border: Border(
-          right: BorderSide(
-              color: colorScheme.tertiary, style: BorderStyle.solid, width: 2),
-        ),
-      ),
-      child: Container(
-        padding: const EdgeInsets.only(top: 20),
-        width: SIDEBAR_WIDTH,
-        // child: ListView(children: list),
-        child: Scrollbar(
-          scrollbarOrientation: ScrollbarOrientation.right,
-          radius: Radius.zero,
-          thumbVisibility: true,
-          controller: _firstController,
-          child: ListView.separated(
-            separatorBuilder: (context, index) => const SizedBox(
-              height: 40,
+    return Stack(
+      clipBehavior: Clip.none,
+      children: [
+        AnimatedContainer(
+          duration: const Duration(milliseconds: 600),
+          curve: Curves.ease,
+          padding: const EdgeInsets.all(30),
+          width: hidden ? 14 : SIDEBAR_WIDTH,
+          decoration: BoxDecoration(
+            gradient: const RadialGradient(
+              stops: [.01, .99],
+              radius: 2.0,
+              focalRadius: .7,
+              // focal: Alignment.bottomCenter,
+              center: Alignment.bottomLeft,
+              // transform: const GradientRotation(12),
+              colors: [Color.fromARGB(128, 36, 71, 105), Color(0xFF081822)],
             ),
-            controller: _firstController,
-            itemCount: list.length ?? 0,
-            // crossAxisAlignment: CrossAxisAlignment.center,
-            itemBuilder: (context, i) => list[i],
+            border: Border(
+              right: BorderSide(
+                  color: colorScheme.tertiary,
+                  style: BorderStyle.solid,
+                  width: 2),
+            ),
+          ),
+          child: Container(
+            padding: const EdgeInsets.only(top: 20),
+            width: hidden ? 0 : SIDEBAR_WIDTH,
+            // child: ListView(children: list),
+            child: Scrollbar(
+              scrollbarOrientation: ScrollbarOrientation.right,
+              radius: Radius.zero,
+              thumbVisibility: true,
+              controller: _firstController,
+              child: ListView.separated(
+                separatorBuilder: (context, index) => const SizedBox(
+                  height: 40,
+                ),
+                controller: _firstController,
+                itemCount: list.length ?? 0,
+                // crossAxisAlignment: CrossAxisAlignment.center,
+                itemBuilder: (context, i) => hidden ? null : list[i],
+              ),
+            ),
           ),
         ),
-      ),
+        // Positioned(
+        //   child: ElevatedButton(
+        //     onPressed: () {
+        //       print("click");
+        //       setState(() {
+        //         hidden = !hidden;
+        //       });
+        //     },
+        //     child: const Icon(Icons.arrow_back),
+        //   ),
+        // ),
+      ],
     );
   }
 

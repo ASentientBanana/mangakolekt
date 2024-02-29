@@ -7,17 +7,13 @@ abstract class LibraryState extends Equatable {
   List<Object> get props => [];
 }
 
-class LibraryInitial extends LibraryState {}
-
 class LibraryLoaded extends LibraryState {
   final LibStore libStore;
-  String modalPath;
   String search = '';
-  LibraryLoaded(
-      {required this.libStore, required this.modalPath, this.search = ''});
+  LibraryLoaded({required this.libStore, this.search = ''});
 
   @override
-  List<Object> get props => [libStore, modalPath, search];
+  List<Object> get props => [libStore, search];
 }
 
 class LibraryLoading extends LibraryState {

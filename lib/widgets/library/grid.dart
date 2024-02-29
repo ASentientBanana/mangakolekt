@@ -3,8 +3,9 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:mangakolekt/bloc/library/library_bloc.dart';
 import 'package:mangakolekt/models/book.dart';
 import 'package:mangakolekt/util/database/database_helpers.dart';
+import 'package:mangakolekt/util/util.dart';
 import 'package:mangakolekt/widgets/dragAndDropManga.dart';
-import 'package:mangakolekt/widgets/library/grid_item.dart';
+import 'package:mangakolekt/widgets/library/gridItem.dart';
 
 class LibGrid extends StatefulWidget {
   const LibGrid({super.key});
@@ -42,13 +43,16 @@ class _LibGridState extends State<LibGrid> {
   }
 
   bool listenWhenGuard(LibraryState previous, LibraryState current) {
+    print("Setting ");
+
     if (previous is! LibraryLoaded || current is! LibraryLoaded) {
       return false;
     }
     if (previous.search != current.search) {
       return true;
     }
-    if (previous.libStore != current.libStore) {
+    if (previous.libStore.libIndex != current.libStore.libIndex) {
+      print('Index changed');
       return true;
     }
     return false;
@@ -58,19 +62,11 @@ class _LibGridState extends State<LibGrid> {
     if ((state is! LibraryLoaded)) {
       return;
     }
-    if (search != state.search) {
-      setState(() {
+    setState(() {
+      if (search != state.search) {
         search = state.search;
-      });
-    }
-
-    if (id != state.libStore.cover.id) {
-      setState(() {
-        id = state.libStore.cover.id;
-        _title =
-            DatabaseMangaHelpers.getCoversFromMangaMap(state.libStore.cover.id);
-      });
-    }
+      }
+    });
   }
 
   @override
@@ -83,28 +79,30 @@ class _LibGridState extends State<LibGrid> {
       child: BlocListener<LibraryBloc, LibraryState>(
         listenWhen: listenWhenGuard,
         listener: listenerCb,
-        child: FutureBuilder(
-          builder: (context, snapshot) {
-            if (snapshot.hasData && snapshot.data!.isNotEmpty) {
-              var l = snapshot.data!.map((e) {
-                return GridItem(item: e);
-              }).toList();
+        child: Builder(builder: (context) {
+          final state = context.read<LibraryBloc>().state;
+          if (state is! LibraryLoaded) {
+            return DragAndDropSurface();
+          }
 
-              return Scrollbar(
-                  radius: Radius.zero,
-                  child: GridView.count(
-                    primary: true,
-                    crossAxisCount: calculateSize(width),
-                    mainAxisSpacing: 100,
-                    crossAxisSpacing: 10,
-                    children: filterList(search, l),
-                  ));
-            } else {
-              return DragAndDropSurface();
-            }
-          },
-          future: _title,
-        ),
+          if (state.libStore.libIndex == null) {
+            return DragAndDropSurface();
+          }
+
+          final covers = state.libStore.libElements[state.libStore.libIndex!];
+          final gridItems = sortCoversNumeric(covers.books)
+              .map((e) => GridItem(item: e))
+              .toList();
+          return Scrollbar(
+              radius: Radius.zero,
+              child: GridView.count(
+                primary: true,
+                crossAxisCount: calculateSize(width),
+                mainAxisSpacing: 100,
+                crossAxisSpacing: 10,
+                children: filterList(search, gridItems),
+              ));
+        }),
       ),
     );
   }
