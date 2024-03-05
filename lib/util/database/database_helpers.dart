@@ -141,18 +141,32 @@ class DatabaseMangaHelpers {
         final db = await DatabaseCore.openDB();
         final results = await db.rawQuery(
             "SELECT * FROM ${DatabaseTables.Bookmarks} LEFT JOIN ${DatabaseTables.Book} ON ${DatabaseTables.Book}.id = ${DatabaseTables.Bookmarks}.book;");
-
-        print(results);
         db.close();
-        return Bookmarks.fromMaps(results);
+        final b = Bookmarks.fromMaps(results);
+        print(b.data);
+        return b;
       }
 
       final results = await DatabaseCore.queryDB(
           table: DatabaseTables.Bookmarks, where: "path=?", args: [path]);
-      return Bookmarks.fromMaps(results);
+      final b = Bookmarks.fromMaps(results);
+      print(b);
+      return b;
     } catch (e) {
       print(e);
       return Bookmarks.Empty();
+    }
+  }
+
+  static Future<List<int>> getBookmarkPagesFromPath(
+      {required String path}) async {
+    try {
+      final results = await DatabaseCore.queryDB(
+          table: DatabaseTables.Bookmarks, where: "path=?", args: [path]);
+      return results.map((e) => (e["page"] as int)).toList();
+    } catch (e) {
+      print(e);
+      return [];
     }
   }
 
@@ -169,10 +183,17 @@ class DatabaseMangaHelpers {
   }
 
   static Future<void> removeBookmark(
-      {required int manga, required int page}) async {
-    await DatabaseCore.deleteFromDB(
-        table: DatabaseTables.Bookmarks,
-        where: 'manga = ? AND page = ?',
-        args: [manga, page]);
+      {required int book, required int page}) async {
+    if (book == -1) {
+      print("INVALID ID");
+      return;
+    }
+    print("VALID ID");
+    final db = await DatabaseCore.openDB();
+    await db.delete(DatabaseTables.Bookmarks,
+        where: 'book=? AND page=?', whereArgs: [book, page]);
+    db.close();
+    // await DatabaseCore.deleteFromDB(
+    //);
   }
 }

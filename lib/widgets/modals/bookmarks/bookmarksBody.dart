@@ -22,9 +22,10 @@ class _BookmarksBodyState extends State<BookmarksBody> {
     bookmarks = DatabaseMangaHelpers.getBookmarks();
   }
 
-  Future<void> deleteBookmark(int manga, int page) async {
-    await DatabaseMangaHelpers.removeBookmark(manga: manga, page: page);
+  Future<void> deleteBookmark(int book, int page) async {
+    await DatabaseMangaHelpers.removeBookmark(book: book, page: page);
     setState(() {
+      print("REMOVING");
       getBookmarks();
     });
   }

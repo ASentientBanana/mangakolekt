@@ -78,16 +78,10 @@ class _MangaReaderState extends State<MangaReader> {
   }
 
   Future<List<int>> getBookmarks() async {
-    if (readerController.book.id != null) {
-      final bookmarks = await DatabaseMangaHelpers.getBookmarks(
-          path: readerController.book.path);
+    final bookmarks = await DatabaseMangaHelpers.getBookmarkPagesFromPath(
+        path: readerController.book.path);
 
-      if (bookmarks.data.isNotEmpty) {
-        return bookmarks.data.first.bookmarks.map((e) => e.page).toList();
-      }
-    }
-
-    return [];
+    return bookmarks;
   }
 
   Future<void> initBook() async {
@@ -126,17 +120,21 @@ class _MangaReaderState extends State<MangaReader> {
     final isBookmark =
         bookmarks.contains(readerController.getCurrentPages().first);
     if (!isBookmark) {
+      print("bookmark not found");
       await DatabaseMangaHelpers.addBookmark(
           book: readerController.book.id ?? -1,
           path: readerController.book.path,
           page: readerController.getCurrentPages().first);
     } else {
+      print("bookmark found");
       await DatabaseMangaHelpers.removeBookmark(
-          manga: readerController.book.id ?? 0,
+          book: readerController.book.id ?? -1,
           page: readerController.getCurrentPages().first);
     }
     final bm = await getBookmarks();
     setState(() {
+      print("Bookmark");
+      print(bm);
       bookmarks = bm;
     });
   }
