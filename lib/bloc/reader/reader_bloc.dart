@@ -15,7 +15,7 @@ class ReaderBloc extends Bloc<ReaderEvent, ReaderState> {
   _updateBookmarks(UpdateBookmarks event, Emitter<ReaderState> emit) {}
 
   _setBookmarks(SetBookmarks event, Emitter<ReaderState> emit) {
-    if (!(this.state is ReaderLoaded)) {
+    if (state is! ReaderLoaded) {
       return;
     }
     emit(ReaderLoaded(bookmarks: event.bookmarks));

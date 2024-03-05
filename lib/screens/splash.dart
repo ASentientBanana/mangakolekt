@@ -1,13 +1,11 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:mangakolekt/bloc/library/library_bloc.dart';
-import 'package:mangakolekt/util/database/database_core.dart';
+import 'package:mangakolekt/models/global.dart';
+import 'package:mangakolekt/services/initializer.dart';
 import 'package:mangakolekt/util/database/database_helpers.dart';
-import 'package:mangakolekt/util/files.dart';
 import 'package:mangakolekt/widgets/loadingDog.dart';
-import 'package:permission_handler/permission_handler.dart';
+import 'package:path_provider/path_provider.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({Key? key}) : super(key: key);
@@ -33,32 +31,29 @@ class _SplashScreenState extends State<SplashScreen> {
       if (!context.mounted) {
         return;
       }
+      //Register documents path
+      Global.appDocumentsDir = (await getApplicationDocumentsDirectory()).path;
 
-      await DatabaseCore.initDatabase();
+      await initAppStructure();
 
-      if (Platform.isAndroid || Platform.isIOS) {
-        final statusses = await [
-          Permission.photos,
-          Permission.videos,
-          Permission.audio,
-        ].request();
+      if (!(await initPermissions())) {
+        // TODO: Add flow
+        print("denied permissions");
       }
 
       final mangaList = await DatabaseMangaHelpers.getAllBooksFromLibrary();
-      await createGlobalCoversDir();
-      await createCurrentDir();
+
       // loading the themes to the store
       if (context.mounted) {
         // REFACTOR:
         context.read<LibraryBloc>().add(SetLibs(libs: mangaList));
       }
 
-      await createLogFile();
-      await createAppDB();
-
       if (!context.mounted) return;
       Navigator.pushNamed(context, '/home');
     } catch (e) {
+      print("init error:");
+      print(e);
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           behavior: SnackBarBehavior.fixed,

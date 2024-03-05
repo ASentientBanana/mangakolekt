@@ -82,7 +82,9 @@ class CreateLibBodyState extends State<CreateLibBody> {
     // Add manga to Manga table in db
     // REFACTOR:
     final id = await DatabaseMangaHelpers.addLibrary(
-        name: textEditingController.text, books: coversPathList);
+        libraryPath: widget.selectedDir,
+        name: textEditingController.text,
+        books: coversPathList);
     final mangaList = await DatabaseMangaHelpers.getAllBooksFromLibrary();
     final index = mangaList.indexWhere((element) => element.id == id);
     if (mangaList.isNotEmpty && context.mounted) {

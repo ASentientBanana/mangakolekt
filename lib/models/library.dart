@@ -3,8 +3,9 @@ import 'package:mangakolekt/models/book.dart';
 class LibraryElement {
   late final String name;
   late final int id;
+  late final String path;
   List<BookCover> books = [];
-  LibraryElement({required this.id, required this.name});
+  LibraryElement({required this.id, required this.name, required this.path});
 
   LibraryElement.empty() {
     name = '';

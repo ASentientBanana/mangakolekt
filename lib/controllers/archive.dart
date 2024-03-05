@@ -31,7 +31,9 @@ class Runner {
 
 class ArchiveController {
   // Add controllers for the file types
-  static List<BaseBookController> controllers = [ZipBookController()];
+  static List<BaseBookController> controllers = [
+    ZipBookController(),
+  ];
 
   static BaseBookController? getTypeController(String type) {
     for (var controller in ArchiveController.controllers) {
@@ -50,7 +52,7 @@ class ArchiveController {
     final String id = args[3];
     final controller = ArchiveController.getTypeController(type);
     if (controller == null) {
-      return null;
+      throw Error.safeToString('Unsupported file type selected.');
     }
     //unzip to the current dir.
     await controller.unpack(pathToBook, dest);
@@ -128,7 +130,7 @@ class ArchiveController {
       String pathToDir, List<String>? files) async {
     //create dirs
     final out = await getGlobalCoversDir();
-    print("Starting unpack process");
+
     final types = <String, Runner>{};
     final dir = Directory(pathToDir);
     if (!await dir.exists()) {
@@ -164,8 +166,7 @@ class ArchiveController {
       final covers = await types[key]
           ?.controller
           .unpackCovers(pathToDir, files: types[key]?.files ?? [], out: out);
-      print("covers::");
-      print(covers);
+
       if (covers != null) {
         allCovers.addAll(covers);
       }

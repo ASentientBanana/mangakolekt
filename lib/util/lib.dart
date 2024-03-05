@@ -91,10 +91,10 @@ Future<bool> deleteLib(String path) async {
   //check if app mapFile and lib mapFile exist;
 
   // final libDir = Directory("$path/$libFolderName");
-  final libDir = Directory(p.join(path, libFolderName));
-  if (await libDir.exists()) {
-    await libDir.delete(recursive: true);
-  }
+  // final libDir = Directory(p.join(path, libFolderName));
+  // if (await libDir.exists()) {
+  //   await libDir.delete(recursive: true);
+  // }
   return true;
 }
 

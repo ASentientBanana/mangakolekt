@@ -6,6 +6,14 @@ import 'package:mangakolekt/util/database/database_table.dart';
 import 'package:mangakolekt/util/util.dart';
 
 class DatabaseMangaHelpers {
+  static Future<List<LibraryElement>> getLibraries({String? id}) async {
+    if (id != null) {
+      DatabaseCore.readFromDB(
+          query: "Select * FROM TABLE ${DatabaseTables.Book}");
+    }
+    return [];
+  }
+
   static getAllManga() {
     DatabaseCore.readFromDB(
         query: "Select * FROM TABLE ${DatabaseTables.Book}");
@@ -15,19 +23,21 @@ class DatabaseMangaHelpers {
     final Map<int, LibraryElement> libraryMap = {};
     final db = await DatabaseCore.openDB();
     final res = await db.rawQuery(
-        "SELECT ${DatabaseTables.Book}.library as id, ${DatabaseTables.Book}.id as book_id, path, cover, ${DatabaseTables.Book}.name as book_name, ${DatabaseTables.Library}.name as library_name FROM ${DatabaseTables.Book} RIGHT JOIN ${DatabaseTables.Library} ON ${DatabaseTables.Library}.id = ${DatabaseTables.Book}.library;");
+        "SELECT ${DatabaseTables.Book}.library as id, ${DatabaseTables.Book}.id as book_id, ${DatabaseTables.Library}.path as library_path , ${DatabaseTables.Book}.path as path, cover, ${DatabaseTables.Book}.name as book_name, ${DatabaseTables.Library}.name as library_name FROM ${DatabaseTables.Book} RIGHT JOIN ${DatabaseTables.Library} ON ${DatabaseTables.Library}.id = ${DatabaseTables.Book}.library;");
 
     //Construct lib element map
     for (var i = 0; i < res.length; i++) {
       final element = res[i];
-      //check
+      //check for id
       if (element['id'] == null) {
         continue;
       }
 
       if (libraryMap[element['id']] == null) {
         libraryMap[element['id'] as int] = LibraryElement(
-            id: element['id'] as int, name: element['library_name'] as String);
+            id: element['id'] as int,
+            path: element['library_path'] as String,
+            name: element['library_name'] as String);
       }
 
       //validate map to see if all fields are present
@@ -56,10 +66,13 @@ class DatabaseMangaHelpers {
   }
 
   static Future<int> addLibrary(
-      {required List<String> books, required String name}) async {
+      {required List<String> books,
+      required String name,
+      required String libraryPath}) async {
     final db = await DatabaseCore.openDB();
 
-    final id = await db.insert(DatabaseTables.Library, {"name": name});
+    final id = await db
+        .insert(DatabaseTables.Library, {"name": name, "path": libraryPath});
 
     // create batch
     final batch = db.batch();
@@ -67,7 +80,6 @@ class DatabaseMangaHelpers {
 
     for (var mapString in books) {
       final mListItem = mapString.split(';');
-
       batch.insert(
         DatabaseTables.Book,
         {
@@ -84,6 +96,28 @@ class DatabaseMangaHelpers {
 
     await db.close();
     return id;
+  }
+
+  static Future<List<String>> deleteLibrary(int id) async {
+    List<String> deleted = [];
+    final db = await DatabaseCore.openDB();
+    final batch = db.batch();
+    batch.query(DatabaseTables.Book,
+        columns: ["cover"], where: 'library=?', whereArgs: [id]);
+    batch.delete(DatabaseTables.Library, where: "id=?", whereArgs: [id]);
+    batch.delete(DatabaseTables.Book, where: 'library=?', whereArgs: [id]);
+    final res = await batch.commit();
+
+    //Its 0 because commit returns the results in the order called
+    final paths = res[0] as List<dynamic>;
+    for (var path in paths) {
+      if (path['cover'] != null) {
+        deleted.add(path['cover']!);
+      }
+    }
+
+    db.close();
+    return deleted;
   }
 
   static Future<void> setCurrentlyReading(String path, int page) async {

@@ -1,8 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 import 'package:file_picker/file_picker.dart';
-import 'package:mangakolekt/models/bloc/theme.dart';
-import 'package:path_provider/path_provider.dart';
+import 'package:mangakolekt/models/global.dart';
 import '../constants.dart';
 import 'package:path/path.dart' as p;
 
@@ -18,18 +17,12 @@ Future<String?> pickFile() async {
   return null;
 }
 
-Future<void> createAppDB() async {
-  // on linux its '/home/petar/Documents'
-  final appDocumentDir = await getApplicationDocumentsDirectory();
-  final mapFile = File(p.join(appDocumentDir.path, appFolder, appMapFile));
-  if (!(await mapFile.exists())) {
-    await mapFile.create(recursive: true);
+Future<void> createAppFolder() async {
+  final appDir = Directory(p.join(Global.appDocumentsDir, Global.mangaDirName));
+  if (!(await appDir.exists())) {
+    await appDir.create(recursive: true);
   }
 }
-
-typedef Callback = void Function();
-
-Future<void> registerBookToLib(String libPath, bookPath) async {}
 
 Future<int> getNumberOfFiles(String path) async {
   final dir = Directory(path);
@@ -49,52 +42,20 @@ Future<int> getNumberOfFiles(String path) async {
 }
 
 Future<void> createLogFile() async {
-  final dirPath = await getApplicationDocumentsDirectory();
-  final f = File(p.join(dirPath.path, appFolder, logFilePath));
+  final f =
+      File(p.join(Global.appDocumentsDir, Global.mangaDirName, logFilePath));
   if (!(await f.exists())) {
     await f.create();
   }
 }
 
 Future<void> log(String msg) async {
-  final logPath = p.join(appFolder, logFilePath);
-}
-
-Future<List<ThemeStore>> readThemeFile() async {
-  final dirPath = await getApplicationDocumentsDirectory();
-  final filePath = p.join(dirPath.path, appFolder, themeFileName);
-  var input = await File(filePath).readAsString();
-  Map<String, dynamic> map = jsonDecode(input);
-  List<dynamic> themes = map['themes'];
-  return themes.map((e) => ThemeStore.fromJSON(e)).toList();
-}
-
-Future<List<ThemeStore>> createThemeFile() async {
-  final dirPath = await getApplicationDocumentsDirectory();
-  final filePath = p.join(dirPath.path, appFolder, themeFileName);
-
-  final f = await File(filePath).create(recursive: true);
-  final themes = ThemeStore.generateDefaultThemes();
-
-  await f.writeAsString(
-      '{ "current": 0, "themes":[${themes.map((e) => jsonEncode(e.toJSON())).join(',')} ]}');
-
-  return themes;
-}
-
-Future<List<ThemeStore>> checkThemeFile() async {
-  final dirPath = await getApplicationDocumentsDirectory();
-  final filePath = p.join(dirPath.path, appFolder, themeFileName);
-  if (await File(filePath).exists()) {
-    return await readThemeFile();
-  } else {
-    return await createThemeFile();
-  }
+  final logPath = p.join(Global.mangaDirName, logFilePath);
 }
 
 Future<String> getCurrentDirPath() async {
-  final dirPath = await getApplicationDocumentsDirectory();
-  return p.join(dirPath.path, appFolder, currentFolder);
+  return p.join(
+      Global.appDocumentsDir, Global.mangaDirName, Global.currentDirName);
 }
 
 Future<void> createCurrentDir() async {
@@ -105,8 +66,8 @@ Future<void> createCurrentDir() async {
 }
 
 Future<void> createGlobalCoversDir() async {
-  final appDocs = await getApplicationDocumentsDirectory();
-  final path = p.join(appDocs.path, 'covers');
+  final path =
+      p.join(Global.appDocumentsDir, Global.mangaDirName, Global.coversDirName);
   final d = Directory(path);
   if (!(await d.exists())) {
     await d.create();
@@ -114,14 +75,14 @@ Future<void> createGlobalCoversDir() async {
 }
 
 Future<String> getGlobalCoversDir() async {
-  final appDocs = await getApplicationDocumentsDirectory();
-  final path = p.join(appDocs.path, 'covers');
+  final path =
+      p.join(Global.appDocumentsDir, Global.mangaDirName, Global.coversDirName);
   return path;
 }
 
 Future<void> emptyCurrentDir() async {
-  final dirPath = await getApplicationDocumentsDirectory();
-  final path = p.join(dirPath.path, appFolder, currentFolder);
+  final path = p.join(
+      Global.appDocumentsDir, Global.mangaDirName, Global.currentDirName);
   final d = Directory(path);
   if (!(await d.exists())) {
     await d.create();
@@ -141,4 +102,11 @@ Future<List<String>> getFilesFromDir(Directory dir) async {
     }
   }
   return files;
+}
+
+Future<void> deleteFiles(List<String> files) async {
+  print("Files marked for deletion: \n ${files}");
+  for (var file in files) {
+    await File(file).delete();
+  }
 }

@@ -36,7 +36,12 @@ class SetCurrentLib extends LibraryEvent {
   List<Object> get props => [index];
 }
 
-class Reset extends LibraryEvent {
+class ClearCurrentLib extends LibraryEvent {
+  @override
+  List<Object> get props => [];
+}
+
+class Refresh extends LibraryEvent {
   @override
   List<Object> get props => [];
 }

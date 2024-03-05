@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:ffi/ffi.dart';
 import 'package:flutter/foundation.dart';
 import 'package:mangakolekt/constants.dart';
+import 'package:mangakolekt/models/global.dart';
 import 'package:mangakolekt/types/ffi.dart';
 import 'package:mangakolekt/generated/archive_ffi.dart' as nb;
 
@@ -31,7 +32,7 @@ class FFIService {
 
   static Future<void> checkLibDir(String path) async {
     //Append lib folder name to the path
-    final fullPath = join(path, libFolderName);
+    final fullPath = join(path, Global.mangaDirName);
     final dyLib = loadService();
     if (dyLib == null) {
       return;

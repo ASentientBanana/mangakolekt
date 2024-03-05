@@ -11,7 +11,7 @@ class LibraryBloc extends Bloc<LibraryEvent, LibraryState> {
   LibraryBloc() : super(LibraryLoaded(libStore: LibStore.initial())) {
     on<SetLibs>(_onSetLibs);
     on<SetCover>(_onSetCover);
-    on<Reset>(_onReset);
+    on<Refresh>(_onRefresh);
     on<RemoveBook>(_removeBook);
     on<SearchLib>(_search);
     on<SetCurrentLib>(_onSetCurrentLib);
@@ -31,9 +31,11 @@ class LibraryBloc extends Bloc<LibraryEvent, LibraryState> {
     }
   }
 
-  void _onReset(Reset event, Emitter<LibraryState> emit) {
+  void _onRefresh(Refresh event, Emitter<LibraryState> emit) {
+    final state = this.state;
     if (state is LibraryLoaded) {
-      emit(LibraryLoaded(libStore: LibStore.initial()));
+      final index = state.libStore.libIndex;
+      // state.libStore.libElements.indexWhere((element) => element.id ==)
     }
   }
 
@@ -51,7 +53,8 @@ class LibraryBloc extends Bloc<LibraryEvent, LibraryState> {
     if (state is LibraryLoaded) {
       emit(LibraryLoaded(
           libStore: LibStore(
-              element: state.libStore.libElements, index: event.index)));
+              element: state.libStore.libElements,
+              index: event.index < 0 ? null : event.index)));
     }
   }
 

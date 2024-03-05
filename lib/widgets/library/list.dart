@@ -42,11 +42,11 @@ class _LibListState extends State<LibList> {
     return Stack(
       clipBehavior: Clip.none,
       children: [
-        AnimatedContainer(
-          duration: const Duration(milliseconds: 600),
-          curve: Curves.ease,
+        Container(
+          // duration: const Duration(milliseconds: 600),
+          // curve: Curves.ease,
+          width: SIDEBAR_WIDTH,
           padding: const EdgeInsets.all(30),
-          width: hidden ? 14 : SIDEBAR_WIDTH,
           decoration: BoxDecoration(
             gradient: const RadialGradient(
               stops: [.01, .99],
@@ -66,7 +66,6 @@ class _LibListState extends State<LibList> {
           ),
           child: Container(
             padding: const EdgeInsets.only(top: 20),
-            width: hidden ? 0 : SIDEBAR_WIDTH,
             // child: ListView(children: list),
             child: Scrollbar(
               scrollbarOrientation: ScrollbarOrientation.right,

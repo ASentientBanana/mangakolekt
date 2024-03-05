@@ -2,13 +2,16 @@ import 'package:mangakolekt/util/database/database_table.dart';
 
 final databaseTableDefinitions = [
   //Main manga table
-  DatabaseTable(name: DatabaseTables.Library).addPrimaryKey().add(
+  DatabaseTable(name: DatabaseTables.Library)
+      .addPrimaryKey()
+      .add(
         DatabaseTableField(
           name: 'name',
           type: DatabaseTypes.Text,
-          extra: ['unique'],
+          // extra: ['unique'],
         ),
-      ),
+      )
+      .add(DatabaseTableField(name: "path", type: DatabaseTypes.Text)),
   // .add(DatabaseTableField(name: 'path', type: DatabaseTypes.Text)),
   //Manga map table Library
   DatabaseTable(name: DatabaseTables.Book)
