@@ -19,6 +19,7 @@ class _BookmarkContentState extends State<BookmarkContent> {
   int bookmarksIndex = 0;
 
   void selectBookmarks(int i) {
+    print(widget.bookmarks.data[bookmarksIndex].name);
     setState(() {
       bookmarksIndex = i;
     });
@@ -45,7 +46,7 @@ class _BookmarkContentState extends State<BookmarkContent> {
     final colorScheme = Theme.of(context).colorScheme;
     return Container(
       height: 500,
-      width: 700,
+      width: 1000,
       color: colorScheme.primary,
       child: Column(
         children: [
@@ -72,7 +73,7 @@ class _BookmarkContentState extends State<BookmarkContent> {
               children: [
                 //Left side
                 Container(
-                  width: 170,
+                  width: 270,
                   padding:
                       const EdgeInsets.symmetric(horizontal: 12, vertical: 5),
                   decoration: BoxDecoration(

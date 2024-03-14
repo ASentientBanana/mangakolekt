@@ -1,7 +1,10 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:mangakolekt/constants.dart';
 import 'package:mangakolekt/locator.dart';
 import 'package:mangakolekt/screens/library.dart';
+import 'package:mangakolekt/screens/mobile/library.dart';
 import 'package:mangakolekt/screens/splash.dart';
 import 'package:mangakolekt/screens/theme_creator.dart';
 import 'package:mangakolekt/services/navigationService.dart';
@@ -26,12 +29,25 @@ class AppWidget extends StatelessWidget {
               id: args["id"],
             ));
       case "/home":
-        return pageRouteBuilderWrapper(settings, const MyHomePage());
+        return pageRouteBuilderWrapper(
+            settings,
+            (Platform.isAndroid || Platform.isIOS)
+                ? const MyHomePageMobile()
+                : const MyHomePage());
       case "/":
         return pageRouteBuilderWrapper(settings, const SplashScreen());
       case "/settings":
-      // return DialogRoute(context: , builder: builder)
-      // return pageRouteBuilderWrapper(settings, const SettingsPage());
+        // return DialogRoute(context: , builder: builder)
+        // return pageRouteBuilderWrapper(settings, const SettingsPage());
+        break;
+      case "/help":
+        // return DialogRoute(context: , builder: builder)
+        // return pageRouteBuilderWrapper(settings, const SettingsPage());
+        break;
+      case "/bookmarks":
+        // return DialogRoute(context: , builder: builder)
+        // return pageRouteBuilderWrapper(settings, const SettingsPage());
+        break;
       case "/theme_creator":
         return pageRouteBuilderWrapper(settings, const ThemeCreatorPage());
       default:

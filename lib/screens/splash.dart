@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:mangakolekt/bloc/library/library_bloc.dart';
-import 'package:mangakolekt/models/global.dart';
 import 'package:mangakolekt/services/initializer.dart';
 import 'package:mangakolekt/util/database/database_helpers.dart';
 import 'package:mangakolekt/widgets/loadingDog.dart';
@@ -32,9 +32,6 @@ class _SplashScreenState extends State<SplashScreen> {
         return;
       }
       //Register documents path
-      Global.appDocumentsDir = (await getApplicationDocumentsDirectory()).path;
-
-      await initAppStructure();
 
       if (!(await initPermissions())) {
         // TODO: Add flow

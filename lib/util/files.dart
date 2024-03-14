@@ -1,7 +1,7 @@
-import 'dart:convert';
 import 'dart:io';
 import 'package:file_picker/file_picker.dart';
 import 'package:mangakolekt/models/global.dart';
+import 'package:path_provider/path_provider.dart' as pp;
 import '../constants.dart';
 import 'package:path/path.dart' as p;
 
@@ -18,7 +18,9 @@ Future<String?> pickFile() async {
 }
 
 Future<void> createAppFolder() async {
-  final appDir = Directory(p.join(Global.appDocumentsDir, Global.mangaDirName));
+  final appDocDir = (await pp.getApplicationDocumentsDirectory()).path;
+
+  final appDir = Directory(p.join(appDocDir, mangaDirName));
   if (!(await appDir.exists())) {
     await appDir.create(recursive: true);
   }
@@ -42,20 +44,22 @@ Future<int> getNumberOfFiles(String path) async {
 }
 
 Future<void> createLogFile() async {
-  final f =
-      File(p.join(Global.appDocumentsDir, Global.mangaDirName, logFilePath));
+  final appDocDir = (await pp.getApplicationDocumentsDirectory()).path;
+
+  final f = File(p.join(appDocDir, mangaDirName, logFilePath));
   if (!(await f.exists())) {
     await f.create();
   }
 }
 
 Future<void> log(String msg) async {
-  final logPath = p.join(Global.mangaDirName, logFilePath);
+  final logPath = p.join(mangaDirName, logFilePath);
 }
 
 Future<String> getCurrentDirPath() async {
-  return p.join(
-      Global.appDocumentsDir, Global.mangaDirName, Global.currentDirName);
+  final appDocDir = (await pp.getApplicationDocumentsDirectory()).path;
+
+  return p.join(appDocDir, mangaDirName, currentDirName);
 }
 
 Future<void> createCurrentDir() async {
@@ -66,8 +70,9 @@ Future<void> createCurrentDir() async {
 }
 
 Future<void> createGlobalCoversDir() async {
-  final path =
-      p.join(Global.appDocumentsDir, Global.mangaDirName, Global.coversDirName);
+  final appDocDir = (await pp.getApplicationDocumentsDirectory()).path;
+
+  final path = p.join(appDocDir, mangaDirName, coversDirName);
   final d = Directory(path);
   if (!(await d.exists())) {
     await d.create();
@@ -75,14 +80,14 @@ Future<void> createGlobalCoversDir() async {
 }
 
 Future<String> getGlobalCoversDir() async {
-  final path =
-      p.join(Global.appDocumentsDir, Global.mangaDirName, Global.coversDirName);
+  final appDocDir = (await pp.getApplicationDocumentsDirectory()).path;
+  final path = p.join(appDocDir, mangaDirName, coversDirName);
   return path;
 }
 
 Future<void> emptyCurrentDir() async {
-  final path = p.join(
-      Global.appDocumentsDir, Global.mangaDirName, Global.currentDirName);
+  final appDocDir = (await pp.getApplicationDocumentsDirectory()).path;
+  final path = p.join(appDocDir, mangaDirName, currentDirName);
   final d = Directory(path);
   if (!(await d.exists())) {
     await d.create();

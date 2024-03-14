@@ -123,7 +123,7 @@ void _unzipFilesInIsolate(List<dynamic> args) async {
   var booksString = '';
   try {
     for (final file in files) {
-      final out = p.join(outputPath, Global.currentDirName);
+      final out = p.join(outputPath, currentDirName);
       final coverName = await unzipCoverBeta(file.path, out);
       booksString +=
           "${p.split(file.path).last};${p.join(out, coverName)};${file.path}&";

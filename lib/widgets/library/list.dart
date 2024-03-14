@@ -45,13 +45,13 @@ class _LibListState extends State<LibList> {
         Container(
           // duration: const Duration(milliseconds: 600),
           // curve: Curves.ease,
-          width: SIDEBAR_WIDTH,
+          width: 280,
           padding: const EdgeInsets.all(30),
           decoration: BoxDecoration(
             gradient: const RadialGradient(
-              stops: [.01, .99],
-              radius: 2.0,
-              focalRadius: .7,
+              stops: [.01, 1],
+              radius: 2.9,
+              focalRadius: .4,
               // focal: Alignment.bottomCenter,
               center: Alignment.bottomLeft,
               // transform: const GradientRotation(12),
@@ -59,7 +59,7 @@ class _LibListState extends State<LibList> {
             ),
             border: Border(
               right: BorderSide(
-                  color: colorScheme.tertiary,
+                  color: colorScheme.secondary,
                   style: BorderStyle.solid,
                   width: 2),
             ),
@@ -84,17 +84,6 @@ class _LibListState extends State<LibList> {
             ),
           ),
         ),
-        // Positioned(
-        //   child: ElevatedButton(
-        //     onPressed: () {
-        //       print("click");
-        //       setState(() {
-        //         hidden = !hidden;
-        //       });
-        //     },
-        //     child: const Icon(Icons.arrow_back),
-        //   ),
-        // ),
       ],
     );
   }

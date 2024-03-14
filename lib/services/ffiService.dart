@@ -32,7 +32,7 @@ class FFIService {
 
   static Future<void> checkLibDir(String path) async {
     //Append lib folder name to the path
-    final fullPath = join(path, Global.mangaDirName);
+    final fullPath = join(path, mangaDirName);
     final dyLib = loadService();
     if (dyLib == null) {
       return;

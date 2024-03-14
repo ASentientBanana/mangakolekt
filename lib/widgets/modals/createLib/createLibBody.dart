@@ -1,4 +1,6 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:mangakolekt/bloc/library/library_bloc.dart';
 import 'package:mangakolekt/controllers/archive.dart';
@@ -7,6 +9,7 @@ import 'package:mangakolekt/services/navigationService.dart';
 import 'package:mangakolekt/util/database/database_helpers.dart';
 import 'package:mangakolekt/util/files.dart';
 import 'package:mangakolekt/util/util.dart';
+// import 'package:flutter/foundation.dart';
 
 class CreateLibBody extends StatefulWidget {
   final String selectedDir;
@@ -48,13 +51,19 @@ class CreateLibBodyState extends State<CreateLibBody> {
 
   Future<List<String>?> startIsolate() async {
     try {
-      final res =
-          await ArchiveController.unpackCovers(widget.selectedDir, null);
+      // compute
+      final out = await getGlobalCoversDir();
+
+      final res = await compute(
+          (message) => ArchiveController.unpackCovers(message[0], message[1]),
+          [widget.selectedDir, out]);
+      // final res = await ArchiveController.unpackCovers(widget.selectedDir, out);
       return res;
     } catch (e) {
       if (!context.mounted) {
         return [];
       }
+      print(e);
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(
@@ -91,10 +100,10 @@ class CreateLibBodyState extends State<CreateLibBody> {
       context.read<LibraryBloc>().add(SetLibs(libs: mangaList));
       context.read<LibraryBloc>().add(SetCurrentLib(index: index));
     }
-    closeModal();
     setState(() {
       isSubmitDisabled = false;
     });
+    closeModal();
   }
 
   void closeModal() {

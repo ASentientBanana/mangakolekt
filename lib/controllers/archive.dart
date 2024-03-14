@@ -3,12 +3,15 @@ import 'dart:io';
 
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:mangakolekt/controllers/types/zip.dart';
 import 'package:mangakolekt/models/book.dart';
-import 'package:mangakolekt/services/ffiService.dart';
+import 'package:mangakolekt/models/global.dart';
+import 'package:mangakolekt/services/initializer.dart';
 import 'package:mangakolekt/util/files.dart';
 import 'package:mangakolekt/util/util.dart';
 import 'package:path/path.dart' as p;
+import 'package:path_provider/path_provider.dart';
 
 abstract class BaseBookController {
   bool checkType(String type);
@@ -100,7 +103,6 @@ class ArchiveController {
     // List<String> _pages = await compute((message) async {
     // return await _loadPagesRecursive(message);
     // }, target);
-    print("`Looking in`: $target");
     final _pages = await _loadPagesRecursive(target);
     _pages.sort(compareNatural);
     // // _pages = sortNumeric(_pages);
@@ -127,10 +129,9 @@ class ArchiveController {
   }
 
   static Future<List<String>?> unpackCovers(
-      String pathToDir, List<String>? files) async {
+      String pathToDir, String out) async {
     //create dirs
-    final out = await getGlobalCoversDir();
-
+    // final out = "/home/petar/Documents/mangakolekt/covers";
     final types = <String, Runner>{};
     final dir = Directory(pathToDir);
     if (!await dir.exists()) {
@@ -139,7 +140,7 @@ class ArchiveController {
 
     // get a list of files
     // final _files = files ?? (await FFIService.ffiGetDirContents(pathToDir));
-    final _files = files ?? (await getFilesFromDir(dir));
+    final _files = (await getFilesFromDir(dir));
     //Build map of types
     for (var element in _files) {
       final type = p.extension(element).substring(1);

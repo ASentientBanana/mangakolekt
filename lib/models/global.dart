@@ -1,8 +1,6 @@
-class Global {
-  static String mangaDirName = 'mangakolekt';
-  static String databaseName = 'manga.db';
-  static String currentDirName = 'current';
-  static String coversDirName = 'covers';
-  static String appDocumentsDir = 'default';
-  static String logName = '.mangalog.txt';
-}
+const mangaDirName = 'mangakolekt';
+const databaseName = 'manga.db';
+const currentDirName = 'current';
+const coversDirName = 'covers';
+const appDocumentsDir = 'default';
+const logName = '.mangalog.txt';

@@ -58,7 +58,9 @@ class _LibListItemState extends State<LibListItem> {
     }
     await handleDeleteFromLib(context, false);
     // final path = widget.item.books.first.path;
-    final res = await ArchiveController.unpackCovers(widget.item.path, null);
+    final out = await getGlobalCoversDir();
+
+    final res = await ArchiveController.unpackCovers(widget.item.path, out);
 
     if (res == null) {
       return;

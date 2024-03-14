@@ -43,6 +43,7 @@ class Bookmarks {
     */
     final map = {};
     for (var element in _maps) {
+      print(_maps[0]);
       final isValid = validateMap(
         element,
         ["id", "name", "page", "path", "created_at"],
@@ -71,12 +72,9 @@ class Bookmarks {
     data = map.entries
         .map(
           (e) {
-            if (!validateMap(e.value, ["bookmarks", "id", "name", "path"])) {
-              return BookmarksData.Empty();
-            }
             return BookmarksData(
               path: e.value["path"],
-              //REFACTOR:
+              //REFACTOR:book
               //Very bad, compiler, temp solution for the compiler
               bookmarks: (e.value["bookmarks"] as List<dynamic>)
                   .map((e) => e as Bookmark)

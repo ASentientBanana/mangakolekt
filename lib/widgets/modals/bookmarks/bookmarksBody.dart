@@ -25,7 +25,6 @@ class _BookmarksBodyState extends State<BookmarksBody> {
   Future<void> deleteBookmark(int book, int page) async {
     await DatabaseMangaHelpers.removeBookmark(book: book, page: page);
     setState(() {
-      print("REMOVING");
       getBookmarks();
     });
   }
@@ -59,7 +58,6 @@ class _BookmarksBodyState extends State<BookmarksBody> {
         bookmarks: Bookmarks.Empty(),
       );
     }
-    print((snapshot.data as Bookmarks).data);
     return BookmarkContent(
       deleteBookmarkCb: deleteBookmark,
       bookmarks: snapshot.data,

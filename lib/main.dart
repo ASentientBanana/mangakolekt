@@ -29,10 +29,7 @@ class MyApp extends StatelessWidget {
         BlocProvider<ReaderBloc>(
             create: (BuildContext context) => ReaderBloc()),
       ],
-      child: const Focus(
-        canRequestFocus: false,
-        child: AppWidget(),
-      ),
+      child: const AppWidget(),
     );
   }
 }
