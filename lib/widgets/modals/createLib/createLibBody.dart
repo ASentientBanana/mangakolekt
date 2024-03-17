@@ -177,20 +177,11 @@ class CreateLibBodyState extends State<CreateLibBody> {
                     ),
                     onPressed:
                         isSubmitDisabled ? null : () => handleSubmit(context),
-                    child: isSubmitDisabled
-                        ? const Center(
-                            child: SizedBox(
-                              // height: 20,
-                              width: 20,
-                              child: CircularProgressIndicator(),
-                            ),
-                          )
-                        : const Text(
-                            "Confirm",
-                            style: TextStyle(
-                                color: Colors.black,
-                                fontWeight: FontWeight.bold),
-                          ),
+                    child: const Text(
+                      "Confirm",
+                      style: TextStyle(
+                          color: Colors.black, fontWeight: FontWeight.bold),
+                    ),
                   ),
                 ),
                 const Padding(

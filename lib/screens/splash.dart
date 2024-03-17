@@ -49,8 +49,6 @@ class _SplashScreenState extends State<SplashScreen> {
       if (!context.mounted) return;
       Navigator.pushNamed(context, '/home');
     } catch (e) {
-      print("init error:");
-      print(e);
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           behavior: SnackBarBehavior.fixed,

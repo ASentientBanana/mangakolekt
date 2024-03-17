@@ -10,6 +10,6 @@ GetIt locator = GetIt.instance;
 setupServices() {
   locator.registerLazySingleton<NavigationService>(() => NavigationService());
   // locator.registerSingleton<FFIService>(FFIService.loadService());
-  locator.registerLazySingleton<SettingsService>(
-      () => SettingsService(settings: Settings(appDirectory: 'default')));
+  // locator.registerLazySingleton<SettingsService>(
+  //     () => SettingsService(settings: ));
 }

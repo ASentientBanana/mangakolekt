@@ -73,10 +73,10 @@ class MangaMenuBar extends StatelessWidget {
                       ],
                       child: const Text("File"),
                     ),
-                    MenuItemButton(
-                      onPressed: () => showSettingsDialog(context),
-                      child: const Text("Settings"),
-                    ),
+                    // MenuItemButton(
+                    //   onPressed: () => showSettingsDialog(context),
+                    //   child: const Text("Settings"),
+                    // ),
                     MenuItemButton(
                       onPressed: () => showBookmarksDialog(context),
                       child: const Text("Bookmarks"),
@@ -93,7 +93,7 @@ class MangaMenuBar extends StatelessWidget {
                 children: [
                   Container(
                     height: 24,
-                    padding: EdgeInsets.only(right: 20),
+                    padding: const EdgeInsets.only(right: 20),
                     child: Material(
                         child: TextField(
                       style: const TextStyle(fontSize: 13),
