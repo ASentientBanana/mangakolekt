@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:mangakolekt/locator.dart';
 import 'package:mangakolekt/util/util.dart';
 import 'package:path/path.dart';
 
@@ -45,6 +46,23 @@ class Setting {
 class Settings {
   List<Setting> data = [];
 
+  Settings();
+
+  Settings.defaultConfig() {
+    data = [
+      Setting(
+          type: 'bool',
+          name: 'RTL',
+          description: 'Default to Right to Left when reading',
+          value: false),
+      Setting(
+          type: 'bool',
+          name: 'doublePage',
+          description: 'Default to double page view',
+          value: false),
+    ];
+  }
+
   static Future<File?> loadSettingsFile(String path) async {
     final file = File(join(path, 'settings.json'));
     if (await file.exists()) {
@@ -84,6 +102,30 @@ class Settings {
         .toList();
     final jsonString = jsonEncode(_map);
     await file.writeAsString(jsonString);
+  }
+
+  static Future<Settings> init(String path) async {
+    final file = File(join(path, 'settings.json'));
+
+    if (!await file.exists()) {
+      await file.create();
+      final _default = Settings.defaultConfig();
+      await save(_default, file.path);
+      return _default;
+    }
+
+    final fSettings = await load(path);
+    final _settings = Settings();
+    _settings.data = fSettings;
+    return _settings;
+  }
+
+  // Future<void> syncFile(String path) async {
+  //   // save(settings, path)
+  // }
+
+  Setting getByNameFromFile(String name) {
+    return data.firstWhere((element) => element.name == name);
   }
 
   Setting getByName(String name) {
