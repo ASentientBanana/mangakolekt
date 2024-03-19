@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:mangakolekt/locator.dart';
 import 'package:mangakolekt/util/util.dart';
 import 'package:path/path.dart';
+import 'package:path_provider/path_provider.dart';
 
 class Setting {
   late String type;
@@ -88,8 +89,9 @@ class Settings {
   }
 
   static Future<void> save(Settings settings, String path) async {
-    final file = File(join(path, 'settings.json'));
+    final file = File(path);
     if (!await file.exists()) {
+      print("File not found");
       return;
     }
     final _map = settings.data
@@ -104,20 +106,20 @@ class Settings {
     await file.writeAsString(jsonString);
   }
 
-  static Future<Settings> init(String path) async {
-    final file = File(join(path, 'settings.json'));
+  static Future<void> init() async {
+    final settingsService = locator<Settings>();
+    final path = (await getApplicationDocumentsDirectory()).path;
+    final file = File(join(path, 'mangakolekt', 'settings.json'));
 
-    if (!await file.exists()) {
+    if (!(await file.exists())) {
       await file.create();
       final _default = Settings.defaultConfig();
       await save(_default, file.path);
-      return _default;
+      return;
     }
 
     final fSettings = await load(path);
-    final _settings = Settings();
-    _settings.data = fSettings;
-    return _settings;
+    settingsService.data = fSettings;
   }
 
   // Future<void> syncFile(String path) async {

@@ -1,11 +1,7 @@
-import 'dart:io';
-
-import 'package:mangakolekt/models/global.dart';
-import 'package:mangakolekt/services/settings.dart';
+import 'package:mangakolekt/models/settings.dart';
 import 'package:mangakolekt/util/database/database_core.dart';
 import 'package:mangakolekt/util/files.dart';
 import 'package:mangakolekt/util/util.dart';
-import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 Future<void> initAppStructure() async {
@@ -14,7 +10,7 @@ Future<void> initAppStructure() async {
   await createCurrentDir();
   await createLogFile();
   await DatabaseCore.initDatabase();
-  await SettingsService.initialize();
+  await Settings.init();
 }
 
 Future<bool> initPermissions() async {

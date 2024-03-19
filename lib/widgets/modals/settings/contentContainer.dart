@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:mangakolekt/locator.dart';
-import 'package:mangakolekt/services/settings.dart';
+import 'package:mangakolekt/models/settings.dart';
 
 class SettingsContent extends StatefulWidget {
   const SettingsContent({Key? key}) : super(key: key);
@@ -18,7 +18,7 @@ default direction,
 */
 
 class _SettingsContentState extends State<SettingsContent> {
-  final settingsService = locator<SettingsService>();
+  final settingsService = locator<Settings>();
 
   @override
   Widget build(BuildContext context) {

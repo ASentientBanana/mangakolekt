@@ -1,5 +1,6 @@
 import 'package:easy_debounce/easy_throttle.dart';
 import 'package:mangakolekt/models/book.dart';
+import 'package:mangakolekt/models/settings.dart';
 import 'package:mangakolekt/models/util.dart';
 import 'package:mangakolekt/util/database/database_helpers.dart';
 
@@ -18,7 +19,7 @@ class ReaderController {
   void Function(String, Object?)? openBook;
   Map<int, List<List<int>>> pageMap = {0: [], 1: []};
 
-  ReaderController({required this.book}) {
+  ReaderController({required this.book, Settings? settings}) {
     pages = book.getPageList();
     //Construct lists for single and double view
     List<List<int>> doubleViewList = [];
@@ -164,5 +165,12 @@ class ReaderController {
       return [];
     }
     return pageMap[isDoublePageView ? 1 : 0]![currentPageIndex];
+  }
+
+  void loadSettings(Settings settings) {
+    final rtlSetting = settings.getByName('RTL');
+    final doublePageSetting = settings.getByName('doublePage');
+    isRightToLeftMode = rtlSetting.value;
+    isDoublePageView = doublePageSetting.value;
   }
 }
