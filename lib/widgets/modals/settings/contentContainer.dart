@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:mangakolekt/locator.dart';
 import 'package:mangakolekt/models/settings.dart';
+import 'package:mangakolekt/widgets/settings/checkbox.dart';
 
 class SettingsContent extends StatefulWidget {
   const SettingsContent({Key? key}) : super(key: key);
@@ -25,7 +26,15 @@ class _SettingsContentState extends State<SettingsContent> {
     final colorScheme = Theme.of(context).colorScheme;
     return Expanded(
       child: ListView(
-        children: [],
+        padding: EdgeInsets.only(left: 10),
+        children: [
+          SettingsCheckbox(
+            name: "RTL",
+          ),
+          SettingsCheckbox(
+            name: "doublePage",
+          )
+        ],
       ),
     );
   }

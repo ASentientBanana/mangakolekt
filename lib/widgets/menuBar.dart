@@ -73,10 +73,10 @@ class MangaMenuBar extends StatelessWidget {
                       ],
                       child: const Text("File"),
                     ),
-                    // MenuItemButton(
-                    //   onPressed: () => showSettingsDialog(context),
-                    //   child: const Text("Settings"),
-                    // ),
+                    MenuItemButton(
+                      onPressed: () => showSettingsDialog(context),
+                      child: const Text("Settings"),
+                    ),
                     MenuItemButton(
                       onPressed: () => showBookmarksDialog(context),
                       child: const Text("Bookmarks"),

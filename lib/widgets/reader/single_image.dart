@@ -20,13 +20,20 @@ class SingleImage extends StatefulWidget {
 }
 
 class _SingleImageState extends State<SingleImage> {
-  // final _imageScrollController = widget.readerScrollController;
+  late final _imageScrollController;
 
   @override
-  void dispose() {
-    widget.readerScrollController.dispose();
-    super.dispose();
-  }
+  // void initState() {
+  //   // TODO: implement initState
+  //   _imageScrollController = widget.readerScrollController;
+  //   super.initState();
+  // }
+
+  // @override
+  // void dispose() {
+  //   widget.readerScrollController.dispose();
+  //   super.dispose();
+  // }
 
   Alignment setAliment(bool isDouble, int index) {
     if (!isDouble) {

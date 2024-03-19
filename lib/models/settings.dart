@@ -72,13 +72,23 @@ class Settings {
     return file;
   }
 
-  static Future<List<Setting>> load(String path) async {
-    final file = File(join(path, 'settings.json'));
-    print(file.path);
-    if (!await file.exists()) {
+  static Future<List<Setting>> load({String? path, File? file}) async {
+    if (file == null && path == null) {
+      throw Exception('File or path must be provided.');
+    }
+    final File _file;
+
+    if (file != null) {
+      _file = file;
+    } else {
+      _file = File(path!);
+    }
+    // final file = File(path);
+    if (!(await _file.exists())) {
+      print("Settings file does not exist at location ${path}");
       return [];
     }
-    final map = await file.readAsString();
+    final map = await _file.readAsString();
     final jsonData = jsonDecode(map) as List<dynamic>;
     final _data = jsonData
         .map((_map) => Setting.fromMap(_map))
@@ -88,9 +98,20 @@ class Settings {
     return _data;
   }
 
-  static Future<void> save(Settings settings, String path) async {
-    final file = File(path);
-    if (!await file.exists()) {
+  static Future<void> save(Settings settings,
+      {String? path, File? file}) async {
+    if (file == null && path == null) {
+      throw Exception("File or path must be provided.");
+    }
+    final File _file;
+
+    if (file != null) {
+      _file = file;
+    } else {
+      _file = File(path!);
+    }
+    // final file = File(path);
+    if (!await _file.exists()) {
       print("File not found");
       return;
     }
@@ -103,7 +124,7 @@ class Settings {
             })
         .toList();
     final jsonString = jsonEncode(_map);
-    await file.writeAsString(jsonString);
+    await _file.writeAsString(jsonString);
   }
 
   static Future<void> init() async {
@@ -114,11 +135,12 @@ class Settings {
     if (!(await file.exists())) {
       await file.create();
       final _default = Settings.defaultConfig();
-      await save(_default, file.path);
+      await save(_default, file: file);
       return;
     }
 
-    final fSettings = await load(path);
+    final fSettings = await load(file: file);
+    print("LOADING:: \n ${fSettings}");
     settingsService.data = fSettings;
   }
 
@@ -132,5 +154,9 @@ class Settings {
 
   Setting getByName(String name) {
     return data.firstWhere((element) => element.name == name);
+  }
+
+  int getIndexByName(String name) {
+    return data.indexWhere((element) => element.name == name);
   }
 }

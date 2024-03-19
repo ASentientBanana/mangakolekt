@@ -1,14 +1,26 @@
 import 'package:flutter/material.dart';
 import 'package:mangakolekt/locator.dart';
 import 'package:mangakolekt/main.dart';
+import 'package:mangakolekt/models/settings.dart';
 import 'package:mangakolekt/services/navigationService.dart';
 import 'package:mangakolekt/widgets/modals/settings/contentContainer.dart';
+import 'package:path/path.dart';
+import 'package:path_provider/path_provider.dart';
 
 class SettingsBody extends StatelessWidget {
   final void Function() dismissCb;
   final _navigationService = locator<NavigationService>();
+  final _settingsService = locator<Settings>();
 
   SettingsBody({Key? key, required this.dismissCb}) : super(key: key);
+
+  void handleOnSave() async {
+    final docsDir = await getApplicationDocumentsDirectory();
+
+    await Settings.save(_settingsService,
+        path: join(docsDir.path, 'mangakolekt', 'settings.json'));
+    _navigationService.goBack();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -56,9 +68,7 @@ class SettingsBody extends StatelessWidget {
                       backgroundColor:
                           MaterialStatePropertyAll(colorScheme.tertiary),
                     ),
-                    onPressed: () {
-                      _navigationService.goBack();
-                    },
+                    onPressed: handleOnSave,
                     child: const Center(
                       child: Text(
                         "Save",

@@ -6,6 +6,7 @@ import 'package:mangakolekt/constants.dart';
 import 'package:mangakolekt/util/database/database_helpers.dart';
 import 'package:mangakolekt/util/reader.dart';
 import 'package:mangakolekt/widgets/appbar/readerbar.dart';
+import 'package:mangakolekt/widgets/reader/curentPageIndexView.dart';
 import 'package:mangakolekt/widgets/reader/single_image.dart';
 import 'package:mangakolekt/widgets/reader/list_preview.dart';
 import 'package:flutter/services.dart';
@@ -72,8 +73,9 @@ class _MangaReaderState extends State<MangaReader> {
 
   @override
   dispose() {
-    super.dispose();
     ServicesBinding.instance.keyboard.removeHandler(handleKeyPress);
+    inputController.readerScrollController.dispose();
+    super.dispose();
   }
 
   Future<List<int>> getBookmarks() async {
@@ -187,21 +189,36 @@ class _MangaReaderState extends State<MangaReader> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Container(
-                  width: SIDEBAR_WIDTH,
-                  color: Theme.of(context).colorScheme.background,
-                  child: ListPreview(
-                      readerController: readerController,
-                      scoreController: _scrollController,
-                      onTap: handlePreviewClick)),
-              // I dont like this but it seems the most intuitive way to do this.
-              Container(
+                width: SIDEBAR_WIDTH,
                 color: Theme.of(context).colorScheme.background,
-                width: MediaQuery.of(context).size.width - SIDEBAR_WIDTH,
-                child: Row(
-                    // mainAxisAlignment: MainAxisAlignment,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    // children: [Text(readerController.pages.length.toString())],
-                    children: renderPages()),
+                child: ListPreview(
+                    readerController: readerController,
+                    scoreController: _scrollController,
+                    onTap: handlePreviewClick),
+              ),
+              // I dont like this but it seems the most intuitive way to do this.
+              Stack(
+                children: [
+                  Container(
+                    color: Theme.of(context).colorScheme.background,
+                    width: MediaQuery.of(context).size.width - SIDEBAR_WIDTH,
+                    child: Row(
+                        // mainAxisAlignment: MainAxisAlignment,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        // children: [Text(readerController.pages.length.toString())],
+                        children: renderPages()),
+                  ),
+                  Positioned(
+                      bottom: 0,
+                      right: 0,
+                      child: CurrentPageIndexView(
+                        currentPages: readerController
+                            .getCurrentPages()
+                            .map((e) => e + 1)
+                            .join('-'),
+                        totalPages: readerController.pages.length.toString(),
+                      ))
+                ],
               ),
             ],
           ),
