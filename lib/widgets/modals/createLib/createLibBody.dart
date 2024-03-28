@@ -6,7 +6,7 @@ import 'package:mangakolekt/bloc/library/library_bloc.dart';
 import 'package:mangakolekt/controllers/archive.dart';
 import 'package:mangakolekt/locator.dart';
 import 'package:mangakolekt/services/navigationService.dart';
-import 'package:mangakolekt/util/database/database_helpers.dart';
+import 'package:mangakolekt/util/database/databaseHelpers.dart';
 import 'package:mangakolekt/util/files.dart';
 import 'package:mangakolekt/util/util.dart';
 // import 'package:flutter/foundation.dart';
@@ -63,7 +63,6 @@ class CreateLibBodyState extends State<CreateLibBody> {
       if (!context.mounted) {
         return [];
       }
-      print(e);
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(

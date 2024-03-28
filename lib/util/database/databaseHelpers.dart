@@ -1,8 +1,8 @@
 import 'package:mangakolekt/models/book.dart';
 import 'package:mangakolekt/models/database/bookmark.dart';
 import 'package:mangakolekt/models/library.dart';
-import 'package:mangakolekt/util/database/database_core.dart';
-import 'package:mangakolekt/util/database/database_table.dart';
+import 'package:mangakolekt/util/database/databaseCore.dart';
+import 'package:mangakolekt/util/database/databaseTable.dart';
 import 'package:mangakolekt/util/util.dart';
 
 class DatabaseMangaHelpers {
@@ -144,7 +144,6 @@ class DatabaseMangaHelpers {
       final b = Bookmarks.fromMaps(results);
       return b;
     } catch (e) {
-      print(e);
       return Bookmarks.Empty();
     }
   }
@@ -156,7 +155,6 @@ class DatabaseMangaHelpers {
           table: DatabaseTables.Bookmarks, where: "path=?", args: [path]);
       return results.map((e) => (e["page"] as int)).toList();
     } catch (e) {
-      print(e);
       return [];
     }
   }

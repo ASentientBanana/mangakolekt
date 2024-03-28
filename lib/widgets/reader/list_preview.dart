@@ -2,13 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:mangakolekt/controllers/reader.dart';
 
 class ListPreview extends StatelessWidget {
-  final ScrollController scoreController;
+  final ScrollController scrollController;
   final void Function(int index)? onTap;
   final ReaderController readerController;
 
   const ListPreview(
       {super.key,
-      required this.scoreController,
+      required this.scrollController,
       required this.readerController,
       required this.onTap});
 
@@ -17,9 +17,9 @@ class ListPreview extends StatelessWidget {
     return Scrollbar(
       trackVisibility: true,
       radius: Radius.zero,
-      controller: scoreController,
+      controller: scrollController,
       child: ListView(
-        controller: scoreController,
+        controller: scrollController,
         children: readerController.pages.asMap().entries.map(
           (e) {
             final isSelected = readerController
@@ -34,31 +34,36 @@ class ListPreview extends StatelessWidget {
                         ? 0
                         : 10),
                 child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
                     Container(
                       color: isSelected
                           ? Theme.of(context).colorScheme.tertiary
                           : Colors.transparent,
-                      width: 100,
-                      height: 100,
-                      child: FractionallySizedBox(
-                        heightFactor: 1,
-                        // height: 100,
-                        child: Center(
-                          child: InkWell(
-                            onTap: () {
-                              if (onTap != null) {
-                                onTap!(e.value.index);
-                              }
-                            },
-                            child: Container(
-                                padding: EdgeInsets.all(isSelected ? 3 : 0),
-                                child: e.value.entry.image),
+                      child: InkWell(
+                        onTap: () {
+                          if (onTap != null) {
+                            onTap!(e.value.index);
+                          }
+                        },
+                        child: SizedBox(
+                          width: 100,
+                          height: 100,
+                          child: FractionallySizedBox(
+                            heightFactor: 1,
+                            // height: 100,
+                            child: Center(
+                              child: Container(
+                                  padding: EdgeInsets.all(isSelected ? 3 : 0),
+                                  child: e.value.entry.image),
+                            ),
                           ),
                         ),
                       ),
                     ),
-                    Text("${e.key + 1}"),
+                    Center(
+                      child: Text("${e.key + 1}"),
+                    ),
                   ],
                 ));
           },

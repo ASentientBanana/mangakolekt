@@ -7,7 +7,7 @@ import 'package:mangakolekt/constants.dart';
 import 'package:mangakolekt/controllers/archive.dart';
 import 'package:mangakolekt/models/book.dart';
 import 'package:mangakolekt/models/library.dart';
-import 'package:mangakolekt/util/database/database_helpers.dart';
+import 'package:mangakolekt/util/database/databaseHelpers.dart';
 import 'package:mangakolekt/util/files.dart';
 import 'package:path/path.dart' as p;
 import 'package:mangakolekt/util/lib.dart';

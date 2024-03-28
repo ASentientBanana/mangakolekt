@@ -85,7 +85,6 @@ class Settings {
     }
     // final file = File(path);
     if (!(await _file.exists())) {
-      print("Settings file does not exist at location ${path}");
       return [];
     }
     final map = await _file.readAsString();
@@ -112,7 +111,6 @@ class Settings {
     }
     // final file = File(path);
     if (!await _file.exists()) {
-      print("File not found");
       return;
     }
     final _map = settings.data
@@ -140,7 +138,6 @@ class Settings {
     }
 
     final fSettings = await load(file: file);
-    print("LOADING:: \n ${fSettings}");
     settingsService.data = fSettings;
   }
 

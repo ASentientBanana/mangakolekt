@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:mangakolekt/bloc/library/library_bloc.dart';
 import 'package:mangakolekt/models/book.dart';
-import 'package:mangakolekt/util/database/database_helpers.dart';
+import 'package:mangakolekt/util/database/databaseHelpers.dart';
 import 'package:mangakolekt/util/util.dart';
 import 'package:mangakolekt/widgets/dragAndDropManga.dart';
 import 'package:mangakolekt/widgets/library/gridItem.dart';
@@ -43,8 +43,6 @@ class _LibGridState extends State<LibGrid> {
   }
 
   bool listenWhenGuard(LibraryState previous, LibraryState current) {
-    print("Setting ");
-
     if (previous is! LibraryLoaded || current is! LibraryLoaded) {
       return false;
     }
@@ -52,7 +50,6 @@ class _LibGridState extends State<LibGrid> {
       return true;
     }
     if (previous.libStore.libIndex != current.libStore.libIndex) {
-      print('Index changed');
       return true;
     }
     return false;

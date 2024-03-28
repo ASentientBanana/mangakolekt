@@ -1,7 +1,7 @@
 import 'dart:io';
 
 import 'package:mangakolekt/models/global.dart';
-import 'package:mangakolekt/util/database/database_table.dart';
+import 'package:mangakolekt/util/database/databaseTable.dart';
 import 'package:mangakolekt/util/database/table_definitions.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';

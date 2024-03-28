@@ -4,7 +4,7 @@ import 'package:flutter/foundation.dart';
 import 'package:mangakolekt/constants.dart';
 import 'package:mangakolekt/controllers/archive.dart';
 import 'package:mangakolekt/models/book.dart';
-import 'package:mangakolekt/util/database/database_helpers.dart';
+import 'package:mangakolekt/util/database/databaseHelpers.dart';
 import 'package:mangakolekt/util/files.dart';
 import 'package:path/path.dart' as p;
 

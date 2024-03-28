@@ -69,8 +69,6 @@ class _ReaderPageWrapperState extends State<ReaderPageWrapper> {
           }
           // instantiate reader controller
           final readerController = ReaderController(book: snapshot.data!);
-          print("CHECK");
-          _settingsService.data.forEach((element) => print(element.name));
           readerController.openBook = _navigationService.pushAndPop;
           readerController.loadSettings(_settingsService);
           return MangaReader(

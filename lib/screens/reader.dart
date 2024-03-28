@@ -3,9 +3,12 @@ import 'package:flutter/material.dart';
 import 'package:mangakolekt/controllers/input.dart';
 import 'package:mangakolekt/controllers/reader.dart';
 import 'package:mangakolekt/constants.dart';
-import 'package:mangakolekt/util/database/database_helpers.dart';
+import 'package:mangakolekt/util/database/databaseHelpers.dart';
+import 'package:mangakolekt/util/platform.dart';
 import 'package:mangakolekt/util/reader.dart';
+import 'package:mangakolekt/widgets/appbar/readerBarMobile.dart';
 import 'package:mangakolekt/widgets/appbar/readerbar.dart';
+import 'package:mangakolekt/widgets/mobile/readerDrawer.dart';
 import 'package:mangakolekt/widgets/reader/curentPageIndexView.dart';
 import 'package:mangakolekt/widgets/reader/single_image.dart';
 import 'package:mangakolekt/widgets/reader/list_preview.dart';
@@ -43,6 +46,9 @@ class _MangaReaderState extends State<MangaReader> {
   }
 
   void handleMouseClick(PointerEvent ev) {
+    if (isMobile()) {
+      return;
+    }
     int left = 1;
     int right = 2;
     setState(() {
@@ -98,7 +104,6 @@ class _MangaReaderState extends State<MangaReader> {
 
   Future<void> findNextBook() async {
     // final x = await checkForNextBook(widget.readerController.book.path);
-    // print(x);
     final map = await checkForNextBook(widget.readerController.book.path);
 
     if (map['prev'] != null) {
@@ -113,7 +118,9 @@ class _MangaReaderState extends State<MangaReader> {
   initState() {
     initBook();
     findNextBook();
-    ServicesBinding.instance.keyboard.addHandler(handleKeyPress);
+    if (!isMobile()) {
+      ServicesBinding.instance.keyboard.addHandler(handleKeyPress);
+    }
     super.initState();
   }
 
@@ -136,6 +143,33 @@ class _MangaReaderState extends State<MangaReader> {
     });
   }
 
+  void handleDragStart(DragStartDetails ds) {}
+  void handleDragEnd(DragUpdateDetails details) {
+    print(details.delta);
+
+    // Swiping in right direction.
+    if (details.delta.dx > 0) {
+      readerController.incrementPage();
+      handleScrollAnimation();
+      return;
+    }
+
+    // Swiping in left direction.
+    if (details.delta.dx < 0) {
+      readerController.decrementPage();
+      handleScrollAnimation();
+      return;
+    }
+    // if (de.velocity > 0) {
+    //   print("INCREMENT");
+    //   readerController.incrementPage();
+    //   handleScrollAnimation();
+    // } else if (de.velocity.pixelsPerSecond.dx < 0) {
+    //   readerController.decrementPage();
+    //   handleScrollAnimation();
+    // }
+  }
+
   List<Widget> renderPages() {
     // A more verbose page rendering way.
     final List<int> pageIndexes;
@@ -151,8 +185,11 @@ class _MangaReaderState extends State<MangaReader> {
       pages.add(
         Expanded(
           // flex: 1,
-          child: Listener(
-            onPointerDown: handleMouseClick,
+          child: GestureDetector(
+            // onPointerMove: ,
+            // onHorizontalDragEnd: handleDragEnd,
+            onPanUpdate: handleDragEnd,
+            onTap: () => handleMouseClick,
             child: SingleImage(
                 readerScrollController: inputController.readerScrollController,
                 isDouble: readerController.getCurrentPages().length == 2,
@@ -166,6 +203,36 @@ class _MangaReaderState extends State<MangaReader> {
     return pages;
   }
 
+  AppBar renderAppBar(ColorScheme colorScheme, bool isBookmark) {
+    if (isMobile()) {
+      return ReaderAppbarMobile(
+          isBookmarkedColor: colorScheme.tertiary,
+          isNotBookmarkedColor: colorScheme.onPrimary,
+          readerController: readerController,
+          isBookmark: isBookmark,
+          bookmark: bookmark,
+          set: setState);
+    }
+    return ReaderAppbar(
+        isBookmarkedColor: colorScheme.tertiary,
+        isNotBookmarkedColor: colorScheme.onPrimary,
+        readerController: readerController,
+        isBookmark: isBookmark,
+        bookmark: bookmark,
+        set: setState);
+  }
+
+  Widget? renderDrawer(ScrollController sc) {
+    if (isMobile()) {
+      return ReaderDrawerMobile(
+        rc: readerController,
+        sc: sc,
+        onTap: handlePreviewClick,
+      );
+    }
+    return null;
+  }
+
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
@@ -176,37 +243,34 @@ class _MangaReaderState extends State<MangaReader> {
       descendantsAreFocusable: false,
       canRequestFocus: false,
       child: Scaffold(
-        appBar: ReaderAppbar(
-            isBookmarkedColor: colorScheme.tertiary,
-            isNotBookmarkedColor: colorScheme.onPrimary,
-            readerController: readerController,
-            isBookmark: isBookmark,
-            bookmark: bookmark,
-            set: setState),
+        drawer: renderDrawer(_scrollController),
+        appBar: renderAppBar(colorScheme, isBookmark),
         body: RawKeyboardListener(
           focusNode: _focusNode,
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Container(
-                width: SIDEBAR_WIDTH,
-                color: Theme.of(context).colorScheme.background,
-                child: ListPreview(
-                    readerController: readerController,
-                    scoreController: _scrollController,
-                    onTap: handlePreviewClick),
-              ),
+              if (!isMobile())
+                Container(
+                  width: SIDEBAR_WIDTH,
+                  color: Theme.of(context).colorScheme.background,
+                  child: ListPreview(
+                      readerController: readerController,
+                      scrollController: _scrollController,
+                      onTap: handlePreviewClick),
+                ),
               // I dont like this but it seems the most intuitive way to do this.
               Stack(
                 children: [
                   Container(
                     color: Theme.of(context).colorScheme.background,
-                    width: MediaQuery.of(context).size.width - SIDEBAR_WIDTH,
+                    width: isMobile()
+                        ? MediaQuery.of(context).size.width
+                        : MediaQuery.of(context).size.width - SIDEBAR_WIDTH,
                     child: Row(
-                        // mainAxisAlignment: MainAxisAlignment,
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        // children: [Text(readerController.pages.length.toString())],
-                        children: renderPages()),
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: renderPages(),
+                    ),
                   ),
                   Positioned(
                       bottom: 0,

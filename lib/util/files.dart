@@ -100,7 +100,6 @@ Future<void> emptyCurrentDir() async {
 Future<List<String>> getFilesFromDir(Directory dir) async {
   final list = await dir.list().toList();
   final List<String> files = [];
-  print("Number of files ${list.length} in ${dir.path}");
   for (var i = 0; i < list.length; i++) {
     if ((await list[i].stat()).type == FileSystemEntityType.file) {
       files.add(list[i].path);
@@ -110,7 +109,6 @@ Future<List<String>> getFilesFromDir(Directory dir) async {
 }
 
 Future<void> deleteFiles(List<String> files) async {
-  print("Files marked for deletion: \n ${files}");
   for (var file in files) {
     await File(file).delete();
   }

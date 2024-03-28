@@ -1,4 +1,4 @@
-import 'package:mangakolekt/util/database/database_table.dart';
+import 'package:mangakolekt/util/database/databaseTable.dart';
 
 final databaseTableDefinitions = [
   //Main manga table

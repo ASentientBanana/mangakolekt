@@ -22,9 +22,6 @@ class FFIService {
     final pDirPath = dirPath.toNativeUtf8().cast<Char>();
     final filesString = nativeBindings.Get_Files_From_Dir(pDirPath);
     files = filesString.cast<Utf8>().toDartString().split("&&");
-    print("Found in dart: ");
-    print(files);
-
     calloc.free(filesString);
     calloc.free(pDirPath);
     return files;
@@ -144,7 +141,6 @@ class FFIService {
 
   //TODO: Add default implementation
   static loadUnsupported() {
-    print("Platform unsuported");
     // throw Error.safeToString("Platform unsuported");
     // Temp solution for the compiler
     return loadLinux();

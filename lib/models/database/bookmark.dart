@@ -43,7 +43,6 @@ class Bookmarks {
     */
     final map = {};
     for (var element in _maps) {
-      print(_maps[0]);
       final isValid = validateMap(
         element,
         ["id", "name", "page", "path", "created_at"],

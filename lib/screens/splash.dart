@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:mangakolekt/bloc/library/library_bloc.dart';
+import 'package:mangakolekt/locator.dart';
 import 'package:mangakolekt/services/initializer.dart';
-import 'package:mangakolekt/util/database/database_helpers.dart';
+import 'package:mangakolekt/services/navigationService.dart';
+import 'package:mangakolekt/util/database/databaseHelpers.dart';
 import 'package:mangakolekt/widgets/loadingDog.dart';
 
 class SplashScreen extends StatefulWidget {
@@ -13,6 +15,8 @@ class SplashScreen extends StatefulWidget {
 }
 
 class _SplashScreenState extends State<SplashScreen> {
+  final _navigationService = locator<NavigationService>();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -33,7 +37,6 @@ class _SplashScreenState extends State<SplashScreen> {
 
       if (!(await initPermissions())) {
         // TODO: Add flow
-        print("denied permissions");
       }
       await initAppStructure();
       final mangaList = await DatabaseMangaHelpers.getAllBooksFromLibrary();
@@ -45,7 +48,9 @@ class _SplashScreenState extends State<SplashScreen> {
       }
 
       if (!context.mounted) return;
-      Navigator.pushNamed(context, '/home');
+      // Navigator.rep(context, '/home');
+      Navigator.popAndPushNamed(context, '/home');
+      // _navigationService.navigateTo('/home', {});
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(

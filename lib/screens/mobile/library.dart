@@ -1,10 +1,11 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:mangakolekt/bloc/library/library_bloc.dart';
 import 'package:mangakolekt/models/book.dart';
+import 'package:mangakolekt/widgets/homeLogo.dart';
+import 'package:mangakolekt/widgets/library/grid.dart';
 import 'package:mangakolekt/widgets/library/list.dart';
+import 'package:mangakolekt/widgets/mobile/libraryDrawer.dart';
 
 class MyHomePageMobile extends StatefulWidget {
   const MyHomePageMobile({super.key});
@@ -26,14 +27,8 @@ class _MyHomePageState extends State<MyHomePageMobile> {
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
     return Scaffold(
-      // appBar:
-      // ],
-      // ),
-      // drawer: Drawer(
-      //   backgroundColor: colorScheme.background,
-      //   child: LibList(),
-      // ),
       backgroundColor: colorScheme.background,
+      drawer: SafeArea(child: LibraryDrawer()),
       appBar: AppBar(actions: [
         SizedBox(
           width: 300,
@@ -42,12 +37,12 @@ class _MyHomePageState extends State<MyHomePageMobile> {
               children: [
                 Container(
                   height: 32,
-                  padding: EdgeInsets.only(right: 15),
+                  padding: const EdgeInsets.only(right: 15),
                   child: Material(
                       child: TextField(
                     style: const TextStyle(fontSize: 13),
                     decoration: InputDecoration(
-                      contentPadding: EdgeInsets.symmetric(horizontal: 5),
+                      contentPadding: const EdgeInsets.symmetric(horizontal: 5),
                       hintText: "Search books",
                       hintStyle: TextStyle(color: colorScheme.onPrimary),
                       fillColor: colorScheme.background,
@@ -83,11 +78,17 @@ class _MyHomePageState extends State<MyHomePageMobile> {
         ),
       ]),
       body: SafeArea(
-        child: Drawer(
-          backgroundColor: colorScheme.background,
-          child: const LibList(),
-        ),
+        child: HomeLogo(),
+        // child: LibList(),
       ),
+      floatingActionButton: FloatingActionButton(
+          shape: RoundedRectangleBorder(
+              side: const BorderSide(
+                  width: 3, color: Color.fromARGB(255, 238, 245, 238)),
+              borderRadius: BorderRadius.circular(100)),
+          backgroundColor: colorScheme.background,
+          onPressed: () {},
+          child: const Icon(size: 42, Icons.add)),
     );
     // return
   }

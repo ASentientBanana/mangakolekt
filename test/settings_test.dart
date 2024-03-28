@@ -14,7 +14,7 @@ void main() {
         description: "12ccccccccccc2c",
         value: 123));
     final expectedLen = s.data.length;
-    await Settings.save(s, path);
+    await Settings.save(s, path: path);
     // final loadedSettings2 = await Settings.load(path);
     // expect(loadedSettings2.length, expectedLen);
   });

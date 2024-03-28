@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:mangakolekt/locator.dart';
-import 'package:mangakolekt/main.dart';
 import 'package:mangakolekt/models/settings.dart';
 import 'package:mangakolekt/services/navigationService.dart';
 import 'package:mangakolekt/widgets/modals/settings/contentContainer.dart';

@@ -2,7 +2,6 @@ import 'dart:io';
 
 import 'package:mangakolekt/services/ffiService.dart';
 import 'package:mangakolekt/util/archive.dart';
-import 'package:path/path.dart' as p;
 import 'package:mangakolekt/controllers/archive.dart';
 
 class ZipBookController extends BaseBookController {
@@ -12,7 +11,6 @@ class ZipBookController extends BaseBookController {
   Future<List<String>> unpackCovers(String pathToDir,
       {required List<String> files, required String out}) async {
     List<String> books;
-    print("STARTING UNPACKING COVERS");
     if (Platform.isLinux || Platform.isWindows || Platform.isAndroid) {
       books = await FFIService.ffiUnzipCovers(files, pathToDir, out);
     } else {

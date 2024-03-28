@@ -19,7 +19,6 @@ class _BookmarkContentState extends State<BookmarkContent> {
   int bookmarksIndex = 0;
 
   void selectBookmarks(int i) {
-    print(widget.bookmarks.data[bookmarksIndex].name);
     setState(() {
       bookmarksIndex = i;
     });
