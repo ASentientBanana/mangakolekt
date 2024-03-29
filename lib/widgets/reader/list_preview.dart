@@ -1,28 +1,54 @@
 import 'package:flutter/material.dart';
 import 'package:mangakolekt/controllers/reader.dart';
 
-class ListPreview extends StatelessWidget {
-  final ScrollController scrollController;
+class ListPreview extends StatefulWidget {
   final void Function(int index)? onTap;
   final ReaderController readerController;
+  ScrollController scrollController = ScrollController();
 
-  const ListPreview(
+  ListPreview(
       {super.key,
-      required this.scrollController,
       required this.readerController,
-      required this.onTap});
+      required this.onTap,
+      ScrollController? sc}) {
+    if (sc != null) {
+      scrollController = sc;
+    }
+  }
+
+  @override
+  State<ListPreview> createState() => _ListPreviewState();
+}
+
+class _ListPreviewState extends State<ListPreview> {
+  @override
+  void initState() {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final index = widget.readerController.getCurrentPages().first;
+      const int offset = 4;
+      const int pageImageHeight = 130;
+      if (widget.scrollController.positions.isNotEmpty) {
+        widget.scrollController.animateTo(
+            ((index - offset) * pageImageHeight).toDouble(),
+            duration: const Duration(milliseconds: 100),
+            curve: Curves.linear);
+      }
+    });
+
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scrollbar(
       trackVisibility: true,
       radius: Radius.zero,
-      controller: scrollController,
+      controller: widget.scrollController,
       child: ListView(
-        controller: scrollController,
-        children: readerController.pages.asMap().entries.map(
+        controller: widget.scrollController,
+        children: widget.readerController.pages.asMap().entries.map(
           (e) {
-            final isSelected = readerController
+            final isSelected = widget.readerController
                 .getCurrentPages()
                 .any((element) => (e.value.index == element));
 
@@ -30,7 +56,7 @@ class ListPreview extends StatelessWidget {
                 padding: EdgeInsets.only(
                     bottom: isSelected &&
                             e.value.index !=
-                                readerController.getCurrentPages().last
+                                widget.readerController.getCurrentPages().last
                         ? 0
                         : 10),
                 child: Column(
@@ -42,8 +68,8 @@ class ListPreview extends StatelessWidget {
                           : Colors.transparent,
                       child: InkWell(
                         onTap: () {
-                          if (onTap != null) {
-                            onTap!(e.value.index);
+                          if (widget.onTap != null) {
+                            widget.onTap!(e.value.index);
                           }
                         },
                         child: SizedBox(

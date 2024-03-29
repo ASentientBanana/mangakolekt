@@ -4,9 +4,11 @@ import 'package:mangakolekt/controllers/reader.dart';
 import 'package:mangakolekt/locator.dart';
 import 'package:mangakolekt/models/book.dart';
 import 'package:mangakolekt/models/settings.dart';
+import 'package:mangakolekt/screens/mobile/reader.dart';
 import 'package:mangakolekt/screens/openBookError.dart';
 import 'package:mangakolekt/screens/reader.dart';
 import 'package:mangakolekt/services/navigationService.dart';
+import 'package:mangakolekt/util/platform.dart';
 import 'package:mangakolekt/util/reader.dart';
 import 'package:mangakolekt/widgets/loadingDog.dart';
 
@@ -71,6 +73,12 @@ class _ReaderPageWrapperState extends State<ReaderPageWrapper> {
           final readerController = ReaderController(book: snapshot.data!);
           readerController.openBook = _navigationService.pushAndPop;
           readerController.loadSettings(_settingsService);
+          if (isMobile()) {
+            return MangaReaderMobile(
+              initialPage: widget.initialPage,
+              readerController: readerController,
+            );
+          }
           return MangaReader(
             initialPage: widget.initialPage,
             readerController: readerController,

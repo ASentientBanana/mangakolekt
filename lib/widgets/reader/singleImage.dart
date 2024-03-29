@@ -6,7 +6,7 @@ class SingleImage extends StatefulWidget {
   final ScaleTo scaleTo;
   final int index;
   final bool isDouble;
-  final ScrollController readerScrollController;
+  final ScrollController? readerScrollController;
   const SingleImage(
       {super.key,
       required this.readerScrollController,
@@ -20,8 +20,6 @@ class SingleImage extends StatefulWidget {
 }
 
 class _SingleImageState extends State<SingleImage> {
-  late final _imageScrollController;
-
   @override
   // void initState() {
   //   // TODO: implement initState
@@ -48,7 +46,7 @@ class _SingleImageState extends State<SingleImage> {
     //Check scaling type
     if (!widget.isDouble && widget.scaleTo == ScaleTo.width) {
       return Padding(
-        padding: EdgeInsets.symmetric(horizontal: 14),
+        padding: const EdgeInsets.symmetric(horizontal: 14),
         child: SingleChildScrollView(
           controller: widget.readerScrollController,
           child: Image(image: widget.image.image, fit: BoxFit.cover),
