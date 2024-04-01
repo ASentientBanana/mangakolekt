@@ -138,8 +138,12 @@ class DatabaseMangaHelpers {
   static Future<Bookmarks> getBookmarks() async {
     try {
       final db = await DatabaseCore.openDB();
+      // final results = await db.rawQuery(
+      //     "SELECT * FROM ${DatabaseTables.Bookmarks} RIGHT JOIN ${DatabaseTables.Book} ON ${DatabaseTables.Book}.id = ${DatabaseTables.Bookmarks}.book;");
       final results = await db.rawQuery(
-          "SELECT   * FROM ${DatabaseTables.Bookmarks} RIGHT JOIN ${DatabaseTables.Book} ON ${DatabaseTables.Book}.id = ${DatabaseTables.Bookmarks}.book;");
+          "SELECT ${DatabaseTables.Library}.path as lib_path, ${DatabaseTables.Book}.path as book_path, ${DatabaseTables.Library}.name as lib_name, * FROM ${DatabaseTables.Bookmarks} INNER JOIN ${DatabaseTables.Book} ON ${DatabaseTables.Book}.id = ${DatabaseTables.Bookmarks}.book INNER JOIN Library ON ${DatabaseTables.Library}.id = ${DatabaseTables.Book}.library;");
+
+      // print(results);
       db.close();
       final b = Bookmarks.fromMaps(results);
       return b;

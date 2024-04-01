@@ -42,28 +42,28 @@ class Bookmarks {
       ]
     */
     final map = {};
+    print(_maps);
     for (var element in _maps) {
       final isValid = validateMap(
         element,
-        ["id", "name", "page", "path", "created_at"],
+        ["id", "name", "page", "book_path", "created_at", "library"],
       );
       if (!isValid) {
         continue;
       }
-
-      if (map[element['id']] == null) {
-        map[element['id']] = {
-          "id": element["id"],
+      if (map[element['library']] == null) {
+        map[element['library']] = {
+          "id": element["library"],
           "name": element["name"],
           "bookmarks": [],
           "path": element["path"],
         };
       }
 
-      map[element["id"]]['bookmarks'].add(
+      map[element["library"]]['bookmarks'].add(
         Bookmark(
             page: element["page"],
-            book: element["path"],
+            book: element["book_path"],
             date: element["created_at"]),
       );
     }
@@ -73,8 +73,6 @@ class Bookmarks {
           (e) {
             return BookmarksData(
               path: e.value["path"],
-              //REFACTOR:book
-              //Very bad, compiler, temp solution for the compiler
               bookmarks: (e.value["bookmarks"] as List<dynamic>)
                   .map((e) => e as Bookmark)
                   .toList(),

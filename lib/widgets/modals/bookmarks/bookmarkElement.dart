@@ -58,8 +58,7 @@ class _BookmarkElementState extends State<BookmarkElement> {
                   : () {
                       _navigationService.pushAndPop('/reader', {
                         "initialPage": widget.bookmarkItem.page,
-                        "path": join(
-                            widget.bookData.path, widget.bookmarkItem.book),
+                        "path": join(widget.bookData.path),
                         "id": widget.bookData.id,
                       });
                     },
@@ -70,11 +69,14 @@ class _BookmarkElementState extends State<BookmarkElement> {
                     : CrossAxisAlignment.start,
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  SizedBox(
-                    width: 150,
-                    child: Text(
-                      widget.bookmarkItem.book,
-                      overflow: TextOverflow.ellipsis,
+                  Tooltip(
+                    message: widget.bookmarkItem.book,
+                    child: SizedBox(
+                      width: 150,
+                      child: Text(
+                        widget.bookmarkItem.book,
+                        overflow: TextOverflow.ellipsis,
+                      ),
                     ),
                   ),
                   Text("Page: ${widget.bookmarkItem.page + 1}"),

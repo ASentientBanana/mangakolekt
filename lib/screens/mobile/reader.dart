@@ -29,16 +29,6 @@ class _MangaReaderState extends State<MangaReaderMobile> {
   late InputController inputController =
       InputController(rc: widget.readerController);
 
-  // void handleScrollAnimation() {
-  //   final index = readerController.getCurrentPages().first;
-  //   const int pageImageHeight = 130;
-  //   // To allow the selected element to be roughly in the middle.
-  //   const int offset = 4;
-
-  //   sc.animateTo(((index - offset) * pageImageHeight).toDouble(),
-  //       duration: const Duration(milliseconds: 100), curve: Curves.linear);
-  // }
-
   void handlePreviewClick(int pageIndex) {
     setState(() {
       readerController.goToPage(pageIndex);
