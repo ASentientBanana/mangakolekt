@@ -142,25 +142,6 @@ class _MangaReaderState extends State<MangaReader> {
     });
   }
 
-  void handleDragStart(DragStartDetails ds) {}
-  void handleDragEnd(DragUpdateDetails details) {
-    print(details.delta);
-
-    // Swiping in right direction.
-    if (details.delta.dx > 0) {
-      readerController.incrementPage();
-      handleScrollAnimation();
-      return;
-    }
-
-    // Swiping in left direction.
-    if (details.delta.dx < 0) {
-      readerController.decrementPage();
-      handleScrollAnimation();
-      return;
-    }
-  }
-
   List<Widget> renderPages() {
     // A more verbose page rendering way.
     final List<int> pageIndexes;

@@ -22,7 +22,7 @@ class MangaReaderMobile extends StatefulWidget {
 
 class _MangaReaderState extends State<MangaReaderMobile> {
   final _focusNode = FocusNode();
-
+  int dx = 0;
   List<int> bookmarks = [];
 
   late ReaderController readerController;
@@ -84,7 +84,7 @@ class _MangaReaderState extends State<MangaReaderMobile> {
   @override
   initState() {
     initBook();
-    // findNextBook();
+    findNextBook();
     super.initState();
   }
 
@@ -108,21 +108,17 @@ class _MangaReaderState extends State<MangaReaderMobile> {
   }
 
   void handleDragStart(DragStartDetails ds) {}
-  void handleDragEnd(DragUpdateDetails details) {
-    print(details.delta);
-
-    // Swiping in right direction.
-    if (details.delta.dx > 0) {
-      readerController.incrementPage();
+  void handleDragEnd(DragEndDetails details) {
+    if (details.primaryVelocity! > 0) {
+      setState(() {
+        readerController.decrementPage();
+      });
       // handleScrollAnimation();
-      return;
-    }
-
-    // Swiping in left direction.
-    if (details.delta.dx < 0) {
-      readerController.decrementPage();
-      // handleScrollAnimation();
-      return;
+    } else if (details.primaryVelocity! < 0) {
+      setState(() {
+        readerController.incrementPage();
+        // handleScrollAnimation();
+      });
     }
   }
 
@@ -142,12 +138,11 @@ class _MangaReaderState extends State<MangaReaderMobile> {
         Expanded(
           // flex: 1,
           child: GestureDetector(
-            onTap: () {
-              setState(() {
-                readerController.incrementPage();
-              });
-            },
-            onPanUpdate: handleDragEnd,
+            // onPanEnd: handleDragEnd,
+            onHorizontalDragEnd: handleDragEnd,
+            // onHorizontalDragEnd: (DragEndDetails details) {
+
+            // },
             child: SingleImage(
                 readerScrollController: null,
                 isDouble: readerController.getCurrentPages().length == 2,
