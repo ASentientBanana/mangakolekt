@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:mangakolekt/constants.dart';
 import 'package:mangakolekt/locator.dart';
 import 'package:mangakolekt/screens/library.dart';
+import 'package:mangakolekt/screens/mobile/createLib.dart';
 import 'package:mangakolekt/screens/mobile/library.dart';
 import 'package:mangakolekt/screens/splash.dart';
 import 'package:mangakolekt/screens/theme_creator.dart';
@@ -48,8 +49,11 @@ class AppWidget extends StatelessWidget {
         // return DialogRoute(context: , builder: builder)
         // return pageRouteBuilderWrapper(settings, const SettingsPage());
         break;
-      case "/theme_creator":
-        return pageRouteBuilderWrapper(settings, const ThemeCreatorPage());
+      case "/addLibrary":
+        final args = (settings.arguments as Map<String, dynamic>);
+        return pageRouteBuilderWrapper(
+            settings, CreateLibraryMobile(path: args['path']));
+
       default:
         break;
     }

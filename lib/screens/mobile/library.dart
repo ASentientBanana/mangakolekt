@@ -1,11 +1,15 @@
+import 'dart:io';
+
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:mangakolekt/bloc/library/library_bloc.dart';
+import 'package:mangakolekt/locator.dart';
 import 'package:mangakolekt/models/book.dart';
+import 'package:mangakolekt/services/navigationService.dart';
 import 'package:mangakolekt/widgets/homeLogo.dart';
-import 'package:mangakolekt/widgets/library/grid.dart';
-import 'package:mangakolekt/widgets/library/list.dart';
 import 'package:mangakolekt/widgets/mobile/libraryDrawer.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 class MyHomePageMobile extends StatefulWidget {
   const MyHomePageMobile({super.key});
@@ -17,10 +21,72 @@ class _MyHomePageState extends State<MyHomePageMobile> {
   BookCover? selectedCover;
   final textEditingController = TextEditingController();
 
+  final _navigationService = locator<NavigationService>();
+  bool disableAdd = false;
+
   void selectManga(BookCover cover) {
     setState(() {
       selectedCover = cover;
     });
+  }
+
+  Future<String?> pickDirHandler(BuildContext context) async {
+    final dir = await FilePicker.platform.getDirectoryPath();
+    if (dir == null || !context.mounted) {
+      return null;
+    }
+    // showCreateLibDialog(context, dir);
+    // final d = Directory(dir);
+    // ScaffoldMessenger.of(context)
+    //     .showSnackBar(SnackBar(content: Text(d.listSync().toString())));
+    //  dir
+
+    return dir;
+  }
+
+  // await pickDirHandler(context);
+
+  Future<void> handleAdd(BuildContext context) async {
+    if (!(await Permission.manageExternalStorage.isGranted)) {
+      final result = await Permission.manageExternalStorage.request();
+      if (result.isDenied || result.isPermanentlyDenied) {
+        return;
+      }
+    }
+
+    if (!context.mounted) {
+      return;
+    }
+    final dir = await pickDirHandler(context);
+    if (dir == null) {
+      return;
+    }
+    _navigationService.navigateTo("/addLibrary", {"path": dir});
+    // showDialog(
+    //   barrierDismissible: false,
+    //   context: context,
+    //   builder: (context) {
+    //     return AlertDialog(
+    //       backgroundColor: Theme.of(context).colorScheme.primary,
+    //       contentPadding: const EdgeInsets.all(0),
+    //       content: const Padding(
+    //           padding: EdgeInsets.symmetric(horizontal: 10),
+    //           child: Text("The app is missing permisions permission")),
+    //       actions: [
+    //         TextButton(
+    //             onPressed: () {
+    //               Navigator.of(context).pop();
+    //             },
+    //             child: const Text("Close")),
+    //         TextButton(
+    //             onPressed: () {
+    //               Permission.manageExternalStorage.request();
+    //             },
+    //             child: Text("ok")),
+    //       ],
+    //     );
+    //   },
+    // );
   }
 
   @override
@@ -87,7 +153,7 @@ class _MyHomePageState extends State<MyHomePageMobile> {
                   width: 3, color: Color.fromARGB(255, 238, 245, 238)),
               borderRadius: BorderRadius.circular(100)),
           backgroundColor: colorScheme.background,
-          onPressed: () {},
+          onPressed: () => handleAdd(context),
           child: const Icon(size: 42, Icons.add)),
     );
     // return
