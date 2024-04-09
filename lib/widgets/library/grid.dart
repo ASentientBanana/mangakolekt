@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:mangakolekt/bloc/library/library_bloc.dart';
+import 'package:mangakolekt/locator.dart';
 import 'package:mangakolekt/models/book.dart';
-import 'package:mangakolekt/util/database/databaseHelpers.dart';
+import 'package:mangakolekt/store/library.dart';
 import 'package:mangakolekt/util/util.dart';
 import 'package:mangakolekt/widgets/dragAndDropManga.dart';
 import 'package:mangakolekt/widgets/library/gridItem.dart';
+import 'package:flutter_mobx/flutter_mobx.dart';
 
 class LibGrid extends StatefulWidget {
   const LibGrid({super.key});
@@ -16,7 +17,7 @@ class LibGrid extends StatefulWidget {
 
 class _LibGridState extends State<LibGrid> {
   Future<List<BookCover>> _title = Future(() => []);
-  String search = '';
+  final libraryStore = locator<LibraryStore>();
   int? id;
 
   int calculateSize(double w) {
@@ -33,12 +34,13 @@ class _LibGridState extends State<LibGrid> {
   }
 
   List<Widget> filterList(String _search, List<GridItem> list) {
-    if (search.isEmpty) {
+    if (libraryStore.searchTerm.isEmpty) {
       return list;
     }
     return list
-        .where((element) =>
-            element.item.name.toLowerCase().contains(search.toLowerCase()))
+        .where((element) => element.item.name
+            .toLowerCase()
+            .contains(libraryStore.searchTerm.toLowerCase()))
         .toList();
   }
 
@@ -59,47 +61,44 @@ class _LibGridState extends State<LibGrid> {
     if ((state is! LibraryLoaded)) {
       return;
     }
-    setState(() {
-      if (search != state.search) {
-        search = state.search;
-      }
-    });
+    // setState(() {
+    //   if (search != state.search) {
+    //     search = state.search;
+    //   }
+    // });
+  }
+
+  Widget observerBuilderHandler(BuildContext context) {
+    double width = MediaQuery.of(context).size.width;
+
+    if (libraryStore.library.isEmpty) {
+      return DragAndDropSurface();
+    }
+
+    final covers = libraryStore.library[libraryStore.selectedCoverIndex];
+    final gridItems =
+        sortCoversNumeric(covers.books).map((e) => GridItem(item: e)).toList();
+    return Scrollbar(
+      radius: Radius.zero,
+      child: GridView.count(
+        primary: true,
+        crossAxisCount: calculateSize(width),
+        mainAxisSpacing: 100,
+        crossAxisSpacing: 10,
+        // children: filterList(libraryStore.searchTerm, gridItems),
+        children: gridItems,
+      ),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
-    double width = MediaQuery.of(context).size.width;
-
     return Container(
       // color: Colors.orange,
       padding: const EdgeInsets.all(30),
-      child: BlocListener<LibraryBloc, LibraryState>(
-        listenWhen: listenWhenGuard,
-        listener: listenerCb,
-        child: Builder(builder: (context) {
-          final state = context.read<LibraryBloc>().state;
-          if (state is! LibraryLoaded) {
-            return DragAndDropSurface();
-          }
-
-          if (state.libStore.libIndex == null) {
-            return DragAndDropSurface();
-          }
-
-          final covers = state.libStore.libElements[state.libStore.libIndex!];
-          final gridItems = sortCoversNumeric(covers.books)
-              .map((e) => GridItem(item: e))
-              .toList();
-          return Scrollbar(
-              radius: Radius.zero,
-              child: GridView.count(
-                primary: true,
-                crossAxisCount: calculateSize(width),
-                mainAxisSpacing: 100,
-                crossAxisSpacing: 10,
-                children: filterList(search, gridItems),
-              ));
-        }),
+      child: Observer(
+        builder: observerBuilderHandler,
+        // builder: (_) => Text("Value ${libraryStore.selectedCoverIndex}"),
       ),
     );
   }

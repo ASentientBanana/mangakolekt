@@ -3,15 +3,12 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:mangakolekt/bloc/library/library_bloc.dart';
-import 'package:mangakolekt/constants.dart';
 import 'package:mangakolekt/controllers/archive.dart';
-import 'package:mangakolekt/models/book.dart';
+import 'package:mangakolekt/locator.dart';
 import 'package:mangakolekt/models/library.dart';
+import 'package:mangakolekt/store/library.dart';
 import 'package:mangakolekt/util/database/databaseHelpers.dart';
 import 'package:mangakolekt/util/files.dart';
-import 'package:path/path.dart' as p;
-import 'package:mangakolekt/util/lib.dart';
-import 'package:path_provider/path_provider.dart';
 
 class LibListItem extends StatefulWidget {
   final LibraryElement item;
@@ -25,6 +22,8 @@ class LibListItem extends StatefulWidget {
 }
 
 class _LibListItemState extends State<LibListItem> {
+  final libraryStore = locator<LibraryStore>();
+
   Future<void> handleDeleteFromLib(
       BuildContext context, bool shouldSetList) async {
     final deletedPaths =
@@ -95,9 +94,7 @@ class _LibListItemState extends State<LibListItem> {
                 constraints.maxWidth * (constraints.maxWidth > 130 ? 0.7 : 0.5),
             child: OutlinedButton(
               onPressed: () async {
-                context.read<LibraryBloc>().add(
-                      SetCurrentLib(index: widget.index),
-                    );
+                libraryStore.selectCover(widget.index);
               },
               child: Center(
                 child: Text(

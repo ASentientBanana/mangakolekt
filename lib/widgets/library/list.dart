@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:mangakolekt/bloc/library/library_bloc.dart';
-import 'package:mangakolekt/constants.dart';
-import 'package:mangakolekt/models/library.dart';
-import 'package:mangakolekt/util/database/databaseHelpers.dart';
+import 'package:mangakolekt/locator.dart';
+import 'package:mangakolekt/store/library.dart';
 import 'package:mangakolekt/widgets/library/listItem.dart';
 
 class LibList extends StatefulWidget {
@@ -15,6 +14,7 @@ class LibList extends StatefulWidget {
 
 class _LibListState extends State<LibList> {
   Future db = Future(() => null);
+  final libraryStore = locator<LibraryStore>();
   final ScrollController _firstController = ScrollController();
   bool hidden = false;
 
@@ -25,18 +25,15 @@ class _LibListState extends State<LibList> {
   }
 
   Widget builder(BuildContext context, LibraryState state) {
-    if (state is! LibraryLoaded) {
-      return const SizedBox.shrink();
-    }
     //Check if empty list to remove the side panel
-    if (state.libStore.libElements.isEmpty) {
+    if (libraryStore.library.isEmpty) {
       return const SizedBox.shrink();
     }
     final List<LibListItem> list = [];
-    final numberOfBooks = state.libStore.libElements.length;
+    final numberOfBooks = libraryStore.library.length;
 
     for (var i = 0; i < numberOfBooks; i++) {
-      list.add(LibListItem(item: state.libStore.libElements[i], index: i));
+      list.add(LibListItem(item: libraryStore.library[i], index: i));
     }
     final colorScheme = Theme.of(context).colorScheme;
     return Stack(

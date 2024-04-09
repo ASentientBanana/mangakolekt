@@ -4,6 +4,7 @@ import 'package:mangakolekt/bloc/library/library_bloc.dart';
 import 'package:mangakolekt/locator.dart';
 import 'package:mangakolekt/services/initializer.dart';
 import 'package:mangakolekt/services/navigationService.dart';
+import 'package:mangakolekt/store/library.dart';
 import 'package:mangakolekt/util/database/databaseHelpers.dart';
 import 'package:mangakolekt/widgets/loadingDog.dart';
 
@@ -15,8 +16,8 @@ class SplashScreen extends StatefulWidget {
 }
 
 class _SplashScreenState extends State<SplashScreen> {
-  final _navigationService = locator<NavigationService>();
-
+  // final _navigationService = locator<NavigationService>();
+  final libraryStore = locator<LibraryStore>();
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -41,11 +42,7 @@ class _SplashScreenState extends State<SplashScreen> {
       await initAppStructure();
       final mangaList = await DatabaseMangaHelpers.getAllBooksFromLibrary();
 
-      // loading the themes to the store
-      if (context.mounted) {
-        // REFACTOR:
-        context.read<LibraryBloc>().add(SetLibs(libs: mangaList));
-      }
+      libraryStore.setLibrary(mangaList);
 
       if (!context.mounted) return;
       // Navigator.rep(context, '/home');
