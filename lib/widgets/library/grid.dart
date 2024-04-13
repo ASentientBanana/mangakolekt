@@ -80,13 +80,15 @@ class _LibGridState extends State<LibGrid> {
         sortCoversNumeric(covers.books).map((e) => GridItem(item: e)).toList();
     return Scrollbar(
       radius: Radius.zero,
-      child: GridView.count(
-        primary: true,
-        crossAxisCount: calculateSize(width),
-        mainAxisSpacing: 100,
-        crossAxisSpacing: 10,
-        // children: filterList(libraryStore.searchTerm, gridItems),
-        children: gridItems,
+      child: Observer(
+        builder: (_) => GridView.count(
+          primary: true,
+          crossAxisCount: calculateSize(width),
+          mainAxisSpacing: 100,
+          crossAxisSpacing: 10,
+          children: filterList(libraryStore.searchTerm, gridItems),
+          // children: gridItems,
+        ),
       ),
     );
   }

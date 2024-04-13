@@ -25,8 +25,6 @@ abstract class LibraryBase with Store {
 
   @action
   void selectCover(int index) {
-    print("Select called");
-    print(selectedCoverIndex);
     selectedCoverIndex = index;
   }
 
