@@ -1,8 +1,6 @@
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:mangakolekt/bloc/library/library_bloc.dart';
 import 'package:mangakolekt/locator.dart';
 import 'package:mangakolekt/services/navigationService.dart';
 import 'package:mangakolekt/store/library.dart';
@@ -18,7 +16,7 @@ class MangaMenuBar extends StatelessWidget {
 
   final _navigationService = locator<NavigationService>();
   final textEditingController = TextEditingController();
-  final libraryStore = LibraryStore();
+  final libraryStore = locator<LibraryStore>();
 
   Future<void> pickFileHandler() async {
     final file = await pickFile();

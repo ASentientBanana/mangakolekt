@@ -29,13 +29,13 @@ mixin _$LibraryStore on LibraryBase, Store {
       Atom(name: 'LibraryBase.selectedCoverIndex', context: context);
 
   @override
-  int get selectedCoverIndex {
+  int? get selectedCoverIndex {
     _$selectedCoverIndexAtom.reportRead();
     return super.selectedCoverIndex;
   }
 
   @override
-  set selectedCoverIndex(int value) {
+  set selectedCoverIndex(int? value) {
     _$selectedCoverIndexAtom.reportWrite(value, super.selectedCoverIndex, () {
       super.selectedCoverIndex = value;
     });
@@ -72,7 +72,7 @@ mixin _$LibraryStore on LibraryBase, Store {
   }
 
   @override
-  void selectCover(int index) {
+  void selectCover(int? index) {
     final _$actionInfo = _$LibraryBaseActionController.startAction(
         name: 'LibraryBase.selectCover');
     try {

@@ -1,8 +1,4 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:mangakolekt/bloc/library/library_bloc.dart';
 import 'package:mangakolekt/controllers/archive.dart';
 import 'package:mangakolekt/locator.dart';
 import 'package:mangakolekt/models/library.dart';
@@ -14,7 +10,9 @@ class LibListItem extends StatefulWidget {
   final LibraryElement item;
   final int index;
 
-  const LibListItem({Key? key, required this.item, required this.index})
+  final libraryStore = locator<LibraryStore>();
+
+  LibListItem({Key? key, required this.item, required this.index})
       : super(key: key);
 
   @override
@@ -24,56 +22,41 @@ class LibListItem extends StatefulWidget {
 class _LibListItemState extends State<LibListItem> {
   final libraryStore = locator<LibraryStore>();
 
-  Future<void> handleDeleteFromLib(
-      BuildContext context, bool shouldSetList) async {
+  Future<void> handleDeleteFromLib(bool shouldSetList) async {
     final deletedPaths =
         await DatabaseMangaHelpers.deleteLibrary(widget.item.id);
     await deleteFiles(deletedPaths);
 
-    // loading the themes to the store
-    if (context.mounted) {
-      // REFACTOR:
-      final libBloc = context.read<LibraryBloc>();
-      if (libBloc.state is! LibraryLoaded) {
-        return;
-      }
-      final state = (libBloc.state as LibraryLoaded);
-      final currentIndex = state.libStore.libIndex;
-      if (currentIndex != null && state.libStore.libElements.isNotEmpty) {
-        final isSelected =
-            state.libStore.libElements[currentIndex].id == widget.item.id;
-        libBloc.add(SetCurrentLib(index: isSelected ? -1 : currentIndex));
-      }
-      if (shouldSetList) {
-        final mangaList = await DatabaseMangaHelpers.getAllBooksFromLibrary();
-        libBloc.add(SetLibs(libs: mangaList));
-      }
-    }
+    final newList = [...libraryStore.library];
+    newList.removeWhere((element) => element.id == widget.item.id);
+    libraryStore.setLibrary(newList);
+    libraryStore.selectCover(null);
   }
 
   Future<void> handleRefreshLib(BuildContext context) async {
-    if (!context.mounted) {
-      return;
-    }
-    await handleDeleteFromLib(context, false);
+    final name = widget.item.name;
+    final path = widget.item.path;
     // final path = widget.item.books.first.path;
     final out = await getGlobalCoversDir();
 
     final res = await ArchiveController.unpackCovers(widget.item.path, out);
+
+    if (!context.mounted) {
+      return;
+    }
+    await handleDeleteFromLib(false);
 
     if (res == null) {
       return;
     }
 
     // Add manga to Manga table in db
-    // REFACTOR:
-    final id = await DatabaseMangaHelpers.addLibrary(
-        libraryPath: widget.item.path, name: widget.item.name, books: res);
+    await DatabaseMangaHelpers.addLibrary(
+        libraryPath: path, name: name, books: res);
     final mangaList = await DatabaseMangaHelpers.getAllBooksFromLibrary();
 
-    if (mangaList.isNotEmpty && context.mounted) {
-      context.read<LibraryBloc>().add(SetLibs(libs: mangaList));
-      context.read<LibraryBloc>().add(const SetCurrentLib(index: -1));
+    if (mangaList.isNotEmpty) {
+      libraryStore.setLibrary(mangaList);
     }
   }
 
@@ -117,7 +100,7 @@ class _LibListItemState extends State<LibListItem> {
             itemBuilder: (context) => [
               PopupMenuItem<String>(
                 child: const Text("Delete"),
-                onTap: () => handleDeleteFromLib(context, true),
+                onTap: () => handleDeleteFromLib(true),
               ),
               PopupMenuItem<String>(
                 child: const Text("Refresh"),

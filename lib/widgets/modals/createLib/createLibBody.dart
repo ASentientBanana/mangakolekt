@@ -1,11 +1,10 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:mangakolekt/bloc/library/library_bloc.dart';
 import 'package:mangakolekt/controllers/archive.dart';
 import 'package:mangakolekt/locator.dart';
 import 'package:mangakolekt/services/navigationService.dart';
+import 'package:mangakolekt/store/library.dart';
 import 'package:mangakolekt/util/database/databaseHelpers.dart';
 import 'package:mangakolekt/util/files.dart';
 import 'package:mangakolekt/util/util.dart';
@@ -28,6 +27,7 @@ class CreateLibBodyState extends State<CreateLibBody> {
   bool isSubmitDisabled = false;
 
   final _navigationService = locator<NavigationService>();
+  final libraryStore = locator<LibraryStore>();
 
   void incrementProgress() {
     setState(() {
@@ -76,7 +76,7 @@ class CreateLibBodyState extends State<CreateLibBody> {
     }
   }
 
-  void handleSubmit(BuildContext context) async {
+  void handleSubmit() async {
     setState(() {
       isSubmitDisabled = true;
     });
@@ -87,17 +87,15 @@ class CreateLibBodyState extends State<CreateLibBody> {
       return;
     }
 
-    // Add manga to Manga table in db
-    // REFACTOR:
     final id = await DatabaseMangaHelpers.addLibrary(
         libraryPath: widget.selectedDir,
         name: textEditingController.text,
         books: coversPathList);
     final mangaList = await DatabaseMangaHelpers.getAllBooksFromLibrary();
     final index = mangaList.indexWhere((element) => element.id == id);
-    if (mangaList.isNotEmpty && context.mounted) {
-      context.read<LibraryBloc>().add(SetLibs(libs: mangaList));
-      context.read<LibraryBloc>().add(SetCurrentLib(index: index));
+    if (mangaList.isNotEmpty) {
+      libraryStore.setLibrary(mangaList);
+      libraryStore.selectCover(index);
     }
     setState(() {
       isSubmitDisabled = false;
@@ -174,8 +172,7 @@ class CreateLibBodyState extends State<CreateLibBody> {
                       shape: const BeveledRectangleBorder(),
                       // side: BorderSide(color: colorScheme.secondary)
                     ),
-                    onPressed:
-                        isSubmitDisabled ? null : () => handleSubmit(context),
+                    onPressed: isSubmitDisabled ? null : handleSubmit,
                     child: const Text(
                       "Confirm",
                       style: TextStyle(

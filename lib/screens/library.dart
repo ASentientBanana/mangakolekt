@@ -1,9 +1,10 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:mangakolekt/bloc/library/library_bloc.dart';
+import 'package:flutter_mobx/flutter_mobx.dart';
+import 'package:mangakolekt/locator.dart';
 import 'package:mangakolekt/models/book.dart';
+import 'package:mangakolekt/store/library.dart';
 import 'package:mangakolekt/widgets/library/grid.dart';
 import 'package:mangakolekt/widgets/library/list.dart';
 import 'package:mangakolekt/widgets/menuBar.dart';
@@ -17,6 +18,7 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   BookCover? selectedCover;
   final textEditingController = TextEditingController();
+  final libraryStore = locator<LibraryStore>();
 
   void selectManga(BookCover cover) {
     setState(() {
@@ -92,8 +94,19 @@ class _MyHomePageState extends State<MyHomePage> {
           child: Container(
             padding: const EdgeInsets.all(4),
             color: colorScheme.background,
-            child: const Row(
-              children: [LibList(), Expanded(child: LibGrid())],
+            child: Row(
+              children: [
+                Observer(builder: (_) {
+                  print(libraryStore.library.length);
+                  if (libraryStore.library.isEmpty) {
+                    return const SizedBox.shrink();
+                  }
+                  return LibList(
+                    libraryList: libraryStore.library,
+                  );
+                }),
+                const Expanded(child: LibGrid())
+              ],
             ),
           ),
         ),

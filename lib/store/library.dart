@@ -13,7 +13,7 @@ abstract class LibraryBase with Store {
   String searchTerm = '';
 
   @observable
-  int selectedCoverIndex = 0;
+  int? selectedCoverIndex = 0;
 
   @observable
   ObservableList<LibraryElement> library = ObservableList.of([]);
@@ -24,7 +24,7 @@ abstract class LibraryBase with Store {
   }
 
   @action
-  void selectCover(int index) {
+  void selectCover(int? index) {
     selectedCoverIndex = index;
   }
 

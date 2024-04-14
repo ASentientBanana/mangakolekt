@@ -1,12 +1,9 @@
-import 'dart:io';
-
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:mangakolekt/bloc/library/library_bloc.dart';
 import 'package:mangakolekt/locator.dart';
 import 'package:mangakolekt/models/book.dart';
 import 'package:mangakolekt/services/navigationService.dart';
+import 'package:mangakolekt/store/library.dart';
 import 'package:mangakolekt/widgets/homeLogo.dart';
 import 'package:mangakolekt/widgets/mobile/libraryDrawer.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -22,6 +19,8 @@ class _MyHomePageState extends State<MyHomePageMobile> {
   final textEditingController = TextEditingController();
 
   final _navigationService = locator<NavigationService>();
+  final libraryStore = locator<LibraryStore>();
+
   bool disableAdd = false;
 
   void selectManga(BookCover cover) {
@@ -125,7 +124,7 @@ class _MyHomePageState extends State<MyHomePageMobile> {
                       ),
                     ),
                     onChanged: (s) {
-                      context.read<LibraryBloc>().add(SearchLib(searchTerm: s));
+                      libraryStore.search(s);
                     },
                     controller: textEditingController,
                   )),

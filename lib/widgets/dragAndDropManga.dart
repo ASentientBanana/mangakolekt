@@ -1,9 +1,5 @@
-import 'dart:io';
-
 import 'package:desktop_drop/desktop_drop.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:mangakolekt/bloc/library/library_bloc.dart';
 import 'package:mangakolekt/services/navigationService.dart';
 import 'package:mangakolekt/locator.dart';
 import 'package:mangakolekt/widgets/homeLogo.dart';

@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:mangakolekt/bloc/library/library_bloc.dart';
 import 'package:mangakolekt/locator.dart';
-import 'package:mangakolekt/models/book.dart';
 import 'package:mangakolekt/store/library.dart';
 import 'package:mangakolekt/util/util.dart';
 import 'package:mangakolekt/widgets/dragAndDropManga.dart';
@@ -16,7 +14,6 @@ class LibGrid extends StatefulWidget {
 }
 
 class _LibGridState extends State<LibGrid> {
-  Future<List<BookCover>> _title = Future(() => []);
   final libraryStore = locator<LibraryStore>();
   int? id;
 
@@ -44,64 +41,39 @@ class _LibGridState extends State<LibGrid> {
         .toList();
   }
 
-  bool listenWhenGuard(LibraryState previous, LibraryState current) {
-    if (previous is! LibraryLoaded || current is! LibraryLoaded) {
-      return false;
-    }
-    if (previous.search != current.search) {
-      return true;
-    }
-    if (previous.libStore.libIndex != current.libStore.libIndex) {
-      return true;
-    }
-    return false;
-  }
-
-  void listenerCb(BuildContext context, LibraryState state) {
-    if ((state is! LibraryLoaded)) {
-      return;
-    }
-    // setState(() {
-    //   if (search != state.search) {
-    //     search = state.search;
-    //   }
-    // });
-  }
-
-  Widget observerBuilderHandler(BuildContext context) {
-    double width = MediaQuery.of(context).size.width;
-
-    if (libraryStore.library.isEmpty) {
-      return DragAndDropSurface();
-    }
-
-    final covers = libraryStore.library[libraryStore.selectedCoverIndex];
-    final gridItems =
-        sortCoversNumeric(covers.books).map((e) => GridItem(item: e)).toList();
-    return Scrollbar(
-      radius: Radius.zero,
-      child: Observer(
-        builder: (_) => GridView.count(
-          primary: true,
-          crossAxisCount: calculateSize(width),
-          mainAxisSpacing: 100,
-          crossAxisSpacing: 10,
-          children: filterList(libraryStore.searchTerm, gridItems),
-          // children: gridItems,
-        ),
-      ),
-    );
-  }
+  // Widget observerBuilderHandler(BuildContext context, String term) {}
 
   @override
   Widget build(BuildContext context) {
     return Container(
       // color: Colors.orange,
       padding: const EdgeInsets.all(30),
-      child: Observer(
-        builder: observerBuilderHandler,
-        // builder: (_) => Text("Value ${libraryStore.selectedCoverIndex}"),
-      ),
+      child: Observer(builder: (context) {
+        double width = MediaQuery.of(context).size.width;
+
+        if (libraryStore.library.isEmpty) {
+          return DragAndDropSurface();
+        }
+
+        if (libraryStore.selectedCoverIndex == null) {
+          return DragAndDropSurface();
+        }
+
+        final covers = libraryStore.library[libraryStore.selectedCoverIndex!];
+        final gridItems = sortCoversNumeric(covers.books)
+            .map((e) => GridItem(item: e))
+            .toList();
+        return Scrollbar(
+          radius: Radius.zero,
+          child: GridView.count(
+            primary: true,
+            crossAxisCount: calculateSize(width),
+            mainAxisSpacing: 100,
+            crossAxisSpacing: 10,
+            children: filterList(libraryStore.searchTerm, gridItems),
+          ),
+        );
+      }),
     );
   }
 }
