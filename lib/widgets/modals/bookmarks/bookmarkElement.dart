@@ -35,6 +35,15 @@ class _BookmarkElementState extends State<BookmarkElement> {
     super.dispose();
   }
 
+  void handleDelete() async {
+    print(widget.bookmarkItem.id);
+    print(widget.bookData.path);
+    setState(() {
+      _isLoading = true;
+    });
+    widget.deleteBookmarkCb(widget.bookmarkItem.id, widget.bookmarkItem.page);
+  }
+
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
@@ -106,15 +115,7 @@ class _BookmarkElementState extends State<BookmarkElement> {
               ),
             ),
             child: ElevatedButton(
-                onPressed: _isLoading
-                    ? null
-                    : () {
-                        setState(() {
-                          _isLoading = true;
-                          widget.deleteBookmarkCb(
-                              widget.bookData.id, widget.bookmarkItem.page);
-                        });
-                      },
+                onPressed: _isLoading ? null : handleDelete,
                 child: const Icon(Icons.delete)),
           ),
         ],

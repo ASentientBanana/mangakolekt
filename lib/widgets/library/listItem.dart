@@ -66,6 +66,7 @@ class _LibListItemState extends State<LibListItem> {
       final theme = Theme.of(context);
       final GlobalKey _menuKey = GlobalKey();
       return Row(
+        mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Container(
             height: 40,

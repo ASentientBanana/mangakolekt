@@ -1,10 +1,12 @@
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:mangakolekt/locator.dart';
 import 'package:mangakolekt/models/book.dart';
 import 'package:mangakolekt/services/navigationService.dart';
 import 'package:mangakolekt/store/library.dart';
 import 'package:mangakolekt/widgets/homeLogo.dart';
+import 'package:mangakolekt/widgets/library/listItem.dart';
 import 'package:mangakolekt/widgets/mobile/libraryDrawer.dart';
 import 'package:permission_handler/permission_handler.dart';
 
@@ -143,17 +145,35 @@ class _MyHomePageState extends State<MyHomePageMobile> {
         ),
       ]),
       body: SafeArea(
-        child: HomeLogo(),
-        // child: LibList(),
+        // color: Colors.red,
+        child: Observer(builder: (_) {
+          if (libraryStore.library.isEmpty) {
+            return HomeLogo();
+          }
+          return ListView.separated(
+              shrinkWrap: true,
+              itemBuilder: (_, index) => Padding(
+                    padding: const EdgeInsets.only(left: 30),
+                    child: LibListItem(
+                        item: libraryStore.library[index], index: index),
+                  ),
+              separatorBuilder: (_, index) => const SizedBox(
+                    height: 10,
+                  ),
+              itemCount: libraryStore.library.length);
+        }),
       ),
+      // child: LibList(),
+
       floatingActionButton: FloatingActionButton(
-          shape: RoundedRectangleBorder(
-              side: const BorderSide(
-                  width: 3, color: Color.fromARGB(255, 238, 245, 238)),
-              borderRadius: BorderRadius.circular(100)),
-          backgroundColor: colorScheme.background,
-          onPressed: () => handleAdd(context),
-          child: const Icon(size: 42, Icons.add)),
+        shape: RoundedRectangleBorder(
+            side: const BorderSide(
+                width: 3, color: Color.fromARGB(255, 238, 245, 238)),
+            borderRadius: BorderRadius.circular(100)),
+        backgroundColor: colorScheme.background,
+        onPressed: () => handleAdd(context),
+        child: const Icon(size: 42, Icons.add),
+      ),
     );
     // return
   }

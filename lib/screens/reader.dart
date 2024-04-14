@@ -6,7 +6,6 @@ import 'package:mangakolekt/constants.dart';
 import 'package:mangakolekt/util/database/databaseHelpers.dart';
 import 'package:mangakolekt/util/platform.dart';
 import 'package:mangakolekt/util/reader.dart';
-import 'package:mangakolekt/widgets/appbar/readerBarMobile.dart';
 import 'package:mangakolekt/widgets/appbar/readerbar.dart';
 import 'package:mangakolekt/widgets/reader/curentPageIndexView.dart';
 import 'package:mangakolekt/widgets/reader/singleImage.dart';

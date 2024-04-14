@@ -4,7 +4,12 @@ class Bookmark {
   final int page;
   final int date;
   final String book;
-  const Bookmark({required this.page, required this.book, required this.date});
+  final int id;
+  const Bookmark(
+      {required this.page,
+      required this.book,
+      required this.date,
+      required this.id});
 }
 
 class BookmarksData {
@@ -59,9 +64,10 @@ class Bookmarks {
           "path": element["path"],
         };
       }
-
+      print("adding element ${element['book']}");
       map[element["library"]]['bookmarks'].add(
         Bookmark(
+            id: element['book'],
             page: element["page"],
             book: element["book_path"],
             date: element["created_at"]),

@@ -1,20 +1,42 @@
 import 'package:flutter/material.dart';
+import 'package:mangakolekt/controllers/archive.dart';
 import 'package:mangakolekt/locator.dart';
 import 'package:mangakolekt/services/navigationService.dart';
+import 'package:mangakolekt/store/library.dart';
+import 'package:mangakolekt/util/database/databaseHelpers.dart';
+import 'package:mangakolekt/util/files.dart';
 
 class CreateLibraryMobile extends StatelessWidget {
   final String path;
   CreateLibraryMobile({Key? key, required this.path}) : super(key: key);
 
   final textController = TextEditingController();
+  final libraryStore = locator<LibraryStore>();
+  final _navigationService = locator<NavigationService>();
 
-  void handleConfirm() {}
+  void handleConfirm() async {
+    final out = await getGlobalCoversDir();
+    final res = await ArchiveController.unpackCovers(path, out);
+    if (res == null) {
+      return;
+    }
+    await DatabaseMangaHelpers.addLibrary(
+        libraryPath: path, name: textController.text, books: res);
+    final mangaList = await DatabaseMangaHelpers.getAllBooksFromLibrary();
+    if (mangaList.isNotEmpty) {
+      libraryStore.setLibrary(mangaList);
+    }
+
+    print("LIST::");
+    print(mangaList);
+    _navigationService.pushAndPop('/library', null);
+  }
 
   @override
   Widget build(BuildContext context) {
-    final coloScheme = Theme.of(context).colorScheme;
+    final colorScheme = Theme.of(context).colorScheme;
     return Scaffold(
-      backgroundColor: coloScheme.background,
+      backgroundColor: colorScheme.background,
       body: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
@@ -25,33 +47,50 @@ class CreateLibraryMobile extends StatelessWidget {
             child: TextFormField(
               controller: textController,
               showCursor: true,
-              cursorColor: coloScheme.tertiary,
+              cursorColor: colorScheme.tertiary,
               decoration: InputDecoration(
                 hintText: "Enter a label for the lib",
-                hintStyle: TextStyle(color: Colors.white60),
+                hintStyle: const TextStyle(color: Colors.white60),
                 focusedBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.zero,
-                  borderSide: BorderSide(width: 1, color: coloScheme.tertiary),
+                  borderSide: BorderSide(width: 1, color: colorScheme.tertiary),
                 ),
                 enabledBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.zero,
-                  borderSide: BorderSide(width: 1, color: coloScheme.tertiary),
+                  borderSide:
+                      BorderSide(width: 1, color: colorScheme.secondary),
                 ),
               ),
             ),
           ),
+          SizedBox(
+            height: 30,
+          ),
           ElevatedButton(
             style: ElevatedButton.styleFrom(
-              elevation: 0,
-              // backgroundColor: colorScheme.tertiary,
-              shape: const BeveledRectangleBorder(),
-              // side: BorderSide(color: colorScheme.secondary)
-            ),
+                elevation: 0,
+                // backgroundColor: colorScheme.tertiary,
+                shape: const BeveledRectangleBorder(),
+                side: BorderSide(color: colorScheme.secondary)),
             onPressed: () => handleConfirm(),
             child: const Text(
-              "Confirm",
+              "Add",
               style:
-                  TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
+                  TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+            ),
+          ),
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(
+                elevation: 0,
+                // backgroundColor: colorScheme.tertiary,
+                // minimumSize: Size.fromHeight(double.infinity),
+                shape: const BeveledRectangleBorder(),
+                side: BorderSide(color: colorScheme.secondary)),
+            onPressed: () {},
+            child: const Text(
+              "Cancel",
+              style:
+                  TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
             ),
           ),
         ],
