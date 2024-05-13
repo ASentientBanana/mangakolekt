@@ -18,8 +18,6 @@ class CurrentPageIndexView extends StatelessWidget {
     final colorScheme = Theme.of(context).colorScheme;
     return Container(
       decoration: BoxDecoration(
-        // borderRadius: BorderRadius.only(topLeft: Radius.circular(5)),
-        color: colorScheme.primary,
         border: Border.all(
           style: BorderStyle.solid,
           color: colorScheme.tertiary,

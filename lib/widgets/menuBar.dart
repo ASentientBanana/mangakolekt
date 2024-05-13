@@ -1,6 +1,7 @@
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:mangakolekt/controllers/archive.dart';
 import 'package:mangakolekt/locator.dart';
 import 'package:mangakolekt/services/navigationService.dart';
 import 'package:mangakolekt/store/library.dart';
@@ -9,6 +10,7 @@ import 'package:mangakolekt/widgets/modals/bookmarks.dart';
 import 'package:mangakolekt/widgets/modals/createLib.dart';
 import 'package:mangakolekt/widgets/modals/help.dart';
 import 'package:mangakolekt/widgets/modals/settings.dart';
+import 'package:path/path.dart';
 
 class MangaMenuBar extends StatelessWidget {
   Widget child;
@@ -31,9 +33,14 @@ class MangaMenuBar extends StatelessWidget {
     SystemNavigator.pop();
   }
 
-  Future<void> pickDirHandler(BuildContext context) async {
+  Future<void> pickDirHandler(BuildContext context,
+      {bool readDir = false}) async {
     final dir = await FilePicker.platform.getDirectoryPath();
     if (dir == null || !context.mounted) {
+      return;
+    }
+    if (readDir) {
+      // _navigationService.navigateTo(, arguments)
       return;
     }
     showCreateLibDialog(context, dir);
@@ -61,6 +68,11 @@ class MangaMenuBar extends StatelessWidget {
                         MenuItemButton(
                           onPressed: pickFileHandler,
                           child: const Text("Open"),
+                        ),
+                        MenuItemButton(
+                          onPressed: () =>
+                              pickDirHandler(context, readDir: true),
+                          child: const Text("Open directory"),
                         ),
                         MenuItemButton(
                           onPressed: () => pickDirHandler(context),

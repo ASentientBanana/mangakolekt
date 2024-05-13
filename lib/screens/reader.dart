@@ -188,7 +188,7 @@ class _MangaReaderState extends State<MangaReader> {
             isBookmark: isBookmark,
             bookmark: bookmark,
             set: setState),
-        body: RawKeyboardListener(
+        body: KeyboardListener(
           focusNode: _focusNode,
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
@@ -215,12 +215,15 @@ class _MangaReaderState extends State<MangaReader> {
                   Positioned(
                       bottom: 0,
                       right: 0,
-                      child: CurrentPageIndexView(
-                        currentPages: readerController
-                            .getCurrentPages()
-                            .map((e) => e + 1)
-                            .join('-'),
-                        totalPages: readerController.pages.length.toString(),
+                      child: Padding(
+                        padding: const EdgeInsets.only(right: 20),
+                        child: CurrentPageIndexView(
+                          currentPages: readerController
+                              .getCurrentPages()
+                              .map((e) => e + 1)
+                              .join('-'),
+                          totalPages: readerController.pages.length.toString(),
+                        ),
                       ))
                 ],
               ),

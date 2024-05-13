@@ -4,6 +4,7 @@ import 'package:mangakolekt/services/initializer.dart';
 import 'package:mangakolekt/store/library.dart';
 import 'package:mangakolekt/util/database/databaseHelpers.dart';
 import 'package:mangakolekt/widgets/loadingDog.dart';
+import 'package:mangakolekt/widgets/modals/permissionPrompt.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({Key? key}) : super(key: key);
@@ -15,6 +16,7 @@ class SplashScreen extends StatefulWidget {
 class _SplashScreenState extends State<SplashScreen> {
   // final _navigationService = locator<NavigationService>();
   final libraryStore = locator<LibraryStore>();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -31,21 +33,18 @@ class _SplashScreenState extends State<SplashScreen> {
       if (!context.mounted) {
         return;
       }
-      //Register documents path
-
-      if (!(await initPermissions())) {
-        // TODO: Add flow
-      }
+      await showPermissionDialog(context);
       await initAppStructure();
       final mangaList = await DatabaseMangaHelpers.getAllBooksFromLibrary();
 
       libraryStore.setLibrary(mangaList);
 
       if (!context.mounted) return;
-      // Navigator.rep(context, '/home');
       Navigator.popAndPushNamed(context, '/home');
-      // _navigationService.navigateTo('/home', {});
     } catch (e) {
+      if (!context.mounted) {
+        return;
+      }
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           behavior: SnackBarBehavior.fixed,

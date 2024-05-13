@@ -65,7 +65,7 @@ class ArchiveController {
     // return null;
   }
 
-  static Future<List<String>> _loadPagesRecursive(String dirPath) async {
+  static Future<List<String>> loadPagesRecursive(String dirPath) async {
     final dir = Directory(dirPath);
     if (!await dir.exists()) {
       return [];
@@ -92,7 +92,7 @@ class ArchiveController {
     dContents.addAll(files);
 
     for (var i = 0; i < dirs.length; i++) {
-      final res = await _loadPagesRecursive(dirs[i]);
+      final res = await loadPagesRecursive(dirs[i]);
       dContents.addAll(res);
     }
     return dContents;
@@ -103,7 +103,7 @@ class ArchiveController {
     // List<String> _pages = await compute((message) async {
     // return await _loadPagesRecursive(message);
     // }, target);
-    final _pages = await _loadPagesRecursive(target);
+    final _pages = await loadPagesRecursive(target);
     _pages.sort(compareNatural);
     // // _pages = sortNumeric(_pages);
 

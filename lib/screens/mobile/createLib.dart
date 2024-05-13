@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:mangakolekt/controllers/archive.dart';
 import 'package:mangakolekt/locator.dart';
@@ -8,11 +9,13 @@ import 'package:mangakolekt/util/files.dart';
 
 class CreateLibraryMobile extends StatelessWidget {
   final String path;
+
   CreateLibraryMobile({Key? key, required this.path}) : super(key: key);
 
   final textController = TextEditingController();
   final libraryStore = locator<LibraryStore>();
   final _navigationService = locator<NavigationService>();
+  final double buttonHorizontalMargins = 20;
 
   void handleConfirm() async {
     final out = await getGlobalCoversDir();
@@ -27,8 +30,6 @@ class CreateLibraryMobile extends StatelessWidget {
       libraryStore.setLibrary(mangaList);
     }
 
-    print("LIST::");
-    print(mangaList);
     _navigationService.pushAndPop('/library', null);
   }
 
@@ -63,34 +64,42 @@ class CreateLibraryMobile extends StatelessWidget {
               ),
             ),
           ),
-          SizedBox(
+          const SizedBox(
             height: 30,
           ),
-          ElevatedButton(
-            style: ElevatedButton.styleFrom(
-                elevation: 0,
-                // backgroundColor: colorScheme.tertiary,
-                shape: const BeveledRectangleBorder(),
-                side: BorderSide(color: colorScheme.secondary)),
-            onPressed: () => handleConfirm(),
-            child: const Text(
-              "Add",
-              style:
-                  TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+          Container(
+            padding: EdgeInsets.symmetric(horizontal: buttonHorizontalMargins),
+            width: double.infinity,
+            child: ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                  elevation: 0,
+                  // backgroundColor: colorScheme.tertiary,
+                  shape: const BeveledRectangleBorder(),
+                  side: BorderSide(color: colorScheme.secondary)),
+              onPressed: () => handleConfirm(),
+              child: const Text(
+                "Add",
+                style:
+                    TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+              ),
             ),
           ),
-          ElevatedButton(
-            style: ElevatedButton.styleFrom(
-                elevation: 0,
-                // backgroundColor: colorScheme.tertiary,
-                // minimumSize: Size.fromHeight(double.infinity),
-                shape: const BeveledRectangleBorder(),
-                side: BorderSide(color: colorScheme.secondary)),
-            onPressed: () {},
-            child: const Text(
-              "Cancel",
-              style:
-                  TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+          Container(
+            padding: EdgeInsets.symmetric(horizontal: buttonHorizontalMargins),
+            width: double.infinity,
+            child: ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                  elevation: 0,
+                  // backgroundColor: colorScheme.tertiary,
+                  // minimumSize: Size.fromHeight(double.infinity),
+                  shape: const BeveledRectangleBorder(),
+                  side: BorderSide(color: colorScheme.secondary)),
+              onPressed: () {},
+              child: const Text(
+                "Cancel",
+                style:
+                    TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+              ),
             ),
           ),
         ],

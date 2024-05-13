@@ -2,9 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:mangakolekt/controllers/archive.dart';
 import 'package:mangakolekt/locator.dart';
 import 'package:mangakolekt/models/library.dart';
+import 'package:mangakolekt/services/navigationService.dart';
 import 'package:mangakolekt/store/library.dart';
 import 'package:mangakolekt/util/database/databaseHelpers.dart';
 import 'package:mangakolekt/util/files.dart';
+import 'package:mangakolekt/util/platform.dart';
 
 class LibListItem extends StatefulWidget {
   final LibraryElement item;
@@ -21,6 +23,7 @@ class LibListItem extends StatefulWidget {
 
 class _LibListItemState extends State<LibListItem> {
   final libraryStore = locator<LibraryStore>();
+  final _navigationService = locator<NavigationService>();
 
   Future<void> handleDeleteFromLib(bool shouldSetList) async {
     final deletedPaths =
@@ -79,6 +82,9 @@ class _LibListItemState extends State<LibListItem> {
             child: OutlinedButton(
               onPressed: () async {
                 libraryStore.selectCover(widget.index);
+                if (isMobile()) {
+                  _navigationService.navigateTo('/grid', null);
+                }
               },
               child: Center(
                 child: Text(
