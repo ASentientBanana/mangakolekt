@@ -100,6 +100,7 @@ class _MangaReaderState extends State<MangaReader> {
     });
   }
 
+  //TODO:REPLACE
   Future<void> findNextBook() async {
     // final x = await checkForNextBook(widget.readerController.book.path);
     final map = await checkForNextBook(widget.readerController.book.path);
@@ -122,6 +123,7 @@ class _MangaReaderState extends State<MangaReader> {
     super.initState();
   }
 
+  // TODO: REPLACE
   Future<void> bookmark() async {
     final isBookmark =
         bookmarks.contains(readerController.getCurrentPages().first);
@@ -141,6 +143,7 @@ class _MangaReaderState extends State<MangaReader> {
     });
   }
 
+  // TODO: REPLACE
   List<Widget> renderPages() {
     // A more verbose page rendering way.
     final List<int> pageIndexes;

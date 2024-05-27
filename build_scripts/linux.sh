@@ -1,5 +1,8 @@
 #!/usr/bin/env bash
 
+# TODO: This is ok for now but later on some of this should be 
+# moved to a seperate script
+
 # armeabi-v7a: For devices with ARMv7 processors.
 # arm64-v8a: For devices with ARMv8 (64-bit) processors.
 # x86: For devices with x86 processors.
@@ -35,9 +38,8 @@ verify(){
 }
 
 compile(){
-    BUILD_TARGET="./build/linux/$arch/$MANGA_LIB"
-
     arch=$1
+    BUILD_TARGET="./build/linux/$arch/$MANGA_LIB"
     echo "Compliing for $arch"
     if [ "$arch" = "amd64" ]; then
     CGO_ENABLED=1 GOOS="linux" GOARCH="$arch" go build -buildmode=c-shared -o "$BUILD_TARGET" "main.go"

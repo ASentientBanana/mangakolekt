@@ -97,7 +97,6 @@ class _MyHomePageState extends State<MyHomePage> {
             child: Row(
               children: [
                 Observer(builder: (_) {
-                  print(libraryStore.library.length);
                   if (libraryStore.library.isEmpty) {
                     return const SizedBox.shrink();
                   }

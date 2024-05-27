@@ -1,17 +1,15 @@
+import 'dart:convert';
 import 'dart:ffi'; // For FFI
 import 'dart:io';
+
 import 'package:ffi/ffi.dart';
 import 'package:flutter/foundation.dart';
-import 'package:mangakolekt/constants.dart';
+import 'package:mangakolekt/generated/archive_ffi.dart' as nb;
 import 'package:mangakolekt/models/global.dart';
 import 'package:mangakolekt/types/ffi.dart';
-import 'package:mangakolekt/generated/archive_ffi.dart' as nb;
-
 import 'package:path/path.dart';
 
 class FFIService {
-  // FFIService({required this.dyLib});
-
   static Future<List<String>> ffiGetDirContents(String dirPath) async {
     List<String> files = [];
     final dyLib = loadService();
@@ -54,8 +52,11 @@ class FFIService {
     try {
       final pFiles =
           await nativeBindings.Unzip_Single_book(pBookPath, pTargetPath);
-      final files = pFiles.cast<Utf8>().toDartString().split("?&?");
-
+      final _files = pFiles.cast<Utf8>().toDartString();
+      print("New data::");
+      print(_files);
+      // final files = pFiles.cast<Utf8>().toDartString().split("?&?");
+      final List<String> files = [];
       calloc.free(pFiles);
       calloc.free(pBookPath);
       calloc.free(pTargetPath);
@@ -93,22 +94,36 @@ class FFIService {
 
     final unzipCoversFromDir = dyLib
         .lookupFunction<UnziperFunc, UnziperFunc>("Unzip_Covers", isLeaf: true);
-
-    final filesString = files.join("&&");
-
+    final filesString = JsonEncoder().convert({"files": files});
     final Pointer<Utf8> filesStringPtr = filesString.toNativeUtf8();
     final Pointer<Utf8> pathPtr = path.toNativeUtf8();
     final Pointer<Utf8> outPtr = out.toNativeUtf8();
+    print("Dart:: 1");
     var res = unzipCoversFromDir(filesStringPtr.cast<Uint8>(),
         pathPtr.cast<Uint8>(), outPtr.cast<Uint8>());
-
+    final output = res.cast<Utf8>().toDartString();
+    if (output.isEmpty) {
+      print("EMPTY STRING");
+    }
+    print("Dart:: 2");
     calloc.free(filesStringPtr);
     calloc.free(pathPtr);
     calloc.free(outPtr);
-
-    final output = res.cast<Utf8>().toDartString();
+    print("Dart:: 3");
     // calloc.free(res);
-    return output.split("&?&").toList();
+    print("Dart:: 4");
+    print(output);
+    try {
+      json.decode(output);
+    } catch (e) {
+      print("JSON DECODE ERROR");
+      print(e);
+      print("For output::");
+      print(output);
+    }
+    // final results = json.decode(output);
+    print("Dart:: 5");
+    return [];
   }
 
   static DynamicLibrary loadWindows() {

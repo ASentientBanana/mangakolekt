@@ -1,6 +1,5 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:mangakolekt/controllers/archive.dart';
 import 'package:mangakolekt/locator.dart';
 import 'package:mangakolekt/services/navigationService.dart';
@@ -82,6 +81,12 @@ class CreateLibBodyState extends State<CreateLibBody> {
     });
 
     final coversPathList = await startIsolate();
+
+    setState(() {
+      isSubmitDisabled = false;
+    });
+    closeModal();
+    return;
 
     if (coversPathList == null) {
       return;

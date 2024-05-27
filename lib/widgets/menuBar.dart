@@ -10,10 +10,10 @@ import 'package:mangakolekt/widgets/modals/bookmarks.dart';
 import 'package:mangakolekt/widgets/modals/createLib.dart';
 import 'package:mangakolekt/widgets/modals/help.dart';
 import 'package:mangakolekt/widgets/modals/settings.dart';
-import 'package:path/path.dart';
 
 class MangaMenuBar extends StatelessWidget {
-  Widget child;
+  final Widget child;
+
   MangaMenuBar({Key? key, required this.child}) : super(key: key);
 
   final _navigationService = locator<NavigationService>();
@@ -47,6 +47,14 @@ class MangaMenuBar extends StatelessWidget {
     //  dir
   }
 
+  Future<void> coversTest() async {
+    final output = "/home/petar/Documents/tmp_to_delete";
+    final target = "/home/petar/bigboy/Manga/Vagabond";
+    print("Starting");
+    final covers = await ArchiveController.unpackCovers(target, output);
+    print("covers done got ${covers?.length ?? 0} results");
+  }
+
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
@@ -70,8 +78,8 @@ class MangaMenuBar extends StatelessWidget {
                           child: const Text("Open"),
                         ),
                         MenuItemButton(
-                          onPressed: () =>
-                              pickDirHandler(context, readDir: true),
+                          onPressed: coversTest,
+                          // pickDirHandler(context, readDir: true),
                           child: const Text("Open directory"),
                         ),
                         MenuItemButton(
