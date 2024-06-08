@@ -98,32 +98,29 @@ class FFIService {
     final Pointer<Utf8> filesStringPtr = filesString.toNativeUtf8();
     final Pointer<Utf8> pathPtr = path.toNativeUtf8();
     final Pointer<Utf8> outPtr = out.toNativeUtf8();
-    print("Dart:: 1");
     var res = unzipCoversFromDir(filesStringPtr.cast<Uint8>(),
         pathPtr.cast<Uint8>(), outPtr.cast<Uint8>());
     final output = res.cast<Utf8>().toDartString();
     if (output.isEmpty) {
       print("EMPTY STRING");
     }
-    print("Dart:: 2");
     calloc.free(filesStringPtr);
     calloc.free(pathPtr);
     calloc.free(outPtr);
-    print("Dart:: 3");
     // calloc.free(res);
-    print("Dart:: 4");
-    print(output);
+     List<Map<String,String>> jsonOutput = [];
     try {
-      json.decode(output);
+      jsonOutput = jsonDecode(output) as List<Map<String,String>>;
     } catch (e) {
       print("JSON DECODE ERROR");
       print(e);
       print("For output::");
       print(output);
+
     }
     // final results = json.decode(output);
     print("Dart:: 5");
-    return [];
+    return jsonOutput;
   }
 
   static DynamicLibrary loadWindows() {

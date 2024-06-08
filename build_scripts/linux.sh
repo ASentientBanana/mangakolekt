@@ -42,16 +42,16 @@ compile(){
     BUILD_TARGET="./build/linux/$arch/$MANGA_LIB"
     echo "Compliing for $arch"
     if [ "$arch" = "amd64" ]; then
-    CGO_ENABLED=1 GOOS="linux" GOARCH="$arch" go build -buildmode=c-shared -o "$BUILD_TARGET" "main.go"
+    CGO_ENABLED=1 GOOS="linux" GOARCH="$arch" ffi build -buildmode=c-shared -o "$BUILD_TARGET" "main.go"
     elif [ "$arch" = "386" ]; then
-    CGO_ENABLED=1 GOOS="linux" GOARCH="$arch" go build -buildmode=c-shared -o "$BUILD_TARGET" "main.go"
+    CGO_ENABLED=1 GOOS="linux" GOARCH="$arch" ffi build -buildmode=c-shared -o "$BUILD_TARGET" "main.go"
     elif [ "$arch" = "arm64" ]; then
     cc=/home/petar/Android/Sdk/ndk/23.1.7779620/toolchains/llvm/prebuilt/linux-x86_64/bin/aarch64-linux-android30-clang
-    CC=$cc CGO_ENABLED=1 GOOS="android" GOARCH="$arch" go build -buildmode=c-shared -o "$BUILD_TARGET" "main.go"
+    CC=$cc CGO_ENABLED=1 GOOS="android" GOARCH="$arch" ffi build -buildmode=c-shared -o "$BUILD_TARGET" "main.go"
     elif [ "$arch" = "arm" ]; then
     cc=/home/petar/Android/Sdk/ndk/23.1.7779620/toolchains/llvm/prebuilt/linux-x86_64/bin/armv7a-linux-androideabi30-clang
-    CC=$cc CGO_ENABLED=1 GOOS="android" GOARCH="$arch" go build -buildmode=c-shared -o "$BUILD_TARGET" "main.go"
-    # CC="musl-gcc -static" CGO_ENABLED=1 GOOS="linux" GOARCH="$arch" go build -buildmode=c-shared -o "$BUILD_TARGET" "main.go"
+    CC=$cc CGO_ENABLED=1 GOOS="android" GOARCH="$arch" ffi build -buildmode=c-shared -o "$BUILD_TARGET" "main.go"
+    # CC="musl-gcc -static" CGO_ENABLED=1 GOOS="linux" GOARCH="$arch" ffi build -buildmode=c-shared -o "$BUILD_TARGET" "main.ffi"
     else
     echo "Architecture is not ARM64"
     # Your code for other architectures goes here

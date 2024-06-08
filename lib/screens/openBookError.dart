@@ -20,7 +20,7 @@ class OpenBookError extends StatelessWidget {
                   style: TextStyle(color: Colors.grey[400], fontSize: 25),
                 ),
                 Text(
-                  'Click to go back',
+                  'Click to ffi back',
                   style: TextStyle(color: Colors.grey[400], fontSize: 17),
                 )
               ],
