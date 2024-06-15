@@ -3,20 +3,17 @@ import 'dart:io';
 
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:mangakolekt/controllers/types/zip.dart';
 import 'package:mangakolekt/models/book.dart';
-import 'package:mangakolekt/models/global.dart';
-import 'package:mangakolekt/services/initializer.dart';
+import 'package:mangakolekt/models/ffi.dart';
 import 'package:mangakolekt/util/files.dart';
 import 'package:mangakolekt/util/util.dart';
 import 'package:path/path.dart' as p;
-import 'package:path_provider/path_provider.dart';
 
 abstract class BaseBookController {
   bool checkType(String type);
   Future<void> unpack(String pathToBook, String dest);
-  Future<List<String>> unpackCovers(String pathToDir,
+  Future<List<FFICoverOutputResult>> unpackCovers(String pathToDir,
       {required List<String> files, required String out});
 }
 
@@ -128,7 +125,7 @@ class ArchiveController {
         path: pathToBook);
   }
 
-  static Future<List<String>?> unpackCovers(
+  static Future<List<FFICoverOutputResult>?> unpackCovers(
       String pathToDir, String out) async {
     //create dirs
     // final out = "/home/petar/Documents/mangakolekt/covers";
@@ -159,7 +156,7 @@ class ArchiveController {
     }
 
     //Create covers list and add all the covers
-    final List<String> allCovers = [];
+    final List<FFICoverOutputResult> allCovers = [];
     for (var key in types.keys) {
       if (types[key] == null) {
         continue;

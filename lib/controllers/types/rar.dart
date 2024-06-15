@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:mangakolekt/models/ffi.dart';
 import 'package:mangakolekt/util/archive.dart';
 import 'package:mangakolekt/util/util.dart';
 import 'package:path/path.dart' as p;
@@ -13,7 +14,7 @@ class ZipBookController extends BaseBookController {
   final List<String> fileTypes = ['cbr', 'rar'];
 
   @override
-  Future<List<String>> unpackCovers(String pathToDir,
+  Future<List<FFICoverOutputResult>> unpackCovers(String pathToDir,
       {required List<String> files, required String out}) async {
     return [];
   }

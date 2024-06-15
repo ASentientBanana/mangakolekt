@@ -30,63 +30,6 @@ class _MyHomePageState extends State<MyHomePage> {
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
     return Scaffold(
-      // appBar: AppBar(
-      // actions: [
-      //   SizedBox(
-      //     width: 300,
-      //     child:
-      //         Column(mainAxisAlignment: MainAxisAlignment.center, children: [
-      //       Stack(
-      //         children: [
-      //           Container(
-      //             height: 32,
-      //             padding: EdgeInsets.only(right: 15),
-      //             child: Material(
-      //                 child: TextField(
-      //               style: const TextStyle(fontSize: 13),
-      //               decoration: InputDecoration(
-      //                 contentPadding: EdgeInsets.symmetric(horizontal: 5),
-      //                 hintText: "Search books",
-      //                 hintStyle: TextStyle(color: colorScheme.onPrimary),
-      //                 fillColor: colorScheme.background,
-      //                 filled: true,
-      //                 focusedBorder: OutlineInputBorder(
-      //                   borderRadius: BorderRadius.zero,
-      //                   borderSide: BorderSide(
-      //                       width: 1, color: colorScheme.onPrimary),
-      //                 ),
-      //                 enabledBorder: OutlineInputBorder(
-      //                   borderRadius: BorderRadius.zero,
-      //                   borderSide: BorderSide(
-      //                       width: 1, color: colorScheme.onPrimary),
-      //                 ),
-      //               ),
-      //               onChanged: (s) {
-      //                 context
-      //                     .read<LibraryBloc>()
-      //                     .add(SearchLib(searchTerm: s));
-      //               },
-      //               controller: textEditingController,
-      //             )),
-      //           ),
-      //           Positioned(
-      //             top: 4,
-      //             right: 25,
-      //             child: Icon(
-      //               Icons.search_sharp,
-      //               color: colorScheme.onPrimary,
-      //             ),
-      //           ),
-      //         ],
-      //       )
-      //     ]),
-      //   )
-      // ],
-      // ),
-      // drawer: Drawer(
-      //   backgroundColor: colorScheme.background,
-      //   child: LibList(),
-      // ),
       backgroundColor: colorScheme.background,
       body: SafeArea(
         top: (Platform.isAndroid || Platform.isIOS),
@@ -97,7 +40,6 @@ class _MyHomePageState extends State<MyHomePage> {
             child: Row(
               children: [
                 Observer(builder: (_) {
-                  print(libraryStore.library.length);
                   if (libraryStore.library.isEmpty) {
                     return const SizedBox.shrink();
                   }

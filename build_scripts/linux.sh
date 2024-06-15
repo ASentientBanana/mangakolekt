@@ -35,12 +35,14 @@ verify(){
 }
 
 compile(){
+    arch=$1
     BUILD_TARGET="./build/linux/$arch/$MANGA_LIB"
 
-    arch=$1
     echo "Compliing for $arch"
     if [ "$arch" = "amd64" ]; then
     CGO_ENABLED=1 GOOS="linux" GOARCH="$arch" go build -buildmode=c-shared -o "$BUILD_TARGET" "main.go"
+    rm "$PROJECT_ROOT/lib/linux/$MANGA_LIB"
+    cp $BUILD_TARGET "$PROJECT_ROOT/lib/linux/$MANGA_LIB"
     elif [ "$arch" = "386" ]; then
     CGO_ENABLED=1 GOOS="linux" GOARCH="$arch" go build -buildmode=c-shared -o "$BUILD_TARGET" "main.go"
     elif [ "$arch" = "arm64" ]; then

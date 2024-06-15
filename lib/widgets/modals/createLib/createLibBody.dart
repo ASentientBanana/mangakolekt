@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:mangakolekt/controllers/archive.dart';
 import 'package:mangakolekt/locator.dart';
+import 'package:mangakolekt/models/ffi.dart';
 import 'package:mangakolekt/services/navigationService.dart';
 import 'package:mangakolekt/store/library.dart';
 import 'package:mangakolekt/util/database/databaseHelpers.dart';
@@ -49,7 +50,7 @@ class CreateLibBodyState extends State<CreateLibBody> {
     super.initState();
   }
 
-  Future<List<String>?> startIsolate() async {
+  Future<List<FFICoverOutputResult>?> startIsolate() async {
     try {
       // compute
       final out = await getGlobalCoversDir();
@@ -63,6 +64,7 @@ class CreateLibBodyState extends State<CreateLibBody> {
       if (!context.mounted) {
         return [];
       }
+      print(e);
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(

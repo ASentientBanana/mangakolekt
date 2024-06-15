@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:mangakolekt/models/ffi.dart';
 import 'package:mangakolekt/services/ffiService.dart';
 import 'package:mangakolekt/util/archive.dart';
 import 'package:mangakolekt/controllers/archive.dart';
@@ -8,15 +9,12 @@ class ZipBookController extends BaseBookController {
   final List<String> fileTypes = ['zip', 'cbz'];
 
   @override
-  Future<List<String>> unpackCovers(String pathToDir,
+  Future<List<FFICoverOutputResult>> unpackCovers(String pathToDir,
       {required List<String> files, required String out}) async {
-    List<String> books;
     if (Platform.isLinux || Platform.isWindows || Platform.isAndroid) {
-      books = await FFIService.ffiUnzipCovers(files, pathToDir, out);
-    } else {
-      books = await getBooksV2(pathToDir);
+      return await FFIService.ffiUnzipCovers(files, pathToDir, out);
     }
-    return books;
+    return [];
   }
 
   // TODO: Decouple the unzip logic from loading the books

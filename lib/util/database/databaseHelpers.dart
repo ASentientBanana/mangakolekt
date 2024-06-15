@@ -1,5 +1,6 @@
 import 'package:mangakolekt/models/book.dart';
 import 'package:mangakolekt/models/database/bookmark.dart';
+import 'package:mangakolekt/models/ffi.dart';
 import 'package:mangakolekt/models/library.dart';
 import 'package:mangakolekt/util/database/databaseCore.dart';
 import 'package:mangakolekt/util/database/databaseTable.dart';
@@ -66,7 +67,7 @@ class DatabaseMangaHelpers {
   }
 
   static Future<int> addLibrary(
-      {required List<String> books,
+      {required List<FFICoverOutputResult> books,
       required String name,
       required String libraryPath}) async {
     final db = await DatabaseCore.openDB();
@@ -78,14 +79,14 @@ class DatabaseMangaHelpers {
     final batch = db.batch();
     //loop and call insert on batch
 
-    for (var mapString in books) {
-      final mListItem = mapString.split(';');
+    for (var cover in books) {
+
       batch.insert(
         DatabaseTables.Book,
         {
-          'name': mListItem[0],
-          "cover": mListItem[1],
-          "path": mListItem[2],
+          'name': cover.archiveName,
+          "cover": cover.destinationPath,
+          "path": cover.directoryFile,
           "library": id
         },
       );

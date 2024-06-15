@@ -1,8 +1,11 @@
+import 'dart:collection';
+import 'dart:convert';
 import 'dart:ffi'; // For FFI
 import 'dart:io';
 import 'package:ffi/ffi.dart';
 import 'package:flutter/foundation.dart';
 import 'package:mangakolekt/constants.dart';
+import 'package:mangakolekt/models/ffi.dart';
 import 'package:mangakolekt/models/global.dart';
 import 'package:mangakolekt/types/ffi.dart';
 import 'package:mangakolekt/generated/archive_ffi.dart' as nb;
@@ -10,7 +13,6 @@ import 'package:mangakolekt/generated/archive_ffi.dart' as nb;
 import 'package:path/path.dart';
 
 class FFIService {
-  // FFIService({required this.dyLib});
 
   static Future<List<String>> ffiGetDirContents(String dirPath) async {
     List<String> files = [];
@@ -54,37 +56,33 @@ class FFIService {
     try {
       final pFiles =
           await nativeBindings.Unzip_Single_book(pBookPath, pTargetPath);
-      final files = pFiles.cast<Utf8>().toDartString().split("?&?");
+      final files = pFiles.cast<Utf8>().toDartString();
+
+      final decodedList = jsonDecode(files);
+      if(decodedList is! Iterable ){
+        return [];
+      }
+      final List<String> filesList = [];
+
+      (decodedList as Iterable).forEach((element) {
+        if(element != null){
+          filesList.add(element);
+        }
+      });
 
       calloc.free(pFiles);
       calloc.free(pBookPath);
       calloc.free(pTargetPath);
-      return files;
+      return filesList;
     } catch (e) {
       calloc.free(pBookPath);
       calloc.free(pTargetPath);
       return [];
     }
-    // final unzipBook = dyLib.lookupFunction<ExtractImagesFromZipFunction,
-    //     ExtractImagesFromZipFunctionDart>("Unzip_Single_book", isLeaf: true);
-    // final bookPath = _bookPath.toNativeUtf8();
-    // final targetPath = _targetPath.toNativeUtf8();
-    // try {
-    //   final filesString = unzipBook(bookPath, targetPath);
-    //   List<String> dartStrings = filesString.toDartString().split("?&?");
-    //   // calloc.free(filesString);
-    //   calloc.free(bookPath);
-    //   calloc.free(targetPath);
-    //   return dartStrings;
-    // } catch (e) {
-    //   calloc.free(bookPath);
-    //   calloc.free(targetPath);
-    //   return [];
-    // }
   }
 
-  static Future<List<String>> ffiUnzipCovers(
-      List<String> files, String path, String out) async {
+  static List<FFICoverOutputResult> ffiUnzipCovers(
+      List<String> files, String path, String out) {
     final dyLib = loadService();
 
     if (dyLib == null) {
@@ -94,8 +92,13 @@ class FFIService {
     final unzipCoversFromDir = dyLib
         .lookupFunction<UnziperFunc, UnziperFunc>("Unzip_Covers", isLeaf: true);
 
-    final filesString = files.join("&&");
+    // TODO:
+    // convert to json
+    final filesString = jsonEncode(files);
 
+    // final filesString = files.join("&&");
+
+    // send data to ffi
     final Pointer<Utf8> filesStringPtr = filesString.toNativeUtf8();
     final Pointer<Utf8> pathPtr = path.toNativeUtf8();
     final Pointer<Utf8> outPtr = out.toNativeUtf8();
@@ -106,9 +109,37 @@ class FFIService {
     calloc.free(pathPtr);
     calloc.free(outPtr);
 
+    // json -> List
     final output = res.cast<Utf8>().toDartString();
-    // calloc.free(res);
-    return output.split("&?&").toList();
+    final ffiOut = jsonDecode(output);
+
+    if(ffiOut.isEmpty){
+      return [];
+    }
+    calloc.free(res);
+    //Expected structure
+    // {
+    // archiveName:string
+    // destinationPath:string
+    //  directoryFile:string
+    // }
+    //map to obj
+
+    if((ffiOut is! List)){
+      print('FFI NOT List: ${ffiOut.runtimeType}');
+      return [];
+    }
+    final List<FFICoverOutputResult> covers = [];
+    (ffiOut as Iterable).forEach((element) {
+      if(element != null){
+        final _cover = FFICoverOutputResult.fromMap(element);
+        if(_cover != null) {
+          covers.add(_cover);
+        }
+      }
+    });
+    print("ffi output:: $covers");
+    return covers;
   }
 
   static DynamicLibrary loadWindows() {
