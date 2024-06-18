@@ -8,7 +8,7 @@ class PermissionPromptBody extends StatelessWidget {
     return const Padding(
       padding: EdgeInsets.all(30),
       child: Text(
-          "In order to filesystem locations for creating local libraries the app needs filesystem permissions"),
+          "In order to access filesystem locations for creating local libraries the app needs filesystem permissions"),
     );
   }
 }

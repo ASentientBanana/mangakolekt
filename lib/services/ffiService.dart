@@ -1,10 +1,8 @@
-import 'dart:collection';
 import 'dart:convert';
-import 'dart:ffi'; // For FFI
+import 'dart:ffi';
 import 'dart:io';
 import 'package:ffi/ffi.dart';
 import 'package:flutter/foundation.dart';
-import 'package:mangakolekt/constants.dart';
 import 'package:mangakolekt/models/ffi.dart';
 import 'package:mangakolekt/models/global.dart';
 import 'package:mangakolekt/types/ffi.dart';

@@ -41,11 +41,12 @@ Future<void> showPermissionDialog(BuildContext context, {confirm}) async {
           content: const PermissionPromptBody(),
         );
       });
-  print("Is accepted: $isAgreed");
   // TODO: Add more stuff
-  if (isAgreed != null && isAgreed) {}
+  if (isAgreed != null && isAgreed) {
   final result = await Permission.manageExternalStorage.request();
-  if (result.isDenied || result.isPermanentlyDenied) {
-    return;
+    if (result.isDenied || result.isPermanentlyDenied) {
+      return;
+    }
+
   }
 }

@@ -12,7 +12,7 @@ class ZipBookController extends BaseBookController {
   Future<List<FFICoverOutputResult>> unpackCovers(String pathToDir,
       {required List<String> files, required String out}) async {
     if (Platform.isLinux || Platform.isWindows || Platform.isAndroid) {
-      return await FFIService.ffiUnzipCovers(files, pathToDir, out);
+      return FFIService.ffiUnzipCovers(files, pathToDir, out);
     }
     return [];
   }
@@ -22,11 +22,9 @@ class ZipBookController extends BaseBookController {
   Future<void> unpack(String pathToBook, String dest) async {
     try {
       final files = await FFIService.ffiUnzipSingleBook(pathToBook, dest);
-
       if (files.isEmpty) {
         return;
       }
-      // await _loadBook(files, bookName, pathToBook);
     } catch (e) {
       print("Problbem with ffi");
       print(e);

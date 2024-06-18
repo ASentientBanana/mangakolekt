@@ -12,7 +12,7 @@ import 'package:mangakolekt/widgets/reader/singleImage.dart';
 class MangaReaderMobile extends StatefulWidget {
   final ReaderController readerController;
   final int initialPage;
-  MangaReaderMobile(
+  const MangaReaderMobile(
       {Key? key, required this.readerController, required this.initialPage})
       : super(key: key);
 
@@ -21,9 +21,10 @@ class MangaReaderMobile extends StatefulWidget {
 }
 
 class _MangaReaderState extends State<MangaReaderMobile> {
-  final _focusNode = FocusNode();
   int dx = 0;
   List<int> bookmarks = [];
+
+  bool disableBookmarkButton = false;
 
   late ReaderController readerController;
   late InputController inputController =
@@ -81,6 +82,9 @@ class _MangaReaderState extends State<MangaReaderMobile> {
   Future<void> bookmark() async {
     final isBookmark =
         bookmarks.contains(readerController.getCurrentPages().first);
+    setState(() {
+      disableBookmarkButton = true;
+    });
     if (!isBookmark) {
       await DatabaseMangaHelpers.addBookmark(
           book: readerController.book.id ?? -1,
@@ -94,6 +98,7 @@ class _MangaReaderState extends State<MangaReaderMobile> {
     final bm = await getBookmarks();
     setState(() {
       bookmarks = bm;
+      disableBookmarkButton = false;
     });
   }
 
@@ -126,13 +131,8 @@ class _MangaReaderState extends State<MangaReaderMobile> {
     for (var i = 0; i < pageIndexes.length; i++) {
       pages.add(
         Expanded(
-          // flex: 1,
           child: GestureDetector(
-            // onPanEnd: handleDragEnd,
             onHorizontalDragEnd: handleDragEnd,
-            // onHorizontalDragEnd: (DragEndDetails details) {
-
-            // },
             child: SingleImage(
                 readerScrollController: null,
                 isDouble: readerController.getCurrentPages().length == 2,
@@ -151,6 +151,7 @@ class _MangaReaderState extends State<MangaReaderMobile> {
     final colorScheme = Theme.of(context).colorScheme;
     final isBookmark =
         bookmarks.contains(readerController.getCurrentPages().first);
+    final width = MediaQuery.of(context).size.width;
     return Focus(
       // This removes tab select for buttons in the screen to
       descendantsAreFocusable: false,
@@ -169,7 +170,7 @@ class _MangaReaderState extends State<MangaReaderMobile> {
             isNotBookmarkedColor: colorScheme.onPrimary,
             readerController: readerController,
             isBookmark: isBookmark,
-            bookmark: bookmark,
+            bookmark: disableBookmarkButton ? (){} : bookmark,
             set: setState),
         body: Row(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -186,14 +187,47 @@ class _MangaReaderState extends State<MangaReaderMobile> {
                   ),
                 ),
                 Positioned(
+                    width: width,
                     bottom: 0,
                     right: 0,
-                    child: CurrentPageIndexView(
-                      currentPages: readerController
-                          .getCurrentPages()
-                          .map((e) => e + 1)
-                          .join('-'),
-                      totalPages: readerController.pages.length.toString(),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      mainAxisSize: MainAxisSize.max,
+                      children: [
+                          // color: colorScheme.primary,
+                           Row(
+                            mainAxisSize: MainAxisSize.max,
+                            children: [
+                              IconButton(
+                                  onPressed: (){
+                                    setState(() {
+                                      readerController.decrementPage();
+                                    });
+                                  },
+                                  icon: Icon(
+                                    Icons.fast_rewind,
+                                    color: colorScheme.secondary,
+                                  )),
+                              IconButton(
+                                  onPressed: (){
+                                    setState(() {
+                                      readerController.incrementPage();
+                                    });
+                                  },
+                                  icon: Icon(
+                                    Icons.fast_forward,
+                                    color: colorScheme.secondary,
+                                  )),
+                            ],
+                          ),
+                        CurrentPageIndexView(
+                          currentPages: readerController
+                              .getCurrentPages()
+                              .map((e) => e + 1)
+                              .join('-'),
+                          totalPages: readerController.pages.length.toString(),
+                        )
+                      ],
                     ))
               ],
             ),

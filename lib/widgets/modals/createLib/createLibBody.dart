@@ -9,7 +9,6 @@ import 'package:mangakolekt/store/library.dart';
 import 'package:mangakolekt/util/database/databaseHelpers.dart';
 import 'package:mangakolekt/util/files.dart';
 import 'package:mangakolekt/util/util.dart';
-// import 'package:flutter/foundation.dart';
 
 class CreateLibBody extends StatefulWidget {
   final String selectedDir;
@@ -64,7 +63,6 @@ class CreateLibBodyState extends State<CreateLibBody> {
       if (!context.mounted) {
         return [];
       }
-      print(e);
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(
@@ -85,7 +83,7 @@ class CreateLibBodyState extends State<CreateLibBody> {
 
     final coversPathList = await startIsolate();
 
-    if (coversPathList == null) {
+    if (coversPathList == null || coversPathList.isEmpty) {
       return;
     }
 

@@ -1,4 +1,3 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:mangakolekt/controllers/archive.dart';
 import 'package:mangakolekt/locator.dart';
@@ -20,7 +19,7 @@ class CreateLibraryMobile extends StatelessWidget {
   void handleConfirm() async {
     final out = await getGlobalCoversDir();
     final res = await ArchiveController.unpackCovers(path, out);
-    if (res == null) {
+    if (res == null || res.isEmpty) {
       return;
     }
     await DatabaseMangaHelpers.addLibrary(
@@ -90,8 +89,6 @@ class CreateLibraryMobile extends StatelessWidget {
             child: ElevatedButton(
               style: ElevatedButton.styleFrom(
                   elevation: 0,
-                  // backgroundColor: colorScheme.tertiary,
-                  // minimumSize: Size.fromHeight(double.infinity),
                   shape: const BeveledRectangleBorder(),
                   side: BorderSide(color: colorScheme.secondary)),
               onPressed: () {},

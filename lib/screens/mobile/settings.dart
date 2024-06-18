@@ -23,7 +23,10 @@ class SettingsMobile extends StatelessWidget {
               ),
               SettingsCheckbox(
                 name: "doublePage",
-              )
+              ),
+              SettingsCheckbox(
+                name: "showControlBar",
+              ),
             ],
           ),
         ),
