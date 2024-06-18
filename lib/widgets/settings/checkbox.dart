@@ -13,13 +13,14 @@ class SettingsCheckbox extends StatefulWidget {
 
 class _SettingsCheckboxState extends State<SettingsCheckbox> {
   final _settingsService = locator<Settings>();
-  late final int? settingIndex;
+  late int? settingIndex = -1;
 
   @override
   void initState() {
-    // TODO: implement initState
-    settingIndex = _settingsService.getIndexByName(widget.name);
-
+    final _index = _settingsService.getIndexByName(widget.name);
+    if(_index != -1){
+      settingIndex = _index;
+    }
     super.initState();
   }
 
@@ -36,7 +37,7 @@ class _SettingsCheckboxState extends State<SettingsCheckbox> {
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
 
-    if (settingIndex == null ||
+    if (settingIndex == null || settingIndex! < 0 ||
         _settingsService.data[settingIndex!].value == null) {
       return const SizedBox.shrink();
     }

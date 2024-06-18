@@ -41,10 +41,10 @@ class AppWidget extends StatelessWidget {
         return pageRouteBuilderWrapper(settings, const SplashScreen());
       case "/settings":
         // return DialogRoute(context: , builder: builder)
-        return pageRouteBuilderWrapper(settings, const SettingsMobile());
+        return pageRouteBuilderWrapper(settings,  SettingsMobile());
       case "/help":
         // return DialogRoute(context: , builder: builder)
-        return pageRouteBuilderWrapper(settings, const SettingsMobile());
+        return pageRouteBuilderWrapper(settings,  SettingsMobile());
         break;
       case "/bookmarks":
         // return DialogRoute(context: , builder: builder)

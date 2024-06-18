@@ -61,6 +61,8 @@ class Settings {
           name: 'doublePage',
           description: 'Default to double page view',
           value: false),
+      Setting(
+          type: 'bool', name: "showControlBar", description: "Default to show UI reader control bar", value: false),
     ];
   }
 
@@ -129,7 +131,6 @@ class Settings {
     final settingsService = locator<Settings>();
     final path = (await getApplicationDocumentsDirectory()).path;
     final file = File(join(path, 'mangakolekt', 'settings.json'));
-
     if (!(await file.exists())) {
       await file.create();
       final _default = Settings.defaultConfig();
@@ -138,9 +139,20 @@ class Settings {
     }
 
     final fSettings = await load(file: file);
+    print("loading settings into mem");
     settingsService.data = fSettings;
   }
 
+  static Future<File> getSettingsFile()async{
+    final path = (await getApplicationDocumentsDirectory()).path;
+    final file = File(join(path, 'mangakolekt', 'settings.json'));
+    return file;
+  }
+
+  static Future<void> resetSettingsToDefault()async{
+    final file = await getSettingsFile();
+    await Settings.save(Settings.defaultConfig(), file: file);
+  }
   // Future<void> syncFile(String path) async {
   //   // save(settings, path)
   // }
@@ -154,6 +166,9 @@ class Settings {
   }
 
   int getIndexByName(String name) {
-    return data.indexWhere((element) => element.name == name);
+    return data.indexWhere((element) {
+      print("Looking for $name comparing to ${element.name}");
+      return element.name == name;
+    });
   }
 }

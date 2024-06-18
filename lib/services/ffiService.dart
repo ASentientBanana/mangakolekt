@@ -62,7 +62,7 @@ class FFIService {
       }
       final List<String> filesList = [];
 
-      (decodedList as Iterable).forEach((element) {
+      decodedList .forEach((element) {
         if(element != null){
           filesList.add(element);
         }
