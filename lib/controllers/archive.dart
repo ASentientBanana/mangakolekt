@@ -130,7 +130,6 @@ class ArchiveController {
   static Future<List<FFICoverOutputResult>?> unpackCovers(
       String pathToDir, String out) async {
     //create dirs
-    // final out = "/home/petar/Documents/mangakolekt/covers";
     final types = <String, Runner>{};
     final dir = Directory(pathToDir);
     if (!await dir.exists()) {
