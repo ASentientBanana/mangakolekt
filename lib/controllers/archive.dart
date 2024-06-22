@@ -3,9 +3,10 @@ import 'dart:io';
 
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
+import 'package:mangakolekt/controllers/types/rar.dart';
 import 'package:mangakolekt/controllers/types/zip.dart';
 import 'package:mangakolekt/models/book.dart';
-import 'package:mangakolekt/services/ffiService.dart';
+import 'package:mangakolekt/models/ffi.dart';
 import 'package:mangakolekt/util/files.dart';
 import 'package:mangakolekt/util/util.dart';
 import 'package:path/path.dart' as p;
@@ -13,7 +14,7 @@ import 'package:path/path.dart' as p;
 abstract class BaseBookController {
   bool checkType(String type);
   Future<void> unpack(String pathToBook, String dest);
-  Future<List<String>> unpackCovers(String pathToDir,
+  Future<List<FFICoverOutputResult>> unpackCovers(String pathToDir,
       {required List<String> files, required String out});
 }
 
@@ -31,7 +32,10 @@ class Runner {
 
 class ArchiveController {
   // Add controllers for the file types
-  static List<BaseBookController> controllers = [ZipBookController()];
+  static List<BaseBookController> controllers = [
+    ZipBookController(),
+    RarBookController(),
+  ];
 
   static BaseBookController? getTypeController(String type) {
     for (var controller in ArchiveController.controllers) {
@@ -50,7 +54,7 @@ class ArchiveController {
     final String id = args[3];
     final controller = ArchiveController.getTypeController(type);
     if (controller == null) {
-      return null;
+      throw Error.safeToString('Unsupported file type selected.');
     }
     //unzip to the current dir.
     await controller.unpack(pathToBook, dest);
@@ -60,7 +64,7 @@ class ArchiveController {
     // return null;
   }
 
-  static Future<List<String>> _loadPagesRecursive(String dirPath) async {
+  static Future<List<String>> loadPagesRecursive(String dirPath) async {
     final dir = Directory(dirPath);
     if (!await dir.exists()) {
       return [];
@@ -87,7 +91,7 @@ class ArchiveController {
     dContents.addAll(files);
 
     for (var i = 0; i < dirs.length; i++) {
-      final res = await _loadPagesRecursive(dirs[i]);
+      final res = await loadPagesRecursive(dirs[i]);
       dContents.addAll(res);
     }
     return dContents;
@@ -98,8 +102,7 @@ class ArchiveController {
     // List<String> _pages = await compute((message) async {
     // return await _loadPagesRecursive(message);
     // }, target);
-    print("`Looking in`: $target");
-    final _pages = await _loadPagesRecursive(target);
+    final _pages = await loadPagesRecursive(target);
     _pages.sort(compareNatural);
     // // _pages = sortNumeric(_pages);
 
@@ -124,18 +127,19 @@ class ArchiveController {
         path: pathToBook);
   }
 
-  static Future<List<String>?> unpackCovers(
-      String pathToDir, List<String>? files) async {
+  static Future<List<FFICoverOutputResult>?> unpackCovers(
+      String pathToDir, String out) async {
     //create dirs
-    final out = await getGlobalCoversDir();
-
+    // final out = "/home/petar/Documents/mangakolekt/covers";
     final types = <String, Runner>{};
     final dir = Directory(pathToDir);
     if (!await dir.exists()) {
       return [];
     }
+
     // get a list of files
-    final _files = files ?? (await FFIService.ffiGetDirContents(pathToDir));
+    // final _files = files ?? (await FFIService.ffiGetDirContents(pathToDir));
+    final _files = (await getFilesFromDir(dir));
     //Build map of types
     for (var element in _files) {
       final type = p.extension(element).substring(1);
@@ -154,7 +158,7 @@ class ArchiveController {
     }
 
     //Create covers list and add all the covers
-    final List<String> allCovers = [];
+    final List<FFICoverOutputResult> allCovers = [];
     for (var key in types.keys) {
       if (types[key] == null) {
         continue;
@@ -162,7 +166,7 @@ class ArchiveController {
       final covers = await types[key]
           ?.controller
           .unpackCovers(pathToDir, files: types[key]?.files ?? [], out: out);
-      print(covers);
+
       if (covers != null) {
         allCovers.addAll(covers);
       }

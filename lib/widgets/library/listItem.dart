@@ -1,20 +1,20 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:mangakolekt/bloc/library/library_bloc.dart';
-import 'package:mangakolekt/constants.dart';
-import 'package:mangakolekt/models/book.dart';
-import 'package:mangakolekt/util/database/database_helpers.dart';
-import 'package:path/path.dart' as p;
-import 'package:mangakolekt/util/lib.dart';
-import 'package:path_provider/path_provider.dart';
+import 'package:mangakolekt/controllers/archive.dart';
+import 'package:mangakolekt/locator.dart';
+import 'package:mangakolekt/models/library.dart';
+import 'package:mangakolekt/services/navigationService.dart';
+import 'package:mangakolekt/store/library.dart';
+import 'package:mangakolekt/util/database/databaseHelpers.dart';
+import 'package:mangakolekt/util/files.dart';
+import 'package:mangakolekt/util/platform.dart';
 
 class LibListItem extends StatefulWidget {
-  final BookCover item;
+  final LibraryElement item;
   final int index;
 
-  const LibListItem({Key? key, required this.item, required this.index})
+  final libraryStore = locator<LibraryStore>();
+
+  LibListItem({Key? key, required this.item, required this.index})
       : super(key: key);
 
   @override
@@ -22,20 +22,44 @@ class LibListItem extends StatefulWidget {
 }
 
 class _LibListItemState extends State<LibListItem> {
-  void handleDeleteFromLib(BuildContext context) async {
-    await deleteLib(widget.item.path);
-    DatabaseMangaHelpers.deleteManga(widget.item.id).then((value) {
-      context.read<LibraryBloc>().add(RemoveBook(id: widget.item.id));
-    });
+  final libraryStore = locator<LibraryStore>();
+  final _navigationService = locator<NavigationService>();
+
+  Future<void> handleDeleteFromLib(bool shouldSetList) async {
+    final deletedPaths =
+        await DatabaseMangaHelpers.deleteLibrary(widget.item.id);
+    await deleteFiles(deletedPaths);
+
+    final newList = [...libraryStore.library];
+    newList.removeWhere((element) => element.id == widget.item.id);
+    libraryStore.setLibrary(newList);
+    libraryStore.selectCover(null);
   }
 
   Future<void> handleRefreshLib(BuildContext context) async {
+    final name = widget.item.name;
+    final path = widget.item.path;
+    // final path = widget.item.books.first.path;
+    final out = await getGlobalCoversDir();
+
+    final res = await ArchiveController.unpackCovers(widget.item.path, out);
+
     if (!context.mounted) {
       return;
     }
-    final mangaList = await refreshLib(item: widget.item);
-    if (mangaList != null) {
-      context.read<LibraryBloc>().add(SetLibs(libs: mangaList));
+    await handleDeleteFromLib(false);
+
+    if (res == null) {
+      return;
+    }
+
+    // Add manga to Manga table in db
+    await DatabaseMangaHelpers.addLibrary(
+        libraryPath: path, name: name, books: res);
+    final mangaList = await DatabaseMangaHelpers.getAllBooksFromLibrary();
+
+    if (mangaList.isNotEmpty) {
+      libraryStore.setLibrary(mangaList);
     }
   }
 
@@ -45,6 +69,7 @@ class _LibListItemState extends State<LibListItem> {
       final theme = Theme.of(context);
       final GlobalKey _menuKey = GlobalKey();
       return Row(
+        mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Container(
             height: 40,
@@ -56,9 +81,10 @@ class _LibListItemState extends State<LibListItem> {
                 constraints.maxWidth * (constraints.maxWidth > 130 ? 0.7 : 0.5),
             child: OutlinedButton(
               onPressed: () async {
-                context.read<LibraryBloc>().add(
-                      SetCover(cover: widget.item),
-                    );
+                libraryStore.selectCover(widget.index);
+                if (isMobile()) {
+                  _navigationService.navigateTo('/grid', null);
+                }
               },
               child: Center(
                 child: Text(
@@ -81,7 +107,7 @@ class _LibListItemState extends State<LibListItem> {
             itemBuilder: (context) => [
               PopupMenuItem<String>(
                 child: const Text("Delete"),
-                onTap: () => handleDeleteFromLib(context),
+                onTap: () => handleDeleteFromLib(true),
               ),
               PopupMenuItem<String>(
                 child: const Text("Refresh"),

@@ -1934,9 +1934,8 @@ class NativeLibrary {
   }
 
   late final _erand48Ptr = _lookup<
-          ffi
-          .NativeFunction<ffi.Double Function(ffi.Pointer<ffi.UnsignedShort>)>>(
-      'erand48');
+      ffi.NativeFunction<
+          ffi.Double Function(ffi.Pointer<ffi.UnsignedShort>)>>('erand48');
   late final _erand48 =
       _erand48Ptr.asFunction<double Function(ffi.Pointer<ffi.UnsignedShort>)>();
 
@@ -1957,9 +1956,8 @@ class NativeLibrary {
   }
 
   late final _nrand48Ptr = _lookup<
-          ffi
-          .NativeFunction<ffi.Long Function(ffi.Pointer<ffi.UnsignedShort>)>>(
-      'nrand48');
+      ffi.NativeFunction<
+          ffi.Long Function(ffi.Pointer<ffi.UnsignedShort>)>>('nrand48');
   late final _nrand48 =
       _nrand48Ptr.asFunction<int Function(ffi.Pointer<ffi.UnsignedShort>)>();
 
@@ -1980,9 +1978,8 @@ class NativeLibrary {
   }
 
   late final _jrand48Ptr = _lookup<
-          ffi
-          .NativeFunction<ffi.Long Function(ffi.Pointer<ffi.UnsignedShort>)>>(
-      'jrand48');
+      ffi.NativeFunction<
+          ffi.Long Function(ffi.Pointer<ffi.UnsignedShort>)>>('jrand48');
   late final _jrand48 =
       _jrand48Ptr.asFunction<int Function(ffi.Pointer<ffi.UnsignedShort>)>();
 
@@ -2023,9 +2020,8 @@ class NativeLibrary {
   }
 
   late final _lcong48Ptr = _lookup<
-          ffi
-          .NativeFunction<ffi.Void Function(ffi.Pointer<ffi.UnsignedShort>)>>(
-      'lcong48');
+      ffi.NativeFunction<
+          ffi.Void Function(ffi.Pointer<ffi.UnsignedShort>)>>('lcong48');
   late final _lcong48 =
       _lcong48Ptr.asFunction<void Function(ffi.Pointer<ffi.UnsignedShort>)>();
 
@@ -2213,9 +2209,8 @@ class NativeLibrary {
   }
 
   late final _arc4random_bufPtr = _lookup<
-          ffi
-          .NativeFunction<ffi.Void Function(ffi.Pointer<ffi.Void>, ffi.Int)>>(
-      'arc4random_buf');
+      ffi.NativeFunction<
+          ffi.Void Function(ffi.Pointer<ffi.Void>, ffi.Int)>>('arc4random_buf');
   late final _arc4random_buf = _arc4random_bufPtr
       .asFunction<void Function(ffi.Pointer<ffi.Void>, int)>();
 
@@ -3021,9 +3016,8 @@ class NativeLibrary {
   }
 
   late final _getloadavgPtr = _lookup<
-          ffi
-          .NativeFunction<ffi.Int Function(ffi.Pointer<ffi.Double>, ffi.Int)>>(
-      'getloadavg');
+      ffi.NativeFunction<
+          ffi.Int Function(ffi.Pointer<ffi.Double>, ffi.Int)>>('getloadavg');
   late final _getloadavg =
       _getloadavgPtr.asFunction<int Function(ffi.Pointer<ffi.Double>, int)>();
 
@@ -3722,9 +3716,8 @@ class NativeLibrary {
   }
 
   late final _strerror_lPtr = _lookup<
-          ffi
-          .NativeFunction<ffi.Pointer<ffi.Char> Function(ffi.Int, locale_t)>>(
-      'strerror_l');
+      ffi.NativeFunction<
+          ffi.Pointer<ffi.Char> Function(ffi.Int, locale_t)>>('strerror_l');
   late final _strerror_l = _strerror_lPtr
       .asFunction<ffi.Pointer<ffi.Char> Function(int, locale_t)>();
 
@@ -3777,9 +3770,8 @@ class NativeLibrary {
   }
 
   late final _bzeroPtr = _lookup<
-          ffi
-          .NativeFunction<ffi.Void Function(ffi.Pointer<ffi.Void>, ffi.Int)>>(
-      'bzero');
+      ffi.NativeFunction<
+          ffi.Void Function(ffi.Pointer<ffi.Void>, ffi.Int)>>('bzero');
   late final _bzero =
       _bzeroPtr.asFunction<void Function(ffi.Pointer<ffi.Void>, int)>();
 
@@ -3941,9 +3933,8 @@ class NativeLibrary {
   }
 
   late final _explicit_bzeroPtr = _lookup<
-          ffi
-          .NativeFunction<ffi.Void Function(ffi.Pointer<ffi.Void>, ffi.Int)>>(
-      'explicit_bzero');
+      ffi.NativeFunction<
+          ffi.Void Function(ffi.Pointer<ffi.Void>, ffi.Int)>>('explicit_bzero');
   late final _explicit_bzero = _explicit_bzeroPtr
       .asFunction<void Function(ffi.Pointer<ffi.Void>, int)>();
 
@@ -4113,7 +4104,27 @@ class NativeLibrary {
       ffi.Pointer<ffi.Char> Function(ffi.Pointer<ffi.Char>,
           ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Char>)>();
 
-  ffi.Pointer<ffi.Char> Unzip_Single_book(
+  ffi.Pointer<ffi.Char> Unrar_Covers(
+    ffi.Pointer<ffi.Char> _files,
+    ffi.Pointer<ffi.Char> _path,
+    ffi.Pointer<ffi.Char> _output,
+  ) {
+    return _Unrar_Covers(
+      _files,
+      _path,
+      _output,
+    );
+  }
+
+  late final _Unrar_CoversPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Pointer<ffi.Char> Function(ffi.Pointer<ffi.Char>,
+              ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Char>)>>('Unrar_Covers');
+  late final _Unrar_Covers = _Unrar_CoversPtr.asFunction<
+      ffi.Pointer<ffi.Char> Function(ffi.Pointer<ffi.Char>,
+          ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Char>)>();
+
+  void Unzip_Single_book(
     ffi.Pointer<ffi.Char> _filePath,
     ffi.Pointer<ffi.Char> _dest,
   ) {
@@ -4125,40 +4136,27 @@ class NativeLibrary {
 
   late final _Unzip_Single_bookPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Pointer<ffi.Char> Function(ffi.Pointer<ffi.Char>,
+          ffi.Void Function(ffi.Pointer<ffi.Char>,
               ffi.Pointer<ffi.Char>)>>('Unzip_Single_book');
   late final _Unzip_Single_book = _Unzip_Single_bookPtr.asFunction<
-      ffi.Pointer<ffi.Char> Function(
-          ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Char>)>();
+      void Function(ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Char>)>();
 
-  void Check_For_Lib_dir(
-    ffi.Pointer<ffi.Char> _path,
+  void Unrar_Single_book(
+    ffi.Pointer<ffi.Char> _filePath,
+    ffi.Pointer<ffi.Char> _dest,
   ) {
-    return _Check_For_Lib_dir(
-      _path,
+    return _Unrar_Single_book(
+      _filePath,
+      _dest,
     );
   }
 
-  late final _Check_For_Lib_dirPtr =
-      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<ffi.Char>)>>(
-          'Check_For_Lib_dir');
-  late final _Check_For_Lib_dir =
-      _Check_For_Lib_dirPtr.asFunction<void Function(ffi.Pointer<ffi.Char>)>();
-
-  ffi.Pointer<ffi.Char> Get_Files_From_Dir(
-    ffi.Pointer<ffi.Char> _path,
-  ) {
-    return _Get_Files_From_Dir(
-      _path,
-    );
-  }
-
-  late final _Get_Files_From_DirPtr = _lookup<
+  late final _Unrar_Single_bookPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Pointer<ffi.Char> Function(
-              ffi.Pointer<ffi.Char>)>>('Get_Files_From_Dir');
-  late final _Get_Files_From_Dir = _Get_Files_From_DirPtr.asFunction<
-      ffi.Pointer<ffi.Char> Function(ffi.Pointer<ffi.Char>)>();
+          ffi.Void Function(ffi.Pointer<ffi.Char>,
+              ffi.Pointer<ffi.Char>)>>('Unrar_Single_book');
+  late final _Unrar_Single_book = _Unrar_Single_bookPtr.asFunction<
+      void Function(ffi.Pointer<ffi.Char>, ffi.Pointer<ffi.Char>)>();
 }
 
 final class __fsid_t extends ffi.Struct {
@@ -4632,8 +4630,8 @@ final class GoSlice extends ffi.Struct {
   external int cap;
 }
 
-typedef GoInt = GoInt32;
-typedef GoInt32 = ffi.Int;
+typedef GoInt = GoInt64;
+typedef GoInt64 = ffi.LongLong;
 
 const int _STDIO_H = 1;
 

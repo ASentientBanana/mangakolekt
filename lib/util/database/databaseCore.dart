@@ -1,7 +1,7 @@
 import 'dart:io';
 
-import 'package:mangakolekt/constants.dart';
-import 'package:mangakolekt/util/database/database_table.dart';
+import 'package:mangakolekt/models/global.dart';
+import 'package:mangakolekt/util/database/databaseTable.dart';
 import 'package:mangakolekt/util/database/table_definitions.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
@@ -13,7 +13,7 @@ class DatabaseCore {
   static Future<void> initDatabase() async {
     sqfliteFfiInit();
     final appDocumentDir = await getApplicationDocumentsDirectory();
-    final dbPath = p.join(appDocumentDir.path, appFolder, dbName);
+    final dbPath = p.join(appDocumentDir.path, mangaDirName, databaseName);
     final fDb = File(dbPath);
 
     if (!await fDb.exists()) {
@@ -31,7 +31,7 @@ class DatabaseCore {
 
   static Future<Database> openDB() async {
     final appDocumentDir = await getApplicationDocumentsDirectory();
-    final dbPath = p.join(appDocumentDir.path, appFolder, dbName);
+    final dbPath = p.join(appDocumentDir.path, mangaDirName, databaseName);
     var databaseFactory = databaseFactoryFfi;
 
     var db = await databaseFactory.openDatabase(dbPath);
@@ -44,7 +44,7 @@ class DatabaseCore {
       required Map<String, Object?> data,
       bool returnTable = false}) async {
     final appDocumentDir = await getApplicationDocumentsDirectory();
-    final dbPath = p.join(appDocumentDir.path, appFolder, dbName);
+    final dbPath = p.join(appDocumentDir.path, mangaDirName, databaseName);
     var databaseFactory = databaseFactoryFfi;
 
     var db = await databaseFactory.openDatabase(dbPath);
@@ -80,7 +80,7 @@ class DatabaseCore {
   static Future<List<Map<String, Object?>>> readFromDB(
       {required String query}) async {
     final appDocumentDir = await getApplicationDocumentsDirectory();
-    final dbPath = p.join(appDocumentDir.path, appFolder, dbName);
+    final dbPath = p.join(appDocumentDir.path, mangaDirName, databaseName);
     var databaseFactory = databaseFactoryFfi;
 
     var db = await databaseFactory.openDatabase(dbPath);
@@ -97,7 +97,7 @@ class DatabaseCore {
       List<Object>? args,
       String? orderBy}) async {
     final appDocumentDir = await getApplicationDocumentsDirectory();
-    final dbPath = p.join(appDocumentDir.path, appFolder, dbName);
+    final dbPath = p.join(appDocumentDir.path, mangaDirName, databaseName);
     var databaseFactory = databaseFactoryFfi;
 
     var db = await databaseFactory.openDatabase(dbPath);
@@ -114,7 +114,7 @@ class DatabaseCore {
       required String path,
       bool returnTable = false}) async {
     final appDocumentDir = await getApplicationDocumentsDirectory();
-    final dbPath = p.join(appDocumentDir.path, appFolder, dbName);
+    final dbPath = p.join(appDocumentDir.path, mangaDirName, databaseName);
     var databaseFactory = databaseFactoryFfi;
     var db = await databaseFactory.openDatabase(dbPath);
 

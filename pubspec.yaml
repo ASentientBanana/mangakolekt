@@ -40,21 +40,27 @@ dependencies:
     sdk: flutter
   flutter_bloc: ^8.0.0
   flutter_colorpicker: ^1.0.3
+  flutter_file_dialog: ^3.0.2
+  flutter_mobx: ^2.2.1+1
   get_it: ^7.6.4
   image: ^4.1.3
   isolate_pool_2: ^1.0.4
   menu_bar: ^0.5.3
+  mobx: ^2.3.3+2
   path: ^1.8.3
   path_provider: ^2.0.12
   permission_handler: ^11.0.1
   sqflite_common_ffi: ^2.3.0+2
   sqlite3_flutter_libs: ^0.5.20
+  url_launcher: ^6.2.4
   uuid: ^3.0.7
-  vm_service: ^11.5.0
+  vm_service: ^13.0.0
   yaml: ^3.1.1
 
 dev_dependencies:
   ffigen: ^9.0.1
+  build_runner: ^2.4.9
+  mobx_codegen: ^2.6.1
   flutter_lints: ^2.0.0
   flutter_test:
     sdk: flutter
@@ -110,4 +116,4 @@ ffigen:
   output: "lib/generated/archive_ffi.dart"
   headers:
     entry-points:
-      - "./unzip/build/linux/manga_archive.h"
+      - "./unzip/build/linux/amd64/manga_archive.h"

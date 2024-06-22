@@ -8,7 +8,7 @@ class BookmarkElement extends StatefulWidget {
   final Bookmark bookmarkItem;
   final BookmarksData bookData;
   final void Function(int, int) deleteBookmarkCb;
-  BookmarkElement(
+  const BookmarkElement(
       {Key? key,
       required this.bookmarkItem,
       required this.bookData,
@@ -22,6 +22,7 @@ class BookmarkElement extends StatefulWidget {
 class _BookmarkElementState extends State<BookmarkElement> {
   final _navigationService = locator<NavigationService>();
   bool _isLoading = false;
+
   String formatDateTime(DateTime dateTime) {
     return "${dateTime.hour}:${dateTime.minute}/${dateTime.day}.${dateTime.month}.${dateTime.year}";
   }
@@ -34,11 +35,23 @@ class _BookmarkElementState extends State<BookmarkElement> {
     super.dispose();
   }
 
+  void handleDelete() async {
+    print(widget.bookmarkItem.id);
+    print(widget.bookData.path);
+    setState(() {
+      _isLoading = true;
+    });
+    widget.deleteBookmarkCb(widget.bookmarkItem.id, widget.bookmarkItem.page);
+  }
+
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
+    final screenWidth = MediaQuery.of(context).size.width;
+    final isWide = screenWidth > 900;
     return Container(
       padding: const EdgeInsets.only(left: 15),
+      height: isWide ? 30 : 90,
       decoration: BoxDecoration(
         border: Border(
           bottom: BorderSide(
@@ -54,19 +67,25 @@ class _BookmarkElementState extends State<BookmarkElement> {
                   : () {
                       _navigationService.pushAndPop('/reader', {
                         "initialPage": widget.bookmarkItem.page,
-                        "path": join(
-                            widget.bookData.path, widget.bookmarkItem.book),
+                        "path": join(widget.bookData.path),
                         "id": widget.bookData.id,
                       });
                     },
-              child: Row(
+              child: Flex(
+                direction: isWide ? Axis.horizontal : Axis.vertical,
+                crossAxisAlignment: isWide
+                    ? CrossAxisAlignment.start
+                    : CrossAxisAlignment.start,
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  SizedBox(
-                    width: 150,
-                    child: Text(
-                      widget.bookmarkItem.book,
-                      overflow: TextOverflow.ellipsis,
+                  Tooltip(
+                    message: widget.bookmarkItem.book,
+                    child: SizedBox(
+                      width: 150,
+                      child: Text(
+                        widget.bookmarkItem.book,
+                        overflow: TextOverflow.ellipsis,
+                      ),
                     ),
                   ),
                   Text("Page: ${widget.bookmarkItem.page + 1}"),
@@ -80,10 +99,13 @@ class _BookmarkElementState extends State<BookmarkElement> {
               ),
             ),
           ),
-          const SizedBox(
-            width: 15,
-          ),
+          isWide
+              ? const SizedBox.shrink()
+              : const SizedBox(
+                  width: 15,
+                ),
           Container(
+            height: isWide ? 30 : 90,
             decoration: BoxDecoration(
               border: Border(
                 left: BorderSide(
@@ -93,15 +115,7 @@ class _BookmarkElementState extends State<BookmarkElement> {
               ),
             ),
             child: ElevatedButton(
-                onPressed: _isLoading
-                    ? null
-                    : () {
-                        setState(() {
-                          _isLoading = true;
-                          widget.deleteBookmarkCb(
-                              widget.bookData.id, widget.bookmarkItem.page);
-                        });
-                      },
+                onPressed: _isLoading ? null : handleDelete,
                 child: const Icon(Icons.delete)),
           ),
         ],

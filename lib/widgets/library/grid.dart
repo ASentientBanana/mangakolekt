@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:mangakolekt/bloc/library/library_bloc.dart';
-import 'package:mangakolekt/models/book.dart';
-import 'package:mangakolekt/util/database/database_helpers.dart';
+import 'package:mangakolekt/locator.dart';
+import 'package:mangakolekt/store/library.dart';
+import 'package:mangakolekt/util/util.dart';
 import 'package:mangakolekt/widgets/dragAndDropManga.dart';
-import 'package:mangakolekt/widgets/library/grid_item.dart';
+import 'package:mangakolekt/widgets/library/gridItem.dart';
+import 'package:flutter_mobx/flutter_mobx.dart';
 
 class LibGrid extends StatefulWidget {
   const LibGrid({super.key});
@@ -14,8 +14,7 @@ class LibGrid extends StatefulWidget {
 }
 
 class _LibGridState extends State<LibGrid> {
-  Future<List<BookCover>> _title = Future(() => []);
-  String search = '';
+  final libraryStore = locator<LibraryStore>();
   int? id;
 
   int calculateSize(double w) {
@@ -32,80 +31,49 @@ class _LibGridState extends State<LibGrid> {
   }
 
   List<Widget> filterList(String _search, List<GridItem> list) {
-    if (search.isEmpty) {
+    if (libraryStore.searchTerm.isEmpty) {
       return list;
     }
     return list
-        .where((element) =>
-            element.item.name.toLowerCase().contains(search.toLowerCase()))
+        .where((element) => element.item.name
+            .toLowerCase()
+            .contains(libraryStore.searchTerm.toLowerCase()))
         .toList();
   }
 
-  bool listenWhenGuard(LibraryState previous, LibraryState current) {
-    if (previous is! LibraryLoaded || current is! LibraryLoaded) {
-      return false;
-    }
-    if (previous.search != current.search) {
-      return true;
-    }
-    if (previous.libStore != current.libStore) {
-      return true;
-    }
-    return false;
-  }
-
-  void listenerCb(BuildContext context, LibraryState state) {
-    if ((state is! LibraryLoaded)) {
-      return;
-    }
-    if (search != state.search) {
-      setState(() {
-        search = state.search;
-      });
-    }
-
-    if (id != state.libStore.cover.id) {
-      setState(() {
-        id = state.libStore.cover.id;
-        _title =
-            DatabaseMangaHelpers.getCoversFromMangaMap(state.libStore.cover.id);
-      });
-    }
-  }
+  // Widget observerBuilderHandler(BuildContext context, String term) {}
 
   @override
   Widget build(BuildContext context) {
-    double width = MediaQuery.of(context).size.width;
-
     return Container(
       // color: Colors.orange,
       padding: const EdgeInsets.all(30),
-      child: BlocListener<LibraryBloc, LibraryState>(
-        listenWhen: listenWhenGuard,
-        listener: listenerCb,
-        child: FutureBuilder(
-          builder: (context, snapshot) {
-            if (snapshot.hasData && snapshot.data!.isNotEmpty) {
-              var l = snapshot.data!.map((e) {
-                return GridItem(item: e);
-              }).toList();
+      child: Observer(builder: (context) {
+        double width = MediaQuery.of(context).size.width;
 
-              return Scrollbar(
-                  radius: Radius.zero,
-                  child: GridView.count(
-                    primary: true,
-                    crossAxisCount: calculateSize(width),
-                    mainAxisSpacing: 100,
-                    crossAxisSpacing: 10,
-                    children: filterList(search, l),
-                  ));
-            } else {
-              return DragAndDropSurface();
-            }
-          },
-          future: _title,
-        ),
-      ),
+        if (libraryStore.library.isEmpty) {
+          return DragAndDropSurface();
+        }
+
+        if (libraryStore.selectedCoverIndex == null) {
+          return DragAndDropSurface();
+        }
+
+        final covers = libraryStore.library[libraryStore.selectedCoverIndex!];
+        final gridItems = sortCoversNumeric(covers.books)
+            .map((e) => GridItem(item: e))
+            .toList();
+        return Scrollbar(
+          radius: Radius.zero,
+          child: GridView.count(
+            primary: true,
+            crossAxisCount: calculateSize(width),
+            mainAxisSpacing: 100,
+            crossAxisSpacing: 10,
+            children: filterList(libraryStore.searchTerm, gridItems),
+          ),
+        );
+      }),
     );
   }
 }

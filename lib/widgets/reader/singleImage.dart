@@ -6,8 +6,10 @@ class SingleImage extends StatefulWidget {
   final ScaleTo scaleTo;
   final int index;
   final bool isDouble;
+  final ScrollController? readerScrollController;
   const SingleImage(
       {super.key,
+      required this.readerScrollController,
       required this.isDouble,
       required this.image,
       required this.scaleTo,
@@ -18,13 +20,18 @@ class SingleImage extends StatefulWidget {
 }
 
 class _SingleImageState extends State<SingleImage> {
-  final _imageScrollController = ScrollController();
-
   @override
-  void dispose() {
-    _imageScrollController.dispose();
-    super.dispose();
-  }
+  // void initState() {
+  //   // TODO: implement initState
+  //   _imageScrollController = widget.readerScrollController;
+  //   super.initState();
+  // }
+
+  // @override
+  // void dispose() {
+  //   widget.readerScrollController.dispose();
+  //   super.dispose();
+  // }
 
   Alignment setAliment(bool isDouble, int index) {
     if (!isDouble) {
@@ -38,9 +45,12 @@ class _SingleImageState extends State<SingleImage> {
   Widget build(BuildContext context) {
     //Check scaling type
     if (!widget.isDouble && widget.scaleTo == ScaleTo.width) {
-      return SingleChildScrollView(
-        controller: _imageScrollController,
-        child: Image(image: widget.image.image, fit: BoxFit.cover),
+      return Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 14),
+        child: SingleChildScrollView(
+          controller: widget.readerScrollController,
+          child: Image(image: widget.image.image, fit: BoxFit.cover),
+        ),
       );
     }
     return Container(

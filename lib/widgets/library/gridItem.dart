@@ -19,7 +19,7 @@ class _GridItemState extends State<GridItem> with TickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
+    // final colorScheme = Theme.of(context).colorScheme;
     return GridTile(
       footer: Center(
         child: Container(

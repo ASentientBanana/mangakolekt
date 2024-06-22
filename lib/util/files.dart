@@ -1,8 +1,7 @@
-import 'dart:convert';
 import 'dart:io';
 import 'package:file_picker/file_picker.dart';
-import 'package:mangakolekt/models/bloc/theme.dart';
-import 'package:path_provider/path_provider.dart';
+import 'package:mangakolekt/models/global.dart';
+import 'package:path_provider/path_provider.dart' as pp;
 import '../constants.dart';
 import 'package:path/path.dart' as p;
 
@@ -18,22 +17,21 @@ Future<String?> pickFile() async {
   return null;
 }
 
-Future<void> createAppDB() async {
-  // on linux its '/home/petar/Documents'
-  final appDocumentDir = await getApplicationDocumentsDirectory();
-  final mapFile = File(p.join(appDocumentDir.path, appFolder, appMapFile));
-  if (!(await mapFile.exists())) {
-    await mapFile.create(recursive: true);
+Future<void> createAppFolder() async {
+  final appDocDir = (await pp.getApplicationDocumentsDirectory()).path;
+
+  final appDir = Directory(p.join(appDocDir, mangaDirName));
+  if (!(await appDir.exists())) {
+    await appDir.create(recursive: true);
   }
 }
-
-typedef Callback = void Function();
-
-Future<void> registerBookToLib(String libPath, bookPath) async {}
 
 Future<int> getNumberOfFiles(String path) async {
   final dir = Directory(path);
   int filesCount = 0;
+  if (!(await dir.exists())) {
+    return filesCount;
+  }
   final contents = await dir.list().toList();
   final len = contents.length;
   for (var i = 0; i < len; i++) {
@@ -46,52 +44,22 @@ Future<int> getNumberOfFiles(String path) async {
 }
 
 Future<void> createLogFile() async {
-  final dirPath = await getApplicationDocumentsDirectory();
-  final f = File(p.join(dirPath.path, appFolder, logFilePath));
+  final appDocDir = (await pp.getApplicationDocumentsDirectory()).path;
+
+  final f = File(p.join(appDocDir, mangaDirName, logFilePath));
   if (!(await f.exists())) {
     await f.create();
   }
 }
 
 Future<void> log(String msg) async {
-  final logPath = p.join(appFolder, logFilePath);
-}
-
-Future<List<ThemeStore>> readThemeFile() async {
-  final dirPath = await getApplicationDocumentsDirectory();
-  final filePath = p.join(dirPath.path, appFolder, themeFileName);
-  var input = await File(filePath).readAsString();
-  Map<String, dynamic> map = jsonDecode(input);
-  List<dynamic> themes = map['themes'];
-  return themes.map((e) => ThemeStore.fromJSON(e)).toList();
-}
-
-Future<List<ThemeStore>> createThemeFile() async {
-  final dirPath = await getApplicationDocumentsDirectory();
-  final filePath = p.join(dirPath.path, appFolder, themeFileName);
-
-  final f = await File(filePath).create(recursive: true);
-  final themes = ThemeStore.generateDefaultThemes();
-
-  await f.writeAsString(
-      '{ "current": 0, "themes":[${themes.map((e) => jsonEncode(e.toJSON())).join(',')} ]}');
-
-  return themes;
-}
-
-Future<List<ThemeStore>> checkThemeFile() async {
-  final dirPath = await getApplicationDocumentsDirectory();
-  final filePath = p.join(dirPath.path, appFolder, themeFileName);
-  if (await File(filePath).exists()) {
-    return await readThemeFile();
-  } else {
-    return await createThemeFile();
-  }
+  final logPath = p.join(mangaDirName, logFilePath);
 }
 
 Future<String> getCurrentDirPath() async {
-  final dirPath = await getApplicationDocumentsDirectory();
-  return p.join(dirPath.path, appFolder, currentFolder);
+  final appDocDir = (await pp.getApplicationDocumentsDirectory()).path;
+
+  return p.join(appDocDir, mangaDirName, currentDirName);
 }
 
 Future<void> createCurrentDir() async {
@@ -102,8 +70,9 @@ Future<void> createCurrentDir() async {
 }
 
 Future<void> createGlobalCoversDir() async {
-  final appDocs = await getApplicationDocumentsDirectory();
-  final path = p.join(appDocs.path, 'covers');
+  final appDocDir = (await pp.getApplicationDocumentsDirectory()).path;
+
+  final path = p.join(appDocDir, mangaDirName, coversDirName);
   final d = Directory(path);
   if (!(await d.exists())) {
     await d.create();
@@ -111,14 +80,14 @@ Future<void> createGlobalCoversDir() async {
 }
 
 Future<String> getGlobalCoversDir() async {
-  final appDocs = await getApplicationDocumentsDirectory();
-  final path = p.join(appDocs.path, 'covers');
+  final appDocDir = (await pp.getApplicationDocumentsDirectory()).path;
+  final path = p.join(appDocDir, mangaDirName, coversDirName);
   return path;
 }
 
 Future<void> emptyCurrentDir() async {
-  final dirPath = await getApplicationDocumentsDirectory();
-  final path = p.join(dirPath.path, appFolder, currentFolder);
+  final appDocDir = (await pp.getApplicationDocumentsDirectory()).path;
+  final path = p.join(appDocDir, mangaDirName, currentDirName);
   final d = Directory(path);
   if (!(await d.exists())) {
     await d.create();
@@ -131,11 +100,16 @@ Future<void> emptyCurrentDir() async {
 Future<List<String>> getFilesFromDir(Directory dir) async {
   final list = await dir.list().toList();
   final List<String> files = [];
-  print("Number of files ${list.length} in ${dir.path}");
   for (var i = 0; i < list.length; i++) {
     if ((await list[i].stat()).type == FileSystemEntityType.file) {
       files.add(list[i].path);
     }
   }
   return files;
+}
+
+Future<void> deleteFiles(List<String> files) async {
+  for (var file in files) {
+    await File(file).delete();
+  }
 }

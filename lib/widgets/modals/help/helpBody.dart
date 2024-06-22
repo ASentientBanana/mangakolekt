@@ -2,11 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:mangakolekt/locator.dart';
 import 'package:mangakolekt/services/navigationService.dart';
 import 'package:mangakolekt/widgets/buttons/squareButton.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class HelpBody extends StatelessWidget {
   HelpBody({Key? key}) : super(key: key);
   final _navigationService = locator<NavigationService>();
-
+  final url = Uri.parse("https://mangakolekt.com");
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
@@ -38,24 +39,15 @@ class HelpBody extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   mainAxisSize: MainAxisSize.max,
                   children: [
-                    //TODO: Add in when site is ready
-                    // Expanded(
-                    //     // flex: 1,
-                    //     child: SquareButton(
-                    //   backgroundColor: colorScheme.onPrimary,
-                    //   onPressed: () {},
-                    //   child: const Text(
-                    //     "Donate",
-                    //     style: TextStyle(color: Colors.black),
-                    //   ),
-                    // )),
                     const SizedBox(width: 20),
                     Expanded(
-                      // flex: 1,
-
                       child: SquareButton(
                         backgroundColor: colorScheme.onPrimary,
-                        onPressed: () {},
+                        onPressed: () async {
+                          try {
+                            await launchUrl(url);
+                          } catch (e) {}
+                        },
                         child: const Text(
                           "Site",
                           style: TextStyle(color: Colors.black),

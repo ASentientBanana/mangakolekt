@@ -1,31 +1,24 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:mangakolekt/constants.dart';
 import 'package:mangakolekt/locator.dart';
 import 'package:mangakolekt/screens/library.dart';
+import 'package:mangakolekt/screens/mobile/bookmarks.dart';
+import 'package:mangakolekt/screens/mobile/createLib.dart';
+import 'package:mangakolekt/screens/mobile/grid.dart';
+import 'package:mangakolekt/screens/mobile/library.dart';
+import 'package:mangakolekt/screens/mobile/settings.dart';
 import 'package:mangakolekt/screens/splash.dart';
-import 'package:mangakolekt/screens/theme_creator.dart';
 import 'package:mangakolekt/services/navigationService.dart';
-import 'package:mangakolekt/util/database/database_helpers.dart';
 import 'package:mangakolekt/util/util.dart';
-import 'package:mangakolekt/screens/reader_page_wrapper.dart';
+import 'package:mangakolekt/screens/readerPageWrapper.dart';
 
-class AppWidget extends StatefulWidget {
+class AppWidget extends StatelessWidget {
   const AppWidget({super.key});
 
   static const defaultTextStyle = TextStyle(
       fontFamily: "HighlandGothic", color: Color.fromARGB(255, 238, 245, 238));
-
-  @override
-  State<AppWidget> createState() => _AppWidgetState();
-}
-
-class _AppWidgetState extends State<AppWidget> {
-  @override
-  void initState() {
-    DatabaseMangaHelpers.getLatestManga();
-
-    super.initState();
-  }
 
   Route<Widget>? onRouteGenerateHandler(RouteSettings settings) {
     switch (settings.name) {
@@ -39,18 +32,33 @@ class _AppWidgetState extends State<AppWidget> {
               id: args["id"],
             ));
       case "/home":
-        return pageRouteBuilderWrapper(settings, const MyHomePage());
+        return pageRouteBuilderWrapper(
+            settings,
+            (Platform.isAndroid || Platform.isIOS)
+                ? const MyHomePageMobile()
+                : const MyHomePage());
       case "/":
         return pageRouteBuilderWrapper(settings, const SplashScreen());
       case "/settings":
-      // return DialogRoute(context: , builder: builder)
-      // return pageRouteBuilderWrapper(settings, const SettingsPage());
-      case "/theme_creator":
-        return pageRouteBuilderWrapper(settings, const ThemeCreatorPage());
+        // return DialogRoute(context: , builder: builder)
+        return pageRouteBuilderWrapper(settings,  SettingsMobile());
+      case "/help":
+        // return DialogRoute(context: , builder: builder)
+        return pageRouteBuilderWrapper(settings,  SettingsMobile());
+        break;
+      case "/bookmarks":
+        // return DialogRoute(context: , builder: builder)
+        return pageRouteBuilderWrapper(settings, BookmarksMobile());
+      case "/grid":
+        return pageRouteBuilderWrapper(settings, const MobileGreedScreen());
+      case "/addLibrary":
+        final args = (settings.arguments as Map<String, dynamic>);
+        return pageRouteBuilderWrapper(
+            settings, CreateLibraryMobile(path: args['path']));
+
       default:
         break;
     }
-    if (settings.name == '/reader') {}
     return null;
   }
 
@@ -69,12 +77,12 @@ class _AppWidgetState extends State<AppWidget> {
         appBarTheme: const AppBarTheme(),
         textTheme:
             Typography().dense.apply(fontFamily: "HighlandGothic").copyWith(
-                  titleMedium: AppWidget.defaultTextStyle,
-                  titleLarge: AppWidget.defaultTextStyle,
-                  displayLarge: AppWidget.defaultTextStyle,
-                  displayMedium: AppWidget.defaultTextStyle,
-                  bodyLarge: AppWidget.defaultTextStyle,
-                  bodyMedium: AppWidget.defaultTextStyle,
+                  titleMedium: defaultTextStyle,
+                  titleLarge: defaultTextStyle,
+                  displayLarge: defaultTextStyle,
+                  displayMedium: defaultTextStyle,
+                  bodyLarge: defaultTextStyle,
+                  bodyMedium: defaultTextStyle,
                 ),
         colorScheme: const ColorScheme(
           brightness: Brightness.dark,

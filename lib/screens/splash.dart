@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:mangakolekt/bloc/library/library_bloc.dart';
-import 'package:mangakolekt/util/database/database_core.dart';
-import 'package:mangakolekt/util/database/database_helpers.dart';
-import 'package:mangakolekt/util/files.dart';
+import 'package:mangakolekt/locator.dart';
+import 'package:mangakolekt/services/initializer.dart';
+import 'package:mangakolekt/store/library.dart';
+import 'package:mangakolekt/util/database/databaseHelpers.dart';
 import 'package:mangakolekt/widgets/loadingDog.dart';
-import 'package:permission_handler/permission_handler.dart';
+import 'package:mangakolekt/widgets/modals/permissionPrompt.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({Key? key}) : super(key: key);
@@ -15,6 +14,9 @@ class SplashScreen extends StatefulWidget {
 }
 
 class _SplashScreenState extends State<SplashScreen> {
+  // final _navigationService = locator<NavigationService>();
+  final libraryStore = locator<LibraryStore>();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -27,39 +29,22 @@ class _SplashScreenState extends State<SplashScreen> {
 
   // init function to create, load and read any data before opening home page
   Future<void> initApp() async {
-    //generating the theme file if not missing and reading if there
-    // final themes = await checkThemeFile();
-
     try {
       if (!context.mounted) {
         return;
       }
+      await showPermissionDialog(context);
+      await initAppStructure();
+      final mangaList = await DatabaseMangaHelpers.getAllBooksFromLibrary();
 
-      await DatabaseCore.initDatabase();
-
-      final statusses = await [
-        Permission.photos,
-        Permission.videos,
-        Permission.audio,
-        Permission.accessMediaLocation
-      ].request();
-
-      final mangaList = await DatabaseMangaHelpers.getManga();
-
-      await createGlobalCoversDir();
-      await createCurrentDir();
-      // loading the themes to the store
-      if (mangaList != null && context.mounted) {
-        context.read<LibraryBloc>().add(SetLibs(libs: mangaList));
-      }
-
-      await createLogFile();
-      await createAppDB();
+      libraryStore.setLibrary(mangaList);
 
       if (!context.mounted) return;
-      Navigator.pushNamed(context, '/home');
+      Navigator.popAndPushNamed(context, '/home');
     } catch (e) {
-      print(e);
+      if (!context.mounted) {
+        return;
+      }
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           behavior: SnackBarBehavior.fixed,
