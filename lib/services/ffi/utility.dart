@@ -58,3 +58,16 @@ DynamicLibrary? loadService() {
   return null;
 // return UnsupportedNativePlatformService();
 }
+
+List<FFICoverOutputResult> extractCovers(Iterable rawCovers){
+  final List<FFICoverOutputResult> covers = [];
+  for(var element in rawCovers){
+    if (element != null) {
+      final cover = FFICoverOutputResult.fromMap(element);
+      if (cover != null) {
+        covers.add(cover);
+      }
+    }
+  }
+  return covers;
+}
