@@ -43,3 +43,6 @@ This command results in three APK files:
    * [project]/build/app/outputs/apk/release/app-armeabi-v7a-release.apk
    * [project]/build/app/outputs/apk/release/app-arm64-v8a-release.apk
    * [project]/build/app/outputs/apk/release/app-x86_64-release.apk
+
+\
+Additional information for building an android version can be found [here](https://docs.flutter.dev/deployment/android).
