@@ -1,8 +1,7 @@
 import 'dart:io';
 
 import 'package:mangakolekt/models/ffi.dart';
-import 'package:mangakolekt/services/ffiService.dart';
-import 'package:mangakolekt/util/archive.dart';
+import 'package:mangakolekt/services/ffi/ffi.dart';
 import 'package:mangakolekt/controllers/archive.dart';
 
 class ZipBookController extends BaseBookController {
@@ -12,7 +11,7 @@ class ZipBookController extends BaseBookController {
   Future<List<FFICoverOutputResult>> unpackCovers(String pathToDir,
       {required List<String> files, required String out}) async {
     if (Platform.isLinux || Platform.isWindows || Platform.isAndroid) {
-      return FFIService.ffiUnzipCovers(files, pathToDir, out);
+      return ffiUnzipCovers(files, pathToDir, out);
     }
     return [];
   }
@@ -21,7 +20,7 @@ class ZipBookController extends BaseBookController {
   @override
   Future<void> unpack(String pathToBook, String dest) async {
     try {
-      await FFIService.ffiUnzipSingleBook(pathToBook, dest);
+      await ffiUnzipSingleBook(pathToBook, dest);
     } catch (e) {
       print("Problbem with ffi");
       print(e);
