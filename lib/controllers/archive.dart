@@ -130,7 +130,6 @@ class ArchiveController {
   static Future<List<FFICoverOutputResult>?> unpackCovers(
       String pathToDir, String out) async {
     //create dirs
-    // final out = "/home/petar/Documents/mangakolekt/covers";
     final types = <String, Runner>{};
     final dir = Directory(pathToDir);
     if (!await dir.exists()) {
@@ -138,7 +137,6 @@ class ArchiveController {
     }
 
     // get a list of files
-    // final _files = files ?? (await FFIService.ffiGetDirContents(pathToDir));
     final _files = (await getFilesFromDir(dir));
     //Build map of types
     for (var element in _files) {
