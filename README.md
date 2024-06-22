@@ -46,3 +46,6 @@ This command results in three APK files:
 
 \
 Additional information for building an android version can be found [here](https://docs.flutter.dev/deployment/android).
+
+Generating the ffi bindings is done by running:
+`dart run ffigen`

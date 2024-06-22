@@ -1,7 +1,6 @@
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:mangakolekt/controllers/archive.dart';
 import 'package:mangakolekt/locator.dart';
 import 'package:mangakolekt/services/navigationService.dart';
 import 'package:mangakolekt/store/library.dart';
@@ -10,10 +9,9 @@ import 'package:mangakolekt/widgets/modals/bookmarks.dart';
 import 'package:mangakolekt/widgets/modals/createLib.dart';
 import 'package:mangakolekt/widgets/modals/help.dart';
 import 'package:mangakolekt/widgets/modals/settings.dart';
-import 'package:path/path.dart';
 
 class MangaMenuBar extends StatelessWidget {
-  Widget child;
+  final Widget child;
   MangaMenuBar({Key? key, required this.child}) : super(key: key);
 
   final _navigationService = locator<NavigationService>();
