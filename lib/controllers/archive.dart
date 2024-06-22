@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
+import 'package:mangakolekt/controllers/types/rar.dart';
 import 'package:mangakolekt/controllers/types/zip.dart';
 import 'package:mangakolekt/models/book.dart';
 import 'package:mangakolekt/models/ffi.dart';
@@ -33,6 +34,7 @@ class ArchiveController {
   // Add controllers for the file types
   static List<BaseBookController> controllers = [
     ZipBookController(),
+    RarBookController(),
   ];
 
   static BaseBookController? getTypeController(String type) {

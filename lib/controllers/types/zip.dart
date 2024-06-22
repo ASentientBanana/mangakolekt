@@ -21,10 +21,7 @@ class ZipBookController extends BaseBookController {
   @override
   Future<void> unpack(String pathToBook, String dest) async {
     try {
-      final files = await FFIService.ffiUnzipSingleBook(pathToBook, dest);
-      if (files.isEmpty) {
-        return;
-      }
+      await FFIService.ffiUnzipSingleBook(pathToBook, dest);
     } catch (e) {
       print("Problbem with ffi");
       print(e);

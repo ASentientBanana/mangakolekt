@@ -116,4 +116,4 @@ ffigen:
   output: "lib/generated/archive_ffi.dart"
   headers:
     entry-points:
-      - "./unzip/build/linux/manga_archive.h"
+      - "./unzip/build/linux/amd64/manga_archive.h"
