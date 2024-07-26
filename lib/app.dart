@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:mangakolekt/constants.dart';
 import 'package:mangakolekt/locator.dart';
@@ -7,6 +5,7 @@ import 'package:mangakolekt/screens/library.dart';
 import 'package:mangakolekt/screens/mobile/bookmarks.dart';
 import 'package:mangakolekt/screens/mobile/createLib.dart';
 import 'package:mangakolekt/screens/mobile/grid.dart';
+import 'package:mangakolekt/screens/mobile/help.dart';
 import 'package:mangakolekt/screens/mobile/library.dart';
 import 'package:mangakolekt/screens/mobile/settings.dart';
 import 'package:mangakolekt/screens/splash.dart';
@@ -32,23 +31,19 @@ class AppWidget extends StatelessWidget {
               id: args["id"],
             ));
       case "/home":
-        return pageRouteBuilderWrapper(
-            settings,
-            (Platform.isAndroid || Platform.isIOS)
-                ? const MyHomePageMobile()
-                : const MyHomePage());
+        return pageRouteBuilderWrapper(settings,
+            (isMobile()) ? const MyHomePageMobile() : const MyHomePage());
       case "/":
         return pageRouteBuilderWrapper(settings, const SplashScreen());
       case "/settings":
         // return DialogRoute(context: , builder: builder)
-        return pageRouteBuilderWrapper(settings,  SettingsMobile());
+        return pageRouteBuilderWrapper(settings, SettingsMobile());
       case "/help":
         // return DialogRoute(context: , builder: builder)
-        return pageRouteBuilderWrapper(settings,  SettingsMobile());
-        break;
+        return pageRouteBuilderWrapper(settings, HelpScreenMobile());
       case "/bookmarks":
         // return DialogRoute(context: , builder: builder)
-        return pageRouteBuilderWrapper(settings, BookmarksMobile());
+        return pageRouteBuilderWrapper(settings, const BookmarksMobile());
       case "/grid":
         return pageRouteBuilderWrapper(settings, const MobileGreedScreen());
       case "/addLibrary":

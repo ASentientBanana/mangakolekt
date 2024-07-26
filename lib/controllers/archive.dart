@@ -57,6 +57,7 @@ class ArchiveController {
       throw Error.safeToString('Unsupported file type selected.');
     }
     //unzip to the current dir.
+
     await controller.unpack(pathToBook, dest);
     //load book here from current dir
     final book = await loadBook(dest, pathToBook, id);

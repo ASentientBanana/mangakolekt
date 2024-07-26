@@ -1,8 +1,11 @@
 import 'dart:io';
 
 import 'package:mangakolekt/models/ffi.dart';
+import 'package:mangakolekt/services/archive/archive.dart';
 import 'package:mangakolekt/services/ffi/ffi.dart';
 import 'package:mangakolekt/controllers/archive.dart';
+import 'package:mangakolekt/services/toast.dart';
+import 'package:mangakolekt/util/platform.dart';
 
 class ZipBookController extends BaseBookController {
   final List<String> fileTypes = ['zip', 'cbz'];
@@ -11,7 +14,15 @@ class ZipBookController extends BaseBookController {
   Future<List<FFICoverOutputResult>> unpackCovers(String pathToDir,
       {required List<String> files, required String out}) async {
     if (Platform.isLinux || Platform.isWindows || Platform.isAndroid) {
-      return ffiUnzipCovers(files, pathToDir, out);
+      try {
+        if (isAbleToLoadDynamicLib()) {
+          return ffiUnzipCovers(files, pathToDir, out);
+        } else {
+          return unzipArchiveCovers(files, out);
+        }
+      } catch (e) {
+        MangaToast("Problem loading covers");
+      }
     }
     return [];
   }
@@ -20,7 +31,11 @@ class ZipBookController extends BaseBookController {
   @override
   Future<void> unpack(String pathToBook, String dest) async {
     try {
-      await ffiUnzipSingleBook(pathToBook, dest);
+      if (isAbleToLoadDynamicLib()) {
+        await ffiUnzipSingleBook(pathToBook, dest);
+      } else {
+        await unzipArchiveBook(pathToBook, dest);
+      }
     } catch (e) {
       print("Problbem with ffi");
       print(e);

@@ -43,7 +43,7 @@ List<FFICoverOutputResult> ffiUnzipCovers(
 Future<void> ffiUnzipSingleBook(String _bookPath, String _targetPath) async {
   final dyLib = loadService();
   if (dyLib == null) {
-    return;
+    throw Error.safeToString('Problem loading service for the platform.');
   }
   final nativeBindings = nb.NativeLibrary(dyLib);
   final pBookPath = _bookPath.toNativeUtf8().cast<Char>();
@@ -51,9 +51,8 @@ Future<void> ffiUnzipSingleBook(String _bookPath, String _targetPath) async {
 
   try {
     nativeBindings.Unzip_Single_book(pBookPath, pTargetPath);
-    // return filesList;
   } catch (e) {
-    //TODO:
+    MangaToast(e.toString(), color: Colors.red);
   } finally {
     calloc.free(pBookPath);
     calloc.free(pTargetPath);

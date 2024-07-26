@@ -38,6 +38,7 @@ class _GridItemState extends State<GridItem> with TickerProviderStateMixin {
             });
           },
           onTap: () {
+            print({"path": widget.item.bookPath, "id": widget.item.id});
             _navigationService.navigateTo('/reader',
                 {"path": widget.item.bookPath, "id": widget.item.id});
           },

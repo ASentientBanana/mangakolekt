@@ -1,6 +1,9 @@
+import 'dart:ffi';
+
 import 'package:flutter/material.dart';
 import 'package:mangakolekt/locator.dart';
 import 'package:mangakolekt/services/initializer.dart';
+import 'package:mangakolekt/services/navigationService.dart';
 import 'package:mangakolekt/store/library.dart';
 import 'package:mangakolekt/util/database/databaseHelpers.dart';
 import 'package:mangakolekt/widgets/loadingDog.dart';
@@ -14,7 +17,7 @@ class SplashScreen extends StatefulWidget {
 }
 
 class _SplashScreenState extends State<SplashScreen> {
-  // final _navigationService = locator<NavigationService>();
+  final _navigationService = locator<NavigationService>();
   final libraryStore = locator<LibraryStore>();
 
   @override
@@ -40,21 +43,24 @@ class _SplashScreenState extends State<SplashScreen> {
       libraryStore.setLibrary(mangaList);
 
       if (!context.mounted) return;
-      Navigator.popAndPushNamed(context, '/home');
+
+      // _navigationService.errorDialog(error: "Some err message");
+      _navigationService.pushAndPop('/home', {});
     } catch (e) {
       if (!context.mounted) {
         return;
       }
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          behavior: SnackBarBehavior.fixed,
-          content: Text(
-            e.toString(),
-            style: const TextStyle(color: Colors.white),
-          ),
-          backgroundColor: Theme.of(context).colorScheme.background,
-        ),
-      );
+      _navigationService.errorDialog(error: e.toString());
+      // ScaffoldMessenger.of(context).showSnackBar(
+      //   SnackBar(
+      //     behavior: SnackBarBehavior.fixed,
+      //     content: Text(
+      //       e.toString(),
+      //       style: const TextStyle(color: Colors.white),
+      //     ),
+      //     backgroundColor: Theme.of(context).colorScheme.background,
+      //   ),
+      // );
     }
   }
 

@@ -2,15 +2,19 @@ import 'package:flutter/material.dart';
 import 'package:mangakolekt/locator.dart';
 import 'package:mangakolekt/models/database/bookmark.dart';
 import 'package:mangakolekt/services/navigationService.dart';
+import 'package:mangakolekt/util/lib.dart';
 
 class BookmarkElement extends StatefulWidget {
   final Bookmark bookmarkItem;
   final BookmarksData bookData;
-  final void Function(int, int) deleteBookmarkCb;
+  final Future<void> Function(int, int) deleteBookmarkCb;
+  final void Function() refetch;
+
   const BookmarkElement(
       {Key? key,
       required this.bookmarkItem,
       required this.bookData,
+      required this.refetch,
       required this.deleteBookmarkCb})
       : super(key: key);
 
@@ -35,7 +39,12 @@ class _BookmarkElementState extends State<BookmarkElement> {
     setState(() {
       _isLoading = true;
     });
-    widget.deleteBookmarkCb(widget.bookmarkItem.id, widget.bookmarkItem.page);
+    await widget.deleteBookmarkCb(
+        widget.bookmarkItem.id, widget.bookmarkItem.page);
+    widget.refetch();
+    setState(() {
+      _isLoading = false;
+    });
   }
 
   @override

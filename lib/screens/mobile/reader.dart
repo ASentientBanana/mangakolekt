@@ -1,5 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:mangakolekt/controllers/input.dart';
 import 'package:mangakolekt/controllers/reader.dart';
 import 'package:mangakolekt/util/database/databaseHelpers.dart';
@@ -20,11 +21,18 @@ class MangaReaderMobile extends StatefulWidget {
   _MangaReaderState createState() => _MangaReaderState();
 }
 
-class _MangaReaderState extends State<MangaReaderMobile> {
+class _MangaReaderState extends State<MangaReaderMobile>
+    with SingleTickerProviderStateMixin {
   int dx = 0;
   List<int> bookmarks = [];
-
+  bool isHidden = false;
   bool disableBookmarkButton = false;
+
+  late final AnimationController appBarAnimationController =
+      AnimationController(
+    vsync: this,
+    duration: const Duration(milliseconds: 400),
+  );
 
   late ReaderController readerController;
   late InputController inputController =
@@ -76,6 +84,7 @@ class _MangaReaderState extends State<MangaReaderMobile> {
   initState() {
     initBook();
     findNextBook();
+    // appBarAnimationController =
     super.initState();
   }
 
@@ -149,14 +158,21 @@ class _MangaReaderState extends State<MangaReaderMobile> {
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
-    final isBookmark =
-        bookmarks.contains(readerController.getCurrentPages().first);
+    bool isBookmark = false;
+    try {
+      isBookmark = bookmarks.contains(readerController.getCurrentPages().first);
+    } catch (e) {
+      isBookmark = false;
+    }
+
     final width = MediaQuery.of(context).size.width;
     return Focus(
       // This removes tab select for buttons in the screen to
       descendantsAreFocusable: false,
       canRequestFocus: false,
       child: Scaffold(
+        extendBodyBehindAppBar: isHidden,
+        backgroundColor: colorScheme.background,
         drawer: Drawer(
           backgroundColor: colorScheme.primary,
           child: ListPreview(
@@ -165,41 +181,53 @@ class _MangaReaderState extends State<MangaReaderMobile> {
             onTap: handlePreviewClick,
           ),
         ),
-        appBar: ReaderAppbarMobile(
+        appBar: SlidingAppBar(
+            controller: appBarAnimationController,
             isBookmarkedColor: colorScheme.tertiary,
             isNotBookmarkedColor: colorScheme.onPrimary,
             readerController: readerController,
             isBookmark: isBookmark,
-            bookmark: disableBookmarkButton ? (){} : bookmark,
+            bookmark: disableBookmarkButton ? () {} : bookmark,
+            isHidden: isHidden,
             set: setState),
-        body: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            // I dont like this but it seems the most intuitive way to do this.
-            Stack(
-              children: [
-                Container(
-                  color: Theme.of(context).colorScheme.background,
-                  width: MediaQuery.of(context).size.width,
-                  child: Row(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: renderPages(),
+        body: Center(
+          // heightFactor: isHidden ? 0.5 : 1,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              // I don't like this but it seems the most intuitive way to do this.
+              Stack(
+                children: [
+                  InkWell(
+                    onTap: () {
+                      setState(() {
+                        isHidden = !isHidden;
+                      });
+                    },
+                    child: Container(
+                      height: MediaQuery.of(context).size.height,
+                      // color: Theme.of(context).colorScheme.background,
+                      width: MediaQuery.of(context).size.width,
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: renderPages(),
+                      ),
+                    ),
                   ),
-                ),
-                Positioned(
-                    width: width,
-                    bottom: 0,
-                    right: 0,
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      mainAxisSize: MainAxisSize.max,
-                      children: [
+                  Positioned(
+                      width: width,
+                      bottom: 0,
+                      right: 0,
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        mainAxisSize: MainAxisSize.max,
+                        children: [
                           // color: colorScheme.primary,
-                           Row(
+                          Row(
                             mainAxisSize: MainAxisSize.max,
                             children: [
                               IconButton(
-                                  onPressed: (){
+                                  onPressed: () {
                                     setState(() {
                                       readerController.decrementPage();
                                     });
@@ -209,7 +237,7 @@ class _MangaReaderState extends State<MangaReaderMobile> {
                                     color: colorScheme.secondary,
                                   )),
                               IconButton(
-                                  onPressed: (){
+                                  onPressed: () {
                                     setState(() {
                                       readerController.incrementPage();
                                     });
@@ -220,18 +248,20 @@ class _MangaReaderState extends State<MangaReaderMobile> {
                                   )),
                             ],
                           ),
-                        CurrentPageIndexView(
-                          currentPages: readerController
-                              .getCurrentPages()
-                              .map((e) => e + 1)
-                              .join('-'),
-                          totalPages: readerController.pages.length.toString(),
-                        )
-                      ],
-                    ))
-              ],
-            ),
-          ],
+                          CurrentPageIndexView(
+                            currentPages: readerController
+                                .getCurrentPages()
+                                .map((e) => e + 1)
+                                .join('-'),
+                            totalPages:
+                                readerController.pages.length.toString(),
+                          )
+                        ],
+                      ))
+                ],
+              ),
+            ],
+          ),
         ),
       ),
     ); // return

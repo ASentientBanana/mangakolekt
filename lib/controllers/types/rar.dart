@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:mangakolekt/models/ffi.dart';
 import 'package:mangakolekt/services/ffi/ffi.dart';
 import 'package:mangakolekt/controllers/archive.dart';
+import 'package:mangakolekt/services/toast.dart';
 
 class RarBookController extends BaseBookController {
   final List<String> fileTypes = ['cbr', 'rar'];
@@ -22,7 +23,7 @@ class RarBookController extends BaseBookController {
       await ffiUnrarSingleBook(pathToBook, dest);
     } catch (e) {
       print("Problbem with ffi");
-      print(e);
+      MangaToast(e.toString());
     }
   }
 

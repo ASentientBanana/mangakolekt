@@ -17,7 +17,7 @@ Future<Book?> getBook(BuildContext context, String bookPath, int? id) async {
   if (Platform.isLinux || Platform.isWindows || Platform.isAndroid) {
     try {
       final params = [bookPath.split('.').last, bookPath, dest, id.toString()];
-      book = await compute(ArchiveController.unpack, params);
+      book = await ArchiveController.unpack(params);
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
