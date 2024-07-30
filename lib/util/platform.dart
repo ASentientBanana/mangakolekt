@@ -2,7 +2,7 @@ import 'dart:ffi';
 import 'dart:io';
 
 bool isSupportedPlatform() {
-  return false;
+  return Platform.isAndroid || Platform.isWindows || Platform.isLinux;
 }
 
 bool isMobile() {

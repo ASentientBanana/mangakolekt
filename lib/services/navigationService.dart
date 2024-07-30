@@ -17,26 +17,27 @@ class NavigationService {
     navigatorKey.currentState?.pop(data);
   }
 
-  void errorDialog({required String error}){
-    if(navigatorKey.currentContext == null){
+  void errorDialog({required String error}) {
+    if (navigatorKey.currentContext == null) {
       return;
     }
     showDialog(
-      context: navigatorKey.currentContext!,
-
-      builder: (context){
-        final colorScheme = Theme.of(context).colorScheme;
-        return AlertDialog(
-          backgroundColor: colorScheme.background,
-          title:const Text("A problem occurred"),
-          content: Text(error),
-          actions: [
-            ElevatedButton(onPressed: (){
-              Navigator.of(context).pop();
-            }, child: Text("Ok"))
-          ],
-        );
-      }
-    );
+        context: navigatorKey.currentContext!,
+        builder: (context) {
+          final colorScheme = Theme.of(context).colorScheme;
+          return AlertDialog(
+            backgroundColor: colorScheme.background,
+            title: const Text("A problem occurred"),
+            content: Text(error),
+            actions: [
+              ElevatedButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+                child: const Text("Ok"),
+              )
+            ],
+          );
+        });
   }
 }

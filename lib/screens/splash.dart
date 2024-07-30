@@ -51,16 +51,6 @@ class _SplashScreenState extends State<SplashScreen> {
         return;
       }
       _navigationService.errorDialog(error: e.toString());
-      // ScaffoldMessenger.of(context).showSnackBar(
-      //   SnackBar(
-      //     behavior: SnackBarBehavior.fixed,
-      //     content: Text(
-      //       e.toString(),
-      //       style: const TextStyle(color: Colors.white),
-      //     ),
-      //     backgroundColor: Theme.of(context).colorScheme.background,
-      //   ),
-      // );
     }
   }
 

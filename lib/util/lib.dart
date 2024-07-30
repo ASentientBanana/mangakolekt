@@ -30,11 +30,6 @@ Future<RefreshResults?> getRefreshLibPaths(BookCover item) async {
     // print("Looking at entry: $file");
     _covers[file] = 1;
   }
-  // generate a list of paths from the database
-  // final List<String> databaseList =
-  //     ((await DatabaseMangaHelpers.getAllBooksFromLibrary(id: item.id)) ?? [])
-  //         .map((e) => e.bookPath)
-  //         .toList();
 
   //loop elements and null existing and mark entries for deletion
   for (var dbElement in []) {
@@ -62,43 +57,3 @@ Future<RefreshResults?> getRefreshLibPaths(BookCover item) async {
 
   return refresh;
 }
-
-Future<List<BookCover>?> refreshLib({required BookCover item}) async {
-  // final RefreshResults? refreshItems = await getRefreshLibPaths(item);
-  // if (refreshItems == null) {
-  //   return null;
-  // }
-
-  // await DatabaseMangaHelpers.batchRemoveLibManga(refreshItems.toDelete);
-  // //fs work
-  // if (refreshItems.toAdd.isNotEmpty) {
-  //   final covers = await compute(
-  //       (message) => ArchiveController.unpackCovers(
-  //           message[0] as String, message[1] as List<String>),
-  //       [item.path, refreshItems.toAdd]);
-  //   if (covers == null) {
-  //     return null;
-  //   }
-  //   await DatabaseMangaHelpers.batchAddLibManga(covers, item.id);
-  // }
-  // final mangaList = await DatabaseMangaHelpers.getManga();
-
-  // return mangaList;
-}
-
-Future<bool> deleteLib(String path) async {
-  //template name;path;bookPath
-  //check if app mapFile and lib mapFile exist;
-
-  // final libDir = Directory("$path/$libFolderName");
-  // final libDir = Directory(p.join(path, libFolderName));
-  // if (await libDir.exists()) {
-  //   await libDir.delete(recursive: true);
-  // }
-  return true;
-}
-
-//TODO: implement a cleanup func for the current folder
-Future<void> cleanupCoversFolder(
-  List<String> db,
-) async {}
