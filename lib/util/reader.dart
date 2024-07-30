@@ -4,7 +4,6 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:mangakolekt/controllers/archive.dart';
 import 'package:mangakolekt/models/book.dart';
-import 'package:mangakolekt/util/archive.dart';
 import 'package:mangakolekt/util/files.dart';
 import 'package:path/path.dart' as p;
 import 'package:collection/collection.dart';
@@ -14,24 +13,24 @@ Future<Book?> getBook(BuildContext context, String bookPath, int? id) async {
   Book? book;
   imageCache.clear();
 
-  if (Platform.isLinux || Platform.isWindows || Platform.isAndroid) {
-    try {
-      final params = [bookPath.split('.').last, bookPath, dest, id.toString()];
-      book = await ArchiveController.unpack(params);
-    } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            e.toString(),
-            style: const TextStyle(color: Colors.white),
-          ),
-          backgroundColor: Theme.of(context).colorScheme.background,
-        ),
-      );
-    }
-  } else {
-    book = await getBookFromArchive(bookPath);
+  if (!(Platform.isLinux || Platform.isWindows || Platform.isAndroid)) {
+    return null;
   }
+  try {
+    final params = [bookPath.split('.').last, bookPath, dest, id.toString()];
+    book = await ArchiveController.unpack(params);
+  } catch (e) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(
+          e.toString(),
+          style: const TextStyle(color: Colors.white),
+        ),
+        backgroundColor: Theme.of(context).colorScheme.background,
+      ),
+    );
+  }
+
   return book;
 }
 

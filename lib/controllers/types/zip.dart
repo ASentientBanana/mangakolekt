@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:mangakolekt/models/book.dart';
 import 'package:mangakolekt/models/ffi.dart';
 import 'package:mangakolekt/services/archive/archive.dart';
 import 'package:mangakolekt/services/ffi/ffi.dart';
@@ -29,13 +30,13 @@ class ZipBookController extends BaseBookController {
 
   // TODO: Decouple the unzip logic from loading the books
   @override
-  Future<void> unpack(String pathToBook, String dest) async {
+  Future<Book?> unpack(String pathToBook, String dest) async {
     try {
-      if (isAbleToLoadDynamicLib()) {
-        await ffiUnzipSingleBook(pathToBook, dest);
-      } else {
-        await unzipArchiveBook(pathToBook, dest);
-      }
+      return await unzipArchiveBook(pathToBook, dest);
+      // if (isAbleToLoadDynamicLib()) {
+      //   await ffiUnzipSingleBook(pathToBook, dest);
+      // } else {
+      // }
     } catch (e) {
       print("Problbem with ffi");
       print(e);

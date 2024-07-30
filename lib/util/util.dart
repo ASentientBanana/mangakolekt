@@ -1,9 +1,11 @@
 import 'dart:io';
+import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:mangakolekt/models/book.dart';
 
 final regex = RegExp(r'\d+');
+
 List<int> extractNumbers(String s) =>
     regex.allMatches(s).map((m) => int.parse(m.group(0)!)).toList();
 
@@ -141,4 +143,17 @@ bool validateMap(Map map, List<String> keys) {
   }
 
   return true;
+}
+
+Future<Image> imageFromBytes(dynamic bytes) async {
+  var decodedImage = await instantiateImageCodec(bytes);
+  final frame = await decodedImage.getNextFrame();
+
+  final image = frame.image;
+  decodedImage.dispose();
+  return Image.memory(
+    bytes,
+    height: image.height.toDouble(),
+    width: image.width.toDouble(),
+  );
 }
