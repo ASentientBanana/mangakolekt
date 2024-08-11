@@ -110,6 +110,9 @@ Future<List<String>> getFilesFromDir(Directory dir) async {
 
 Future<void> deleteFiles(List<String> files) async {
   for (var file in files) {
-    await File(file).delete();
+    final f = File(file);
+    if (await f.exists()) {
+      await f.delete();
+    }
   }
 }

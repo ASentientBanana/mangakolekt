@@ -9,6 +9,10 @@ import 'package:mangakolekt/widgets/modals/bookmarks.dart';
 import 'package:mangakolekt/widgets/modals/createLib.dart';
 import 'package:mangakolekt/widgets/modals/help.dart';
 import 'package:mangakolekt/widgets/modals/settings.dart';
+import 'package:mangakolekt_archive_lib/mangakolekt_archive_lib.dart' as mkh;
+import 'package:mangakolekt_archive_lib/mangakolekt_archive_zip/mangakolekt_archive_cover.dart';
+import 'package:path/path.dart';
+import 'package:path_provider/path_provider.dart';
 
 class MangaMenuBar extends StatelessWidget {
   final Widget child;
@@ -19,11 +23,20 @@ class MangaMenuBar extends StatelessWidget {
   final libraryStore = locator<LibraryStore>();
 
   Future<void> pickFileHandler() async {
-    final file = await pickFile();
-
-    if (file != null) {
-      _navigationService.navigateTo('/reader', {"id": 0, "path": file});
+    // final file = await pickFile();
+    try {
+      mangakolektUnzipArchiveCover(
+          "/home/petar/bigboy/Manga/Holyland/Holyland - Volume_01.cbz",
+          '/home/petar/Documents/mangakolekt/');
+    } catch (e) {
+      print("FFI ERROR");
+      print(e);
     }
+
+    // if (file != null) {
+    //   _navigationService.navigateTo('/reader', {"id": 0, "path": file});
+    // }
+    return;
   }
 
   void quitHandler() {

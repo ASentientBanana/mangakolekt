@@ -60,7 +60,7 @@ class Book {
   final String name;
   final List<PageEntry> pages;
   final String path;
-  final int? id;
+  int? id;
 
   Book(
       {required this.name,

@@ -87,22 +87,15 @@ class _MangaReaderState extends State<MangaReaderMobile>
   }
 
   Future<void> bookmark() async {
-    final isBookmark =
-        bookmarks.contains(readerController.getCurrentPages().first);
     setState(() {
       disableBookmarkButton = true;
     });
-    if (!isBookmark) {
-      await DatabaseMangaHelpers.addBookmark(
-          book: readerController.book.id ?? -1,
-          path: readerController.book.path,
-          page: readerController.getCurrentPages().first);
-    } else {
-      await DatabaseMangaHelpers.removeBookmark(
-          book: readerController.book.id ?? -1,
-          page: readerController.getCurrentPages().first);
-    }
-    final bm = await getBookmarks();
+
+    final bm = await DatabaseMangaHelpers.bookmark(
+        bookID: readerController.book.id ?? -1,
+        path: readerController.book.path,
+        page: readerController.getCurrentPages().first);
+
     setState(() {
       bookmarks = bm;
       disableBookmarkButton = false;

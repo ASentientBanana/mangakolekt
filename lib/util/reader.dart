@@ -19,6 +19,9 @@ Future<Book?> getBook(BuildContext context, String bookPath, int? id) async {
   try {
     final params = [bookPath.split('.').last, bookPath, dest, id.toString()];
     book = await ArchiveController.unpack(params);
+    if(id != null && book?.id == null){
+      book?.id = id;
+    }
   } catch (e) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(

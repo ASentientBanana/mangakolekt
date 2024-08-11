@@ -42,6 +42,13 @@ class _BookmarkContentState extends State<BookmarkContent> {
   }
 
   @override
+  void initState() {
+    super.initState();
+    print("Printing::");
+    widget.bookmarks.data.forEach((element) {print(element.name);});
+  }
+
+  @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
     return Container(
@@ -50,7 +57,6 @@ class _BookmarkContentState extends State<BookmarkContent> {
       color: colorScheme.primary,
       child: Column(
         children: [
-          //Title
           Container(
             padding: const EdgeInsets.all(7),
             decoration: BoxDecoration(

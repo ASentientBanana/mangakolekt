@@ -4258,14 +4258,13 @@ final class _IO_FILE extends ffi.Struct {
 
   external ffi.Pointer<ffi.Void> _freeres_buf;
 
-  @ffi.Int()
-  external int __pad5;
+  external ffi.Pointer<ffi.Pointer<_IO_FILE>> _prevchain;
 
   @ffi.Int()
   external int _mode;
 
-  @ffi.Char()
-  external int _unused2;
+  @ffi.Array.multi([20])
+  external ffi.Array<ffi.Char> _unused2;
 }
 
 final class _IO_marker extends ffi.Opaque {}
@@ -4639,7 +4638,7 @@ const int _FEATURES_H = 1;
 
 const int _DEFAULT_SOURCE = 1;
 
-const int __GLIBC_USE_ISOC2X = 1;
+const int __GLIBC_USE_ISOC23 = 1;
 
 const int __USE_ISOC11 = 1;
 
@@ -4673,6 +4672,8 @@ const int __SYSCALL_WORDSIZE = 64;
 
 const int __TIMESIZE = 64;
 
+const int __USE_TIME_BITS64 = 1;
+
 const int __USE_MISC = 1;
 
 const int __USE_ATFILE = 1;
@@ -4683,7 +4684,7 @@ const int __GLIBC_USE_DEPRECATED_GETS = 0;
 
 const int __GLIBC_USE_DEPRECATED_SCANF = 0;
 
-const int __GLIBC_USE_C2X_STRTOL = 1;
+const int __GLIBC_USE_C23_STRTOL = 1;
 
 const int _STDC_PREDEF_H = 1;
 
@@ -4701,7 +4702,7 @@ const int __GNU_LIBRARY__ = 6;
 
 const int __GLIBC__ = 2;
 
-const int __GLIBC_MINOR__ = 39;
+const int __GLIBC_MINOR__ = 40;
 
 const int _SYS_CDEFS_H = 1;
 
@@ -4719,13 +4720,13 @@ const int __GLIBC_USE_LIB_EXT2 = 1;
 
 const int __GLIBC_USE_IEC_60559_BFP_EXT = 1;
 
-const int __GLIBC_USE_IEC_60559_BFP_EXT_C2X = 1;
+const int __GLIBC_USE_IEC_60559_BFP_EXT_C23 = 1;
 
 const int __GLIBC_USE_IEC_60559_EXT = 1;
 
 const int __GLIBC_USE_IEC_60559_FUNCS_EXT = 1;
 
-const int __GLIBC_USE_IEC_60559_FUNCS_EXT_C2X = 1;
+const int __GLIBC_USE_IEC_60559_FUNCS_EXT_C23 = 1;
 
 const int __GLIBC_USE_IEC_60559_TYPES_EXT = 1;
 

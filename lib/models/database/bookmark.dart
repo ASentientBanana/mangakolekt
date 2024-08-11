@@ -39,6 +39,24 @@ class Bookmarks {
     data = [];
   }
 
+  bool containsBookmark(String path, int page) {
+    bool containsBookmark = false;
+    data.forEach((element) {
+      final foundBook = path == element.path;
+      if (!foundBook) {
+        return;
+      }
+      for (var i = 0; i < element.bookmarks.length; i++) {
+        final _page = element.bookmarks[i].page;
+        if (_page == page) {
+          containsBookmark = true;
+          return;
+        }
+      }
+    });
+    return containsBookmark;
+  }
+
   Bookmarks.fromMaps(List<Map<String, dynamic>> _maps) {
     // Reformat the data to look like
     /*
@@ -47,7 +65,6 @@ class Bookmarks {
       ]
     */
     final map = {};
-    print(_maps);
     for (var element in _maps) {
       final isValid = validateMap(
         element,
@@ -64,7 +81,6 @@ class Bookmarks {
           "path": element["path"],
         };
       }
-      print("adding element ${element['book']}");
       map[element["library"]]['bookmarks'].add(
         Bookmark(
             id: element['book'],
