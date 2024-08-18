@@ -23,19 +23,11 @@ class MangaMenuBar extends StatelessWidget {
   final libraryStore = locator<LibraryStore>();
 
   Future<void> pickFileHandler() async {
-    // final file = await pickFile();
-    try {
-      mangakolektUnzipArchiveCover(
-          "/home/petar/bigboy/Manga/Holyland/Holyland - Volume_01.cbz",
-          '/home/petar/Documents/mangakolekt/');
-    } catch (e) {
-      print("FFI ERROR");
-      print(e);
-    }
+    final file = await pickFile();
 
-    // if (file != null) {
-    //   _navigationService.navigateTo('/reader', {"id": 0, "path": file});
-    // }
+    if (file != null) {
+      _navigationService.navigateTo('/reader', {"id": 0, "path": file});
+    }
     return;
   }
 

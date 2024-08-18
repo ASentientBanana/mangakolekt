@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:flutter/foundation.dart';
 import 'package:isolate_pool_2/isolate_pool_2.dart';
 import 'package:mangakolekt/models/book.dart';
 import 'package:mangakolekt/models/ffi.dart';
@@ -17,17 +18,17 @@ class ZipBookController extends BaseBookController {
       {required List<String> files, required String out}) async {
     if (Platform.isLinux || Platform.isWindows || Platform.isAndroid) {
       try {
-        if (isAbleToLoadDynamicLib()) {
-          return ffiUnzipCovers(files, pathToDir, out);
-        } else {
-          final pool = IsolatePool(10);
-          await pool.start();
-          final res = await unzipArchiveCovers(pool, files, out);
-          pool.stop();
-          return res;
-        }
+        final start = DateTime.now().millisecondsSinceEpoch;
+        final res =
+            await compute((message) => ffiUnzipCovers(message), [files, out]);
+
+        // final res = await compute(
+        //     (message) => unzipArchiveCoversDart(message), [files, out]);
+        final end = DateTime.now().millisecondsSinceEpoch;
+        print("Time to unzip all covers:: ${(end - start) / 1000}");
+        return res;
       } catch (e) {
-        MangaToast("Problem loading covers");
+        return [];
       }
     }
     return [];
@@ -37,7 +38,8 @@ class ZipBookController extends BaseBookController {
   @override
   Future<Book?> unpack(String pathToBook, String dest) async {
     try {
-      return await unzipArchiveBook(pathToBook, dest);
+      return await unzipArchiveBook(pathToBook);
+      return await unzipArchiveBookDart(pathToBook);
     } catch (e) {
       print("Problbem with ffi");
       print(e);

@@ -1,11 +1,14 @@
-library archive_service;
-
+import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
 import 'package:isolate_pool_2/isolate_pool_2.dart';
 import 'package:mangakolekt/models/book.dart';
 import 'package:mangakolekt/models/ffi.dart';
+import 'package:mangakolekt/services/ffi/ffi.dart';
 import 'package:mangakolekt/util/util.dart';
 import "dart:io";
-import 'package:archive/archive.dart' as archiver;
+import 'package:mangakolekt_archive_lib/mangakolekt_archive_zip/mangakolekt_archive_book.dart';
+import 'package:mangakolekt_archive_lib/models/ffi_book_output_result.dart'
+    as mangaLibBook;
 import 'package:path/path.dart' as p;
 import 'package:archive/archive_io.dart';
 
@@ -22,13 +25,14 @@ class UnzipCoversJob extends PooledJob<List<FFICoverOutputResult>> {
 
   @override
   Future<List<FFICoverOutputResult>> job() async {
-    return await _unzipArchiveCovers([files, out]);
+    return ffiUnzipCovers([files, out]);
+    // return await _unzipArchiveCovers([files, out]);
   }
 }
 
 List<List<String>> chunkify(List<String> files) {
   final List<List<String>> chunks = [];
-  const numberOfChunks = 10;
+  const numberOfChunks = 3;
   print("LOADING $numberOfChunks chunks");
   if (files.length < numberOfChunks) {
     return [files];
@@ -47,38 +51,31 @@ List<List<String>> chunkify(List<String> files) {
   return chunks;
 }
 
-Future<List<FFICoverOutputResult>> unzipArchiveCovers(
-    IsolatePool pool, List<String> files, String out) async {
-  final List<FFICoverOutputResult> result = [];
+Future<List<FFICoverOutputResult>> unzipArchiveCoversDart(
+    List<dynamic> props) async {
+  List<String> files = props[0];
+  String out = props[1];
 
   final start = DateTime.now().millisecondsSinceEpoch;
-  final chunks = chunkify(files);
+
+  // final chunks = chunkify(files);
 
   // print("Chunk 1:: SIZE:: ${c[0].length} \n ${c[0]}");
   // print("Chunk 2:: SIZE:: ${c[1].length} \n ${c[1]}");
   // print("Chunk 3:: SIZE:: ${c[2].length} \n ${c[2]}");
 
-  // final res =compute(
-  //     (message) =>
-  //         _unzipArchiveCovers(message[0] as List<String>, message[1] as String),
-  //     [files, out]);
+  final res = _unzipArchiveCovers([files, out]);
 
-  final List<Future> futures = [];
-  for (var i = 0; i < chunks.length; i++) {
-    final chunk = chunks[i];
+  // final List<Future> futures = [];
 
-    futures.add(pool.scheduleJob<List<FFICoverOutputResult>>(
-        UnzipCoversJob(files: chunk, out: out)));
-  }
-
-  final List<dynamic> results = await Future.wait(futures);
-  for (var i = 0; i < results.length; i++) {
-    result.addAll(results[i]);
-  }
+  // final List<dynamic> results = await Future.wait(futures);
+  // for (var i = 0; i < results.length; i++) {
+  //   result.addAll(results[i]);
+  // }
 
   final end = DateTime.now().millisecondsSinceEpoch;
   print("Unzip finished complete in ${(end - start) / 1000}s");
-  return result;
+  return res;
 }
 
 Future<List<FFICoverOutputResult>> _unzipArchiveCovers(
@@ -91,6 +88,7 @@ Future<List<FFICoverOutputResult>> _unzipArchiveCovers(
 
   for (var i = 0; i < files.length; i++) {
     final file = files[i];
+    final start = DateTime.now().millisecondsSinceEpoch;
     // final openedFile = File(file);
     final inputStream = InputFileStream(file);
     // final archiveFile = await openedFile.readAsBytes();
@@ -105,23 +103,24 @@ Future<List<FFICoverOutputResult>> _unzipArchiveCovers(
       if (!f.isFile) {
         continue;
       }
-      final extension = p.extension(f.name);
-      if (!ext.contains(extension)) {
-        continue;
-      }
+      // final extension = p.extension(f.name);
+      // if (!ext.contains(extension)) {
+      //   continue;
+      // }
       final fName = newName + p.extension(f.name);
       final destinationPath = p.join(out, fName);
       final data = f.content as List<int>;
       final outFile = File(destinationPath);
       await outFile.create();
       await outFile.writeAsBytes(data);
-      
       response.add(FFICoverOutputResult(
           archiveName: p.basenameWithoutExtension(file),
           destinationPath: destinationPath,
           directoryFile: file));
       break;
     }
+    final end = DateTime.now().millisecondsSinceEpoch;
+    print("Unzipping cover in dart ${(end - start) / 1000}s");
     inputStream.close();
   }
 
@@ -130,21 +129,52 @@ Future<List<FFICoverOutputResult>> _unzipArchiveCovers(
   return response;
 }
 
-Future<Book?> unzipArchiveBook(String zipPath, String dest) async {
-  final openedFile = File(zipPath);
-  final archiveBytes = await openedFile.readAsBytes();
-  final archiveFile = archiver.ZipDecoder().decodeBytes(archiveBytes);
-  // await recreateDirectory(dest);
-
+Future<Book?> unzipArchiveBook(String zipPath) async {
   final List<PageEntry> pages = [];
-
-  for (var f in archiveFile) {
-    print(f.name);
-    if (!f.isFile) {
-      print("dir: ${f.name}");
-      continue;
+  List<mangaLibBook.Page> _pages = [];
+  try {
+    print("Unziping: ${p.basenameWithoutExtension(zipPath)}");
+    _pages = await Future(() => mangakolektUnzipArchiveBook(zipPath));
+  } catch (e) {
+    print(e);
+    return null;
+  }
+  for (var p in _pages) {
+    Image image;
+    try {
+      image = await imageFromBytes(p.image);
+    } catch (e) {
+      break;
     }
 
+    bool isDouble = false;
+    if (image.width != null && image.height != null) {
+      isDouble = image.width! >= image.height!;
+    }
+
+    pages.add(PageEntry(name: p.name, image: image, isDouble: isDouble));
+  }
+
+  return Book(
+      name: p.basename(zipPath),
+      pageNumber: pages.length,
+      pages: pages,
+      path: zipPath);
+}
+
+Future<Book?> unzipArchiveBookDart(String zipPath) async {
+  List<PageEntry> pages = [];
+
+  final openedFile = File(zipPath);
+  final archiveBytes = await openedFile.readAsBytes();
+  final archiveFile = ZipDecoder().decodeBytes(archiveBytes);
+
+  for (var f in archiveFile) {
+    final start = DateTime.now().millisecondsSinceEpoch;
+
+    if (!f.isFile) {
+      continue;
+    }
     final data = f.content;
 
     final image = await imageFromBytes(data);
@@ -154,17 +184,11 @@ Future<Book?> unzipArchiveBook(String zipPath, String dest) async {
     if (image.width != null &&
         image.height != null &&
         (image.width! > image.height!)) {
-      // final split = f.name.split('.');
-      // image.
-      // split.insert(1, "__wide__");
-      // imageName = split.join('');
       isDouble = true;
     }
     pages.add(PageEntry(name: imageName, image: image, isDouble: isDouble));
-
-    // final outputFile = File(p.join(dest, imageName));
-    // await outputFile.create(recursive: true);
-    // await outputFile.writeAsBytes(data);
+    final end = DateTime.now().millisecondsSinceEpoch;
+    print("Time per page:: ${(end - start) / 1000}");
   }
   return Book(
       name: p.basename(zipPath),

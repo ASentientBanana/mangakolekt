@@ -58,7 +58,7 @@ dependencies:
   vm_service: ^13.0.0
   yaml: ^3.1.1
   mangakolekt_archive_lib:
-    path: "../mangakolekt_archive_lib"
+    path: "./packages/mangakolekt_archive_lib/"
 
 dev_dependencies:
   ffigen: ^9.0.1
@@ -115,6 +115,7 @@ msix_config:
   identity_name: yepex.mangakolekt
   msix_version: 1.0.0.0
   assets_directory_path: "assets"
+
 ffigen:
   output: "lib/generated/archive_ffi.dart"
   headers:

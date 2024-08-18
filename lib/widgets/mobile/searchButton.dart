@@ -22,19 +22,15 @@ class _SearchButtonState extends State<SearchButton> {
     final size = MediaQuery.of(context).size;
 
     if (!showSearchBar) {
-      return Positioned(
-        right: 0,
-        bottom: 0,
-        child: Container(
-          color: colorScheme.background,
-          child: IconButton(
-            onPressed: () {
-              setState(() {
-                showSearchBar = true;
-              });
-            },
-            icon: const Icon(Icons.search_sharp),
-          ),
+      return Container(
+        color: colorScheme.background,
+        child: IconButton(
+          onPressed: () {
+            setState(() {
+              showSearchBar = true;
+            });
+          },
+          icon: const Icon(Icons.search_sharp),
         ),
       );
     }
