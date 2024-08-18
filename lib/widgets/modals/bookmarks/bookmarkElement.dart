@@ -2,16 +2,19 @@ import 'package:flutter/material.dart';
 import 'package:mangakolekt/locator.dart';
 import 'package:mangakolekt/models/database/bookmark.dart';
 import 'package:mangakolekt/services/navigationService.dart';
-import 'package:path/path.dart';
+import 'package:mangakolekt/util/lib.dart';
 
 class BookmarkElement extends StatefulWidget {
   final Bookmark bookmarkItem;
   final BookmarksData bookData;
-  final void Function(int, int) deleteBookmarkCb;
+  final Future<void> Function(int, int) deleteBookmarkCb;
+  final void Function() refetch;
+
   const BookmarkElement(
       {Key? key,
       required this.bookmarkItem,
       required this.bookData,
+      required this.refetch,
       required this.deleteBookmarkCb})
       : super(key: key);
 
@@ -29,19 +32,19 @@ class _BookmarkElementState extends State<BookmarkElement> {
 
   @override
   void dispose() {
-    // setState(() {
-    //   _isLoading = false;
-    // });
     super.dispose();
   }
 
   void handleDelete() async {
-    print(widget.bookmarkItem.id);
-    print(widget.bookData.path);
     setState(() {
       _isLoading = true;
     });
-    widget.deleteBookmarkCb(widget.bookmarkItem.id, widget.bookmarkItem.page);
+    await widget.deleteBookmarkCb(
+        widget.bookmarkItem.id, widget.bookmarkItem.page);
+    widget.refetch();
+    setState(() {
+      _isLoading = false;
+    });
   }
 
   @override
@@ -67,7 +70,7 @@ class _BookmarkElementState extends State<BookmarkElement> {
                   : () {
                       _navigationService.pushAndPop('/reader', {
                         "initialPage": widget.bookmarkItem.page,
-                        "path": join(widget.bookData.path),
+                        "path": widget.bookmarkItem.book,
                         "id": widget.bookData.id,
                       });
                     },
@@ -114,9 +117,13 @@ class _BookmarkElementState extends State<BookmarkElement> {
                     style: BorderStyle.solid),
               ),
             ),
-            child: ElevatedButton(
-                onPressed: _isLoading ? null : handleDelete,
-                child: const Icon(Icons.delete)),
+            child: InkWell(
+              onTap: _isLoading ? null : handleDelete,
+              child: SizedBox(
+                width: 50,
+                child: Icon(Icons.delete, color: colorScheme.secondary),
+              ),
+            ),
           ),
         ],
       ),

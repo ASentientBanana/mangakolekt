@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -22,29 +23,16 @@ class CreateLibBody extends StatefulWidget {
 class CreateLibBodyState extends State<CreateLibBody> {
   final TextEditingController textEditingController = TextEditingController();
 
-  double numberOfFiles = 0;
+  int numberOfFiles = 0;
   double maxNumberOfFiles = 1;
+  int initialNuberOfFiles = 0;
   bool isSubmitDisabled = false;
 
   final _navigationService = locator<NavigationService>();
   final libraryStore = locator<LibraryStore>();
 
-  void incrementProgress() {
-    setState(() {
-      numberOfFiles++;
-    });
-  }
-
-  void getMaxNumber() async {
-    final numberOfFiles = await getNumberOfFiles(widget.selectedDir);
-    setState(() {
-      maxNumberOfFiles = numberOfFiles.toDouble();
-    });
-  }
-
   @override
   void initState() {
-    getMaxNumber();
     textEditingController.text = widget.selectedDir.split('/').last;
     super.initState();
   }
@@ -82,7 +70,6 @@ class CreateLibBodyState extends State<CreateLibBody> {
     });
 
     final coversPathList = await startIsolate();
-
     if (coversPathList == null || coversPathList.isEmpty) {
       return;
     }
@@ -106,6 +93,27 @@ class CreateLibBodyState extends State<CreateLibBody> {
   void closeModal() {
     _navigationService.goBack();
   }
+  // TODO: Maybe implement progress indicator
+  // Future<void> checkProgress({bool initial = false}) async {
+  //   final out = await getGlobalCoversDir();
+  //   final dir = Directory(out);
+  //   const duration = Duration(seconds: 1);
+
+  //   while (isSubmitDisabled) {
+  //     final itemCount = await (dir.list()).length;
+
+  //     await Future.delayed(duration);
+  //     if (initial) {
+  //       setState(() {
+  //         initialNuberOfFiles = itemCount;
+  //       });
+  //       break;
+  //     }
+  //     setState(() {
+  //       numberOfFiles = itemCount;
+  //     });
+  //   }
+  // }
 
   @override
   Widget build(BuildContext context) {

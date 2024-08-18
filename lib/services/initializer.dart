@@ -11,6 +11,7 @@ Future<void> initAppStructure() async {
   await createLogFile();
   await DatabaseCore.initDatabase();
   await Settings.init();
+  // MangaToast("Initialization complete",color:Colors.green);
 }
 
 Future<bool> initPermissions() async {

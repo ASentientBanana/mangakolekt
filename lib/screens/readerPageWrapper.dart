@@ -53,6 +53,9 @@ class _ReaderPageWrapperState extends State<ReaderPageWrapper> {
     return FutureBuilder(
         future: _book,
         builder: (context, snapshot) {
+          if (snapshot.error != null) {
+            return OpenBookError();
+          }
           //Check if we got the data
           if (!snapshot.hasData) {
             if (snapshot.connectionState == ConnectionState.waiting) {

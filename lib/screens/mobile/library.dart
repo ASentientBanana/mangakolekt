@@ -7,6 +7,7 @@ import 'package:mangakolekt/widgets/homeLogo.dart';
 import 'package:mangakolekt/widgets/library/listItem.dart';
 import 'package:mangakolekt/widgets/mobile/libraryActionButton.dart';
 import 'package:mangakolekt/widgets/mobile/libraryDrawer.dart';
+import 'package:mangakolekt/widgets/mobile/searchButton.dart';
 
 class MyHomePageMobile extends StatefulWidget {
   const MyHomePageMobile({super.key});
@@ -16,7 +17,7 @@ class MyHomePageMobile extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePageMobile> {
   BookCover? selectedCover;
-  final textEditingController = TextEditingController();
+  bool showSearchBox = false;
 
   final libraryStore = locator<LibraryStore>();
 
@@ -28,78 +29,45 @@ class _MyHomePageState extends State<MyHomePageMobile> {
     });
   }
 
+  Widget listBuilder(BuildContext _) {
+    if (libraryStore.library.isEmpty) {
+      return HomeLogo();
+    }
+    final lib = libraryStore.library
+        .where((element) => element.name.contains(libraryStore.searchTerm))
+        .toList();
+    return Padding(
+      padding: const EdgeInsets.only(top: 40),
+      child: ListView.separated(
+          shrinkWrap: true,
+          itemBuilder: (_, index) => Padding(
+                padding: const EdgeInsets.only(left: 30),
+                child: LibListItem(item: lib[index], index: index),
+              ),
+          separatorBuilder: (_, index) => const SizedBox(
+                height: 10,
+              ),
+          itemCount: lib.length),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
     return Scaffold(
       backgroundColor: colorScheme.background,
       drawer: SafeArea(child: LibraryDrawer()),
-      appBar: AppBar(actions: [
-        SizedBox(
-          width: 300,
-          child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
-            Stack(
-              children: [
-                Container(
-                  height: 32,
-                  padding: const EdgeInsets.only(right: 15),
-                  child: Material(
-                      child: TextField(
-                    style: const TextStyle(fontSize: 13),
-                    decoration: InputDecoration(
-                      contentPadding: const EdgeInsets.symmetric(horizontal: 5),
-                      hintText: "Search books",
-                      hintStyle: TextStyle(color: colorScheme.onPrimary),
-                      fillColor: colorScheme.background,
-                      filled: true,
-                      focusedBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.zero,
-                        borderSide:
-                            BorderSide(width: 1, color: colorScheme.onPrimary),
-                      ),
-                      enabledBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.zero,
-                        borderSide:
-                            BorderSide(width: 1, color: colorScheme.onPrimary),
-                      ),
-                    ),
-                    onChanged: (s) {
-                      libraryStore.search(s);
-                    },
-                    controller: textEditingController,
-                  )),
-                ),
-                Positioned(
-                  top: 4,
-                  right: 25,
-                  child: Icon(
-                    Icons.search_sharp,
-                    color: colorScheme.onPrimary,
-                  ),
-                ),
-              ],
-            )
+      appBar: AppBar(
+          shape:
+              const Border(bottom: BorderSide(color: Colors.white, width: 1)),
+          actions: [
+            SearchButton(),
           ]),
-        ),
-      ]),
       body: SafeArea(
         // color: Colors.red,
-        child: Observer(builder: (_) {
-          if (libraryStore.library.isEmpty) {
-            return HomeLogo();
-          }
-          return ListView.separated(
-              shrinkWrap: true,
-              itemBuilder: (_, index) => Padding(
-                    padding: const EdgeInsets.only(left: 30),
-                    child: LibListItem(
-                        item: libraryStore.library[index], index: index),
-                  ),
-              separatorBuilder: (_, index) => const SizedBox(
-                    height: 10,
-                  ),
-              itemCount: libraryStore.library.length);
-        }),
+        child: Observer(
+          builder: listBuilder,
+        ),
       ),
       // child: LibList(),
 

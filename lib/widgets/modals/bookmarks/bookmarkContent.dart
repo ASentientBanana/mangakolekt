@@ -5,7 +5,7 @@ import 'package:mangakolekt/widgets/modals/bookmarks/bookmarkMangaButton.dart';
 
 class BookmarkContent extends StatefulWidget {
   final Bookmarks bookmarks;
-  final void Function(int, int) deleteBookmarkCb;
+  final Future<void> Function(int, int) deleteBookmarkCb;
 
   const BookmarkContent(
       {Key? key, required this.bookmarks, required this.deleteBookmarkCb})
@@ -36,8 +36,16 @@ class _BookmarkContentState extends State<BookmarkContent> {
         key: Key(widget.bookmarks.data[bookmarksIndex].bookmarks[index].date
             .toString()),
         deleteBookmarkCb: widget.deleteBookmarkCb,
+        refetch: () => {},
         bookData: widget.bookmarks.data[bookmarksIndex],
         bookmarkItem: widget.bookmarks.data[bookmarksIndex].bookmarks[index]);
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    print("Printing::");
+    widget.bookmarks.data.forEach((element) {print(element.name);});
   }
 
   @override
@@ -49,7 +57,6 @@ class _BookmarkContentState extends State<BookmarkContent> {
       color: colorScheme.primary,
       child: Column(
         children: [
-          //Title
           Container(
             padding: const EdgeInsets.all(7),
             decoration: BoxDecoration(

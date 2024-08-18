@@ -52,12 +52,7 @@ class PageEntry {
   // final double w;
   // final double h;
 
-  PageEntry({
-    required this.name,
-    required this.image,
-  }) {
-    isDouble = name.contains('__wide__');
-  }
+  PageEntry({required this.name, required this.image, required this.isDouble});
 }
 
 class Book {
@@ -65,7 +60,7 @@ class Book {
   final String name;
   final List<PageEntry> pages;
   final String path;
-  final int? id;
+  int? id;
 
   Book(
       {required this.name,

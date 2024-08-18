@@ -10,7 +10,7 @@ class ReaderAppbar extends AppBar {
     required Color isNotBookmarkedColor,
     required readerController,
     required isBookmark,
-    required void Function() bookmark,
+    required void Function()? bookmark,
     required void Function(VoidCallback) set,
   }) : super(
             title: Text(readerController.book.name),

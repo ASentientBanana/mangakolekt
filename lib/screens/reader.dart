@@ -1,4 +1,3 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:mangakolekt/controllers/input.dart';
 import 'package:mangakolekt/controllers/reader.dart';
@@ -25,7 +24,9 @@ class MangaReader extends StatefulWidget {
 
 class _MangaReaderState extends State<MangaReader> {
   final _focusNode = FocusNode();
+
   List<int> bookmarks = [];
+  bool disableBookmarkButton = false;
 
   late ReaderController readerController;
   late InputController inputController =
@@ -123,20 +124,15 @@ class _MangaReaderState extends State<MangaReader> {
   }
 
   Future<void> bookmark() async {
-    final isBookmark =
-        bookmarks.contains(readerController.getCurrentPages().first);
-    if (!isBookmark) {
-      await DatabaseMangaHelpers.addBookmark(
-          book: readerController.book.id ?? -1,
-          path: readerController.book.path,
-          page: readerController.getCurrentPages().first);
-    } else {
-      await DatabaseMangaHelpers.removeBookmark(
-          book: readerController.book.id ?? -1,
-          page: readerController.getCurrentPages().first);
-    }
-    final bm = await getBookmarks();
     setState(() {
+      disableBookmarkButton = true;
+    });
+    final bm = await DatabaseMangaHelpers.bookmark(
+        bookID: readerController.book.id ?? -1,
+        path: readerController.book.path,
+        page: readerController.getCurrentPages().first);
+    setState(() {
+      disableBookmarkButton = false;
       bookmarks = bm;
     });
   }
@@ -186,7 +182,7 @@ class _MangaReaderState extends State<MangaReader> {
             isNotBookmarkedColor: colorScheme.onPrimary,
             readerController: readerController,
             isBookmark: isBookmark,
-            bookmark: bookmark,
+            bookmark: disableBookmarkButton ? null : bookmark,
             set: setState),
         body: KeyboardListener(
           focusNode: _focusNode,

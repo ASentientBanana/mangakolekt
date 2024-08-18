@@ -11,24 +11,15 @@ class LibraryDrawer extends StatelessWidget {
   final List<NavigationItem> items = [];
 
   void handlePickFile() async {
-    final file = await pickFile();
-
-    if (file != null) {
-      _navigationService.navigateTo('/reader', {"id": 0, "path": file});
-    }
+      final file = await pickFile();
+      if (file != null) {
+        _navigationService.navigateTo('/reader', {"id": 0, "path": file});
+      }
   }
 
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
-
-    Widget? buildItem(BuildContext context, int index) {
-      // return Text(items[index]);
-    }
-
-    Widget buildSeperator(BuildContext context, int index) {
-      return SizedBox.shrink();
-    }
 
     return Drawer(
       backgroundColor: colorScheme.primary,

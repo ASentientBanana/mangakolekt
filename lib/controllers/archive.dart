@@ -13,7 +13,7 @@ import 'package:path/path.dart' as p;
 
 abstract class BaseBookController {
   bool checkType(String type);
-  Future<void> unpack(String pathToBook, String dest);
+  Future<Book?> unpack(String pathToBook, String dest);
   Future<List<FFICoverOutputResult>> unpackCovers(String pathToDir,
       {required List<String> files, required String out});
 }
@@ -57,10 +57,11 @@ class ArchiveController {
       throw Error.safeToString('Unsupported file type selected.');
     }
     //unzip to the current dir.
-    await controller.unpack(pathToBook, dest);
+
+    return await controller.unpack(pathToBook, dest);
     //load book here from current dir
-    final book = await loadBook(dest, pathToBook, id);
-    return book;
+    // final book = await loadBook(dest, pathToBook, id);
+    // return book;
     // return null;
   }
 
@@ -116,8 +117,10 @@ class ArchiveController {
       if (!(await file.exists())) {
         continue;
       }
-      pages.add(
-          PageEntry(name: p.split(_pages[i]).last, image: Image.file(file)));
+      pages.add(PageEntry(
+          name: p.split(_pages[i]).last,
+          image: Image.file(file),
+          isDouble: false));
     }
     return Book(
         id: id != null ? int.tryParse(id) : null,
@@ -137,7 +140,6 @@ class ArchiveController {
     }
 
     // get a list of files
-    // final _files = files ?? (await FFIService.ffiGetDirContents(pathToDir));
     final _files = (await getFilesFromDir(dir));
     //Build map of types
     for (var element in _files) {

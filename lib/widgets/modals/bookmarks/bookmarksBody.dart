@@ -58,7 +58,6 @@ class _BookmarksBodyState extends State<BookmarksBody> {
         bookmarks: Bookmarks.Empty(),
       );
     }
-    // print(snapshot.data);
     return BookmarkContent(
       deleteBookmarkCb: deleteBookmark,
       bookmarks: snapshot.data,

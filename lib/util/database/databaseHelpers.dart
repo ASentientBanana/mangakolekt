@@ -5,6 +5,7 @@ import 'package:mangakolekt/models/library.dart';
 import 'package:mangakolekt/util/database/databaseCore.dart';
 import 'package:mangakolekt/util/database/databaseTable.dart';
 import 'package:mangakolekt/util/util.dart';
+import 'package:vm_service/vm_service.dart';
 
 class DatabaseMangaHelpers {
   static Future<List<LibraryElement>> getLibraries({String? id}) async {
@@ -80,7 +81,6 @@ class DatabaseMangaHelpers {
     //loop and call insert on batch
 
     for (var cover in books) {
-
       batch.insert(
         DatabaseTables.Book,
         {
@@ -141,10 +141,14 @@ class DatabaseMangaHelpers {
       final db = await DatabaseCore.openDB();
       // final results = await db.rawQuery(
       //     "SELECT * FROM ${DatabaseTables.Bookmarks} RIGHT JOIN ${DatabaseTables.Book} ON ${DatabaseTables.Book}.id = ${DatabaseTables.Bookmarks}.book;");
-      final results = await db.rawQuery(
-          "SELECT ${DatabaseTables.Library}.path as lib_path, ${DatabaseTables.Book}.path as book_path, ${DatabaseTables.Library}.name as lib_name, * FROM ${DatabaseTables.Bookmarks} INNER JOIN ${DatabaseTables.Book} ON ${DatabaseTables.Book}.id = ${DatabaseTables.Bookmarks}.book INNER JOIN Library ON ${DatabaseTables.Library}.id = ${DatabaseTables.Book}.library;");
 
-      // print(results);
+      final query =
+          "SELECT ${DatabaseTables.Library}.path as lib_path, ${DatabaseTables.Book}.path as book_path, ${DatabaseTables.Library}.name as lib_name, * FROM ${DatabaseTables.Bookmarks} INNER JOIN ${DatabaseTables.Book} ON ${DatabaseTables.Book}.id = ${DatabaseTables.Bookmarks}.book INNER JOIN Library ON ${DatabaseTables.Library}.id = ${DatabaseTables.Book}.library;";
+      final results = await db.rawQuery(query);
+
+      print("FOUND:: $results for :: ${DatabaseTables.Bookmarks}");
+      print("query:: $query");
+
       db.close();
       final b = Bookmarks.fromMaps(results);
       return b;
@@ -187,5 +191,17 @@ class DatabaseMangaHelpers {
     db.close();
     // await DatabaseCore.deleteFromDB(
     //);
+  }
+
+  static Future<List<int>> bookmark(
+      {int bookID = -1, required String path, required int page}) async {
+    final bookmarks = await getBookmarks();
+    final hasBookmark = bookmarks.containsBookmark(path, page);
+    if (!hasBookmark) {
+      await addBookmark(book: bookID, path: path, page: page);
+    } else {
+      await removeBookmark(book: bookID, page: page);
+    }
+    return await getBookmarkPagesFromPath(path: path);
   }
 }

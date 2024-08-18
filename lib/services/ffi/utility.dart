@@ -16,6 +16,7 @@ DynamicLibrary loadWindows() {
 }
 
 DynamicLibrary loadLinux() {
+  print("loading linux dynamic lib");
   final String path;
   if (kReleaseMode) {
 // /home/petar/Projects/mangakolekt/dist/mangakolekt/dist/linux/mangakolekt:
@@ -27,16 +28,12 @@ DynamicLibrary loadLinux() {
   return DynamicLibrary.open(path);
 }
 
-//TODO: Add default implementation
-loadUnsupported() {
-// throw Error.safeToString("Platform unsuported");
-// Temp solution for the compiler
-  return loadLinux();
-}
-
 DynamicLibrary loadAndroid() {
   const path = 'manga_archive.so';
-  return DynamicLibrary.open(path);
+  final dl =  DynamicLibrary.open(path);
+  print("loading linux dynamic lib");
+  print(dl);
+  return dl;
 }
 
 //

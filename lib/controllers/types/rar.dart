@@ -1,8 +1,10 @@
 import 'dart:io';
 
+import 'package:mangakolekt/models/book.dart';
 import 'package:mangakolekt/models/ffi.dart';
 import 'package:mangakolekt/services/ffi/ffi.dart';
 import 'package:mangakolekt/controllers/archive.dart';
+import 'package:mangakolekt/services/toast.dart';
 
 class RarBookController extends BaseBookController {
   final List<String> fileTypes = ['cbr', 'rar'];
@@ -17,13 +19,14 @@ class RarBookController extends BaseBookController {
   }
 
   @override
-  Future<void> unpack(String pathToBook, String dest) async {
+  Future<Book?> unpack(String pathToBook, String dest) async {
     try {
       await ffiUnrarSingleBook(pathToBook, dest);
     } catch (e) {
       print("Problbem with ffi");
-      print(e);
+      MangaToast(e.toString());
     }
+    return null;
   }
 
   @override

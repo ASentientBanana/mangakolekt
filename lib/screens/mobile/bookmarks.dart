@@ -14,6 +14,7 @@ class BookmarksMobile extends StatefulWidget {
 class _BookmarksMobileState extends State<BookmarksMobile> {
   Future<Bookmarks?> bookmarksFuture = Future(() => null);
   int bookmarkIndex = 0;
+  bool isLoadingState = false;
 
   void getBookmarks() {
     setState(() {
@@ -23,27 +24,41 @@ class _BookmarksMobileState extends State<BookmarksMobile> {
 
   @override
   void initState() {
-    // TODO: implement initState
     getBookmarks();
     super.initState();
   }
 
+  Future<void> action(Future Function() cb) async {
+    setState(() {
+      isLoadingState = true;
+    });
+    await cb();
+    setState(() {
+      isLoadingState = false;
+    });
+  }
+
   Widget bookmarkElementBuilder(BookmarksData item, int index) {
     return BookmarkElement(
+        refetch: getBookmarks,
         bookmarkItem: item.bookmarks[index],
         bookData: item,
-        deleteBookmarkCb: (_, __) {});
+        deleteBookmarkCb: (int p1, int p2) =>
+            DatabaseMangaHelpers.removeBookmark(book: p1, page: p2));
   }
 
   Widget futureContentBuilder(
       BuildContext context, AsyncSnapshot<Bookmarks?> snapshot) {
-
     if (!snapshot.hasData) {
-      return const Text("No bookmarks loaded");
+      return const Center(
+        child: Text("No bookmarks loaded"),
+      );
     }
 
     if (snapshot.data!.data.isEmpty) {
-      return const Text("No bookmarks added");
+      return const Center(
+        child: Text("No bookmarks added"),
+      );
     }
 
     return ListView.builder(
