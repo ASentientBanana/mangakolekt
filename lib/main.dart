@@ -8,8 +8,6 @@ void main() {
   setupServices();
   runApp(const MyApp());
 }
-// multy threaded Vagabond :: 327 books ~30s
-// single threaded Vagabond :: 327 books ~30s
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});

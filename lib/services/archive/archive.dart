@@ -33,7 +33,6 @@ class UnzipCoversJob extends PooledJob<List<FFICoverOutputResult>> {
 List<List<String>> chunkify(List<String> files) {
   final List<List<String>> chunks = [];
   const numberOfChunks = 3;
-  print("LOADING $numberOfChunks chunks");
   if (files.length < numberOfChunks) {
     return [files];
   }
@@ -58,23 +57,9 @@ Future<List<FFICoverOutputResult>> unzipArchiveCoversDart(
 
   final start = DateTime.now().millisecondsSinceEpoch;
 
-  // final chunks = chunkify(files);
-
-  // print("Chunk 1:: SIZE:: ${c[0].length} \n ${c[0]}");
-  // print("Chunk 2:: SIZE:: ${c[1].length} \n ${c[1]}");
-  // print("Chunk 3:: SIZE:: ${c[2].length} \n ${c[2]}");
-
   final res = _unzipArchiveCovers([files, out]);
 
-  // final List<Future> futures = [];
-
-  // final List<dynamic> results = await Future.wait(futures);
-  // for (var i = 0; i < results.length; i++) {
-  //   result.addAll(results[i]);
-  // }
-
   final end = DateTime.now().millisecondsSinceEpoch;
-  print("Unzip finished complete in ${(end - start) / 1000}s");
   return res;
 }
 
