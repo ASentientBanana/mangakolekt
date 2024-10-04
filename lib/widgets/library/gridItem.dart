@@ -31,13 +31,20 @@ class _GridItemState extends State<GridItem> with TickerProviderStateMixin {
       return Image.asset('assets/images/dog_color.png');
     }
 
-    final fileByteData = await coverFile.readAsBytes();
-      return Image.memory(
-        fileByteData,
-        errorBuilder: (_, __, ___) {
-          return Image.asset('assets/images/dog_color.png');
-        },
-      );
+    return Image.file(
+      coverFile,
+      errorBuilder: (_, __, ___) {
+        return Image.asset('assets/images/dog_color.png');
+      },
+    );
+
+    // final fileByteData = await coverFile.readAsBytes();
+    //   return Image.memory(
+    //     fileByteData,
+    //     errorBuilder: (_, __, ___) {
+    //       return Image.asset('assets/images/dog_color.png');
+    //     },
+    //   );
   }
 
   @override
@@ -61,9 +68,8 @@ class _GridItemState extends State<GridItem> with TickerProviderStateMixin {
             });
           },
           onTap: () {
-            print(widget.item.path);
-            // _navigationService.navigateTo('/reader',
-            //     {"path": widget.item.bookPath, "id": widget.item.id});
+            _navigationService.navigateTo('/reader',
+                {"path": widget.item.bookPath, "id": widget.item.id});
           },
           child: FutureBuilder<Widget>(
             builder: imageBuilder,
