@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:mangakolekt/constants.dart';
-// import 'package:mangakolekt/controllers/reader.dart';
 import 'package:mangakolekt/models/util.dart';
 import 'package:mangakolekt/widgets/appbar/backButton.dart';
 

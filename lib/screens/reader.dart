@@ -1,12 +1,14 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
+import 'package:flutter/widgets.dart';
 import 'package:mangakolekt/controllers/input.dart';
 import 'package:mangakolekt/controllers/reader.dart';
 import 'package:mangakolekt/constants.dart';
-import 'package:mangakolekt/util/database/databaseHelpers.dart';
+import 'package:mangakolekt/services/database/databaseHelpers.dart';
 import 'package:mangakolekt/util/platform.dart';
 import 'package:mangakolekt/util/reader.dart';
 import 'package:mangakolekt/widgets/appbar/readerbar.dart';
-import 'package:mangakolekt/widgets/reader/curentPageIndexView.dart';
 import 'package:mangakolekt/widgets/reader/singleImage.dart';
 import 'package:mangakolekt/widgets/reader/list_preview.dart';
 import 'package:flutter/services.dart';
@@ -137,46 +139,87 @@ class _MangaReaderState extends State<MangaReader> {
     });
   }
 
-  List<Widget> renderPages() {
+  List<Widget> renderPages(Size size) {
     // A more verbose page rendering way.
     final List<int> pageIndexes;
+
+    final List<Widget> pages = [];
+    final List<Map<String, double>> aspects = [];
+
     //check if double page view is toggled
     if (readerController.isRightToLeftMode) {
       pageIndexes = readerController.getCurrentPages();
     } else {
       pageIndexes = readerController.getCurrentPages().reversed.toList();
     }
-    final List<Widget> pages = [];
 
-    for (var i = 0; i < pageIndexes.length; i++) {
+    // Calculate new aspect ratio
+    pageIndexes.forEach((imageIndex) {
+      final img = readerController.pages[imageIndex].entry.image;
+      final w = img.width ?? 1;
+      final h = img.height ?? 1;
+      final isWide = w > h;
+      final ar = isWide ? w / h : h / w;
+      final area = w * h;
+      aspects.add({
+        "area": area,
+        "aspect": ar,
+      });
+    });
+
+    //simplest way to iterate aspects
+    int imageIndex = 0;
+    // 1.3 is a magic number arrived at with testing
+    final imgWidth = ((size.width * 1.3) / pageIndexes.length);
+    pageIndexes.forEach((pageIndex) {
+      final imgHeight = imgWidth / (aspects[imageIndex]["aspect"] ?? 1);
+
+      // Image(
+      //   image: readerController.pages[imageIndex].entry.image.image,
+      //   height: imgWidth,
+      //   width:  imgHeight,
+      //   alignment: setAliment(readerController.isDoublePageView, count),
+      // )
       pages.add(
-        Expanded(
-          // flex: 1,
-          child: Listener(
-            onPointerDown: handleMouseClick,
-            child: SingleImage(
-                readerScrollController: inputController.readerScrollController,
-                isDouble: readerController.getCurrentPages().length == 2,
-                index: i,
-                image: readerController.pages[pageIndexes[i]].entry.image,
-                scaleTo: readerController.scaleTo),
-          ),
+        SingleImage(
+            isDouble: readerController.isDoublePageView,
+            increment: handleMouseClick,
+            image: readerController.pages[pageIndex].entry.image,
+            imageIndex: imageIndex,
+            size: Size(imgHeight, imgWidth),
         ),
       );
-    }
+      imageIndex++;
+    });
     return pages;
+  }
+
+  Widget readerLayoutBuilder(
+      BuildContext context, BoxConstraints constraints, double width) {
+    return Center(
+        child: Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      mainAxisSize: MainAxisSize.max,
+      children: renderPages(Size(width, constraints.maxHeight)),
+    ));
   }
 
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
+    final screenSize = MediaQuery.of(context).size;
+    final screenWidth = screenSize.width;
+    // final screenHeight = screenSize.height;
     final isBookmark =
         bookmarks.contains(readerController.getCurrentPages().first);
+    final readerWidth = screenWidth - SIDEBAR_WIDTH;
+
     return Focus(
       // This removes tab select for buttons in the screen to
       descendantsAreFocusable: false,
       canRequestFocus: false,
       child: Scaffold(
+        backgroundColor: Colors.white,
         appBar: ReaderAppbar(
             isBookmarkedColor: colorScheme.tertiary,
             isNotBookmarkedColor: colorScheme.onPrimary,
@@ -187,41 +230,24 @@ class _MangaReaderState extends State<MangaReader> {
         body: KeyboardListener(
           focusNode: _focusNode,
           child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Container(
                 width: SIDEBAR_WIDTH,
-                color: Theme.of(context).colorScheme.background,
+                color: colorScheme.background,
                 child: ListPreview(
-                    readerController: readerController,
-                    sc: _scrollController,
-                    onTap: handlePreviewClick),
+                  readerController: readerController,
+                  sc: _scrollController,
+                  onTap: handlePreviewClick,
+                ),
               ),
               // I dont like this but it seems the most intuitive way to do this.
-              Stack(
-                children: [
-                  Container(
-                    color: Theme.of(context).colorScheme.background,
-                    width: MediaQuery.of(context).size.width - SIDEBAR_WIDTH,
-                    child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: renderPages(),
-                    ),
-                  ),
-                  Positioned(
-                      bottom: 0,
-                      right: 0,
-                      child: Padding(
-                        padding: const EdgeInsets.only(right: 20),
-                        child: CurrentPageIndexView(
-                          currentPages: readerController
-                              .getCurrentPages()
-                              .map((e) => e + 1)
-                              .join('-'),
-                          totalPages: readerController.pages.length.toString(),
-                        ),
-                      ))
-                ],
+              Container(
+                color: colorScheme.background,
+                // color: Colors.purpleAccent,
+                width: readerWidth,
+                child: LayoutBuilder(
+                  builder: (ctx, c) => readerLayoutBuilder(ctx, c, readerWidth),
+                ),
               ),
             ],
           ),
@@ -230,3 +256,18 @@ class _MangaReaderState extends State<MangaReader> {
     ); // return
   }
 }
+
+//
+// Positioned(
+// bottom: 0,
+// right: 0,
+// child: Padding(
+// padding: const EdgeInsets.only(right: 20),
+// child: CurrentPageIndexView(
+// currentPages: readerController
+//     .getCurrentPages()
+//     .map((e) => e + 1)
+//     .join('-'),
+// totalPages: readerController.pages.length.toString(),
+// ),
+// ))

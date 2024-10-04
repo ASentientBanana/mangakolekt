@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:mangakolekt/models/database/bookmark.dart';
-import 'package:mangakolekt/util/database/databaseHelpers.dart';
+import 'package:mangakolekt/services/database/databaseHelpers.dart';
 import 'package:mangakolekt/widgets/modals/bookmarks/bookmarkElement.dart';
 import 'package:mangakolekt/widgets/modals/bookmarks/bookmarkMangaButton.dart';
 

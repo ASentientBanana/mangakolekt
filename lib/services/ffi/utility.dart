@@ -32,7 +32,6 @@ DynamicLibrary loadAndroid() {
   const path = 'manga_archive.so';
   final dl =  DynamicLibrary.open(path);
   print("loading linux dynamic lib");
-  print(dl);
   return dl;
 }
 

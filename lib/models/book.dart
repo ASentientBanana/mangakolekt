@@ -1,4 +1,8 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
+import 'package:mangakolekt/util/files.dart';
+import 'package:mangakolekt/util/platform.dart';
 import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
 
@@ -14,14 +18,39 @@ class BookCover {
   String name = '';
   String path = '';
   String bookPath = '';
-  BookCover(
-      {required this.name,
-      required this.path,
-      required this.bookPath,
-      required this.id});
+  BookCover({
+    required this.name,
+    required this.path,
+    required this.bookPath,
+    required this.id,
+  });
 
   String get mapString => "$name;$path;$bookPath";
-  // return BookCover(name: bookName, path: out, bookPath: path);
+
+  // Example path in android:
+  // /data/user/0/com.example.mangakolekt/app_flutter/mangakolekt/covers/1727543076847446.jpg
+  Future<String> getPath() async {
+    final appDir = await getGlobalCoversDir();
+    final l = [];
+    if (isMobile()) {
+      final d = Directory(appDir);
+      d.list().forEach((elem) {
+        l.add(elem);
+      });
+    
+      final file = join(appDir, basename(path));
+      final e = File(file).existsSync();
+      final e2 = File(path).existsSync();
+      // /data/user/0/com.example.mangakolekt/app_flutter/mangakolekt/covers/1727543076861272.jpg: true
+      // /data/user/0/com.example.mangakolekt/app_flutter/mangakolekt/covers/1727543076861272.jpg: true
+      print("");
+      print("\n$file: $e");
+      print("$path: $e2");
+      print("^^^^^^");
+      return file;
+    }
+    return path;
+  }
 
   static BookCover? fromMap(Map<String, dynamic> map) {
     final name = map['name'];

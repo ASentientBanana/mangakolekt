@@ -17,13 +17,36 @@ class _GridItemState extends State<GridItem> with TickerProviderStateMixin {
   bool isHovering = false;
   final _navigationService = locator<NavigationService>();
 
+  Widget imageBuilder(BuildContext context, AsyncSnapshot snapshot) {
+    if (!snapshot.hasData) {
+      return Image.asset('assets/images/dog_color.png');
+    }
+    return snapshot.data;
+  }
+
+  Future<Widget> loadImage(BookCover cover) async {
+    final coverFile = File(await cover.getPath());
+
+    if (!await coverFile.exists()) {
+      return Image.asset('assets/images/dog_color.png');
+    }
+
+    final fileByteData = await coverFile.readAsBytes();
+      return Image.memory(
+        fileByteData,
+        errorBuilder: (_, __, ___) {
+          return Image.asset('assets/images/dog_color.png');
+        },
+      );
+  }
+
   @override
   Widget build(BuildContext context) {
     // final colorScheme = Theme.of(context).colorScheme;
     return GridTile(
       footer: Center(
         child: Container(
-          padding: EdgeInsets.only(top: 100),
+          padding: const EdgeInsets.only(top: 100),
           child: Text(widget.item.name),
         ),
       ),
@@ -38,13 +61,13 @@ class _GridItemState extends State<GridItem> with TickerProviderStateMixin {
             });
           },
           onTap: () {
-            print({"path": widget.item.bookPath, "id": widget.item.id});
-            _navigationService.navigateTo('/reader',
-                {"path": widget.item.bookPath, "id": widget.item.id});
+            print(widget.item.path);
+            // _navigationService.navigateTo('/reader',
+            //     {"path": widget.item.bookPath, "id": widget.item.id});
           },
-          child: Image.file(
-            fit: BoxFit.contain,
-            File(widget.item.path),
+          child: FutureBuilder<Widget>(
+            builder: imageBuilder,
+            future: loadImage(widget.item),
           ),
         ),
       ),

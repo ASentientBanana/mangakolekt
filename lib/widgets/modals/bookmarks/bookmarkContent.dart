@@ -44,7 +44,6 @@ class _BookmarkContentState extends State<BookmarkContent> {
   @override
   void initState() {
     super.initState();
-    print("Printing::");
     widget.bookmarks.data.forEach((element) {print(element.name);});
   }
 

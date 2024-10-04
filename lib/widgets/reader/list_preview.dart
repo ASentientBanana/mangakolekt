@@ -42,6 +42,7 @@ class _ListPreviewState extends State<ListPreview> {
   Widget build(BuildContext context) {
     return Scrollbar(
       trackVisibility: true,
+
       radius: Radius.zero,
       controller: widget.scrollController,
       child: ListView(

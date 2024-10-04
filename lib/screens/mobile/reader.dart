@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:mangakolekt/controllers/input.dart';
 import 'package:mangakolekt/controllers/reader.dart';
-import 'package:mangakolekt/util/database/databaseHelpers.dart';
+import 'package:mangakolekt/services/database/databaseHelpers.dart';
 import 'package:mangakolekt/util/reader.dart';
 import 'package:mangakolekt/widgets/appbar/readerBarMobile.dart';
 import 'package:mangakolekt/widgets/reader/curentPageIndexView.dart';
@@ -102,7 +102,6 @@ class _MangaReaderState extends State<MangaReaderMobile>
     });
   }
 
-  void handleDragStart(DragStartDetails ds) {}
   void handleDragEnd(DragEndDetails details) {
     if (details.primaryVelocity! > 0) {
       setState(() {
@@ -117,32 +116,58 @@ class _MangaReaderState extends State<MangaReaderMobile>
     }
   }
 
-  List<Widget> renderPages() {
+  List<Widget> renderPages(Size size) {
     // A more verbose page rendering way.
     final List<int> pageIndexes;
+
+    final List<Widget> pages = [];
+    final List<Map<String, double>> aspects = [];
+
     //check if double page view is toggled
     if (readerController.isRightToLeftMode) {
       pageIndexes = readerController.getCurrentPages();
     } else {
       pageIndexes = readerController.getCurrentPages().reversed.toList();
     }
-    final List<Widget> pages = [];
 
-    for (var i = 0; i < pageIndexes.length; i++) {
+    // Calculate new aspect ratio
+    pageIndexes.forEach((imageIndex) {
+      final img = readerController.pages[imageIndex].entry.image;
+      final w = img.width ?? 1;
+      final h = img.height ?? 1;
+      final isWide = w > h;
+      final ar = isWide ? w / h : h / w;
+      final area = w * h;
+      aspects.add({
+        "area": area,
+        "aspect": ar,
+      });
+    });
+
+    //simplest way to iterate aspects
+    int imageIndex = 0;
+    // 1.3 is a magic number arrived at with testing
+    final imgWidth = ((size.width * 1.3) / pageIndexes.length);
+    pageIndexes.forEach((pageIndex) {
+      final imgHeight = imgWidth / (aspects[imageIndex]["aspect"] ?? 1);
+
+      // Image(
+      //   image: readerController.pages[imageIndex].entry.image.image,
+      //   height: imgWidth,
+      //   width:  imgHeight,
+      //   alignment: setAliment(readerController.isDoublePageView, count),
+      // )
       pages.add(
-        Expanded(
-          child: GestureDetector(
-            onHorizontalDragEnd: handleDragEnd,
-            child: SingleImage(
-                readerScrollController: null,
-                isDouble: readerController.getCurrentPages().length == 2,
-                index: i,
-                image: readerController.pages[pageIndexes[i]].entry.image,
-                scaleTo: readerController.scaleTo),
-          ),
+        SingleImage(
+          isDouble: readerController.isDoublePageView,
+          onDrag: handleDragEnd,
+          image: readerController.pages[pageIndex].entry.image,
+          imageIndex: imageIndex,
+          size: Size(imgHeight, imgWidth),
         ),
       );
-    }
+      imageIndex++;
+    });
     return pages;
   }
 
@@ -156,7 +181,7 @@ class _MangaReaderState extends State<MangaReaderMobile>
       isBookmark = false;
     }
 
-    final width = MediaQuery.of(context).size.width;
+    final size = MediaQuery.of(context).size;
     return Focus(
       // This removes tab select for buttons in the screen to
       descendantsAreFocusable: false,
@@ -198,15 +223,16 @@ class _MangaReaderState extends State<MangaReaderMobile>
                     child: Container(
                       height: MediaQuery.of(context).size.height,
                       // color: Theme.of(context).colorScheme.background,
-                      width: MediaQuery.of(context).size.width,
+                      width: size.width,
                       child: Row(
                         crossAxisAlignment: CrossAxisAlignment.center,
-                        children: renderPages(),
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: renderPages(size),
                       ),
                     ),
                   ),
                   Positioned(
-                      width: width,
+                      width: size.width,
                       bottom: 0,
                       right: 0,
                       child: Row(
