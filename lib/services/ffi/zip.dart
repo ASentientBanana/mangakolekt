@@ -1,4 +1,5 @@
-part of ffi_service;
+import 'package:mangakolekt/models/ffi.dart';
+import 'package:mangakolekt_archive_lib/mangakolekt_archive_zip/mangakolekt_archive_cover.dart';
 
 List<FFICoverOutputResult> ffiUnzipCovers(List<dynamic> props) {
   List<String> files = props[0];

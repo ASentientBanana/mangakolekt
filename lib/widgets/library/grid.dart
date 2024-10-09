@@ -60,8 +60,12 @@ class _LibGridState extends State<LibGrid> {
         }
 
         final covers = libraryStore.library[libraryStore.selectedCoverIndex!];
+
         final gridItems = sortCoversNumeric(covers.books)
-            .map((e) => GridItem(item: e))
+            .map((e) => GridItem(
+                  item: e,
+                  libraryId: covers.id,
+                ))
             .toList();
         return Scrollbar(
           radius: Radius.zero,

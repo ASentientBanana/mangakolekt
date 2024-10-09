@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:mangakolekt/locator.dart';
 import 'package:mangakolekt/models/database/bookmark.dart';
 import 'package:mangakolekt/services/navigationService.dart';
-import 'package:mangakolekt/util/lib.dart';
+// import 'package:mangakolekt/util/lib.dart';
 
 class BookmarkElement extends StatefulWidget {
   final Bookmark bookmarkItem;

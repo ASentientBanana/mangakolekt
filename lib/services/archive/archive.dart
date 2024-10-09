@@ -110,7 +110,8 @@ Future<Book?> unzipArchiveBook(String zipPath) async {
 
     bool isDouble = false;
     if (image.width != null && image.height != null) {
-      isDouble = image.width! >= image.height!;
+      isDouble =
+          (image.width! >= image.height!) || image.width! == image.height!;
     }
 
     pages.add(PageEntry(name: p.name, image: image, isDouble: isDouble));

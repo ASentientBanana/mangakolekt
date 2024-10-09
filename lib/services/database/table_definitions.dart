@@ -8,7 +8,6 @@ final databaseTableDefinitions = [
         DatabaseTableField(
           name: 'name',
           type: DatabaseTypes.Text,
-          // extra: ['unique'],
         ),
       )
       .add(DatabaseTableField(name: "path", type: DatabaseTypes.Text)),
@@ -29,6 +28,7 @@ final databaseTableDefinitions = [
   DatabaseTable(name: DatabaseTables.Bookmarks)
       .addPrimaryKey()
       .add(DatabaseTableField(name: 'book', type: DatabaseTypes.Int))
+      .add(DatabaseTableField(name: 'library', type: DatabaseTypes.Int))
       .add(DatabaseTableField(name: 'page', type: DatabaseTypes.Int))
       .add(DatabaseTableField(name: 'path', type: DatabaseTypes.Text))
       .add(DatabaseTableField(name: 'created_at', type: DatabaseTypes.Int))

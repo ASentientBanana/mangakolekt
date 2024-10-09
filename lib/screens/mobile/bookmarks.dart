@@ -18,7 +18,7 @@ class _BookmarksMobileState extends State<BookmarksMobile> {
 
   void getBookmarks() {
     setState(() {
-      bookmarksFuture = DatabaseMangaHelpers.getBookmarks();
+      // bookmarksFuture = DatabaseMangaHelpers.getBookmarks();
     });
   }
 
@@ -39,12 +39,13 @@ class _BookmarksMobileState extends State<BookmarksMobile> {
   }
 
   Widget bookmarkElementBuilder(BookmarksData item, int index) {
-    return BookmarkElement(
-        refetch: getBookmarks,
-        bookmarkItem: item.bookmarks[index],
-        bookData: item,
-        deleteBookmarkCb: (int p1, int p2) =>
-            DatabaseMangaHelpers.removeBookmark(book: p1, page: p2));
+    return SizedBox.shrink();
+    // return BookmarkElement(
+    //     refetch: getBookmarks,
+    //     bookmarkItem: item.bookmarks[index],
+    //     bookData: item,
+    //     deleteBookmarkCb: (int p1, int p2) =>
+    //         DatabaseMangaHelpers.removeBookmark(book: p1, page: p2));
   }
 
   Widget futureContentBuilder(

@@ -23,8 +23,6 @@ List<Page> mangakolektUnzipArchiveBook(String bookPath) {
   final List<Page> pages = [];
 
   for (int i = 0; i < number_of_entries; i++) {
-    final start = DateTime.now().millisecondsSinceEpoch;
-
     Pointer<nb.zip_stat_t> statbuf = malloc();
 
     if (_bindings.zip_stat_index(archive, i, 0, statbuf) != 0) {
@@ -56,8 +54,6 @@ List<Page> mangakolektUnzipArchiveBook(String bookPath) {
     final imageData = Uint8List.fromList(uint8Pointer.asTypedList(size));
     // final img = material.Image.memory(content.cast<Uint8>().asTypedList(size));
     pages.add(Page(image: imageData, name: fileName));
-    final end = DateTime.now().millisecondsSinceEpoch;
-    print("Time per page:: ${(end - start) / 1000}");
     calloc.free(content);
     calloc.free(statbuf);
   }

@@ -19,11 +19,11 @@ class _BookmarksBodyState extends State<BookmarksBody> {
   Future<Bookmarks?> bookmarks = Future(() => null);
 
   void getBookmarks() {
-    bookmarks = DatabaseMangaHelpers.getBookmarks();
+    bookmarks = DatabaseMangaHelpers.getAllBookmarks();
   }
 
   Future<void> deleteBookmark(int book, int page) async {
-    await DatabaseMangaHelpers.removeBookmark(book: book, page: page);
+    // await DatabaseMangaHelpers.removeBookmark(book: book, page: page);
     setState(() {
       getBookmarks();
     });

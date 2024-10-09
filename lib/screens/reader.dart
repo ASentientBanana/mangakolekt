@@ -16,9 +16,13 @@ import 'package:flutter/services.dart';
 class MangaReader extends StatefulWidget {
   final ReaderController readerController;
   final int initialPage;
-  const MangaReader(
-      {Key? key, required this.readerController, required this.initialPage})
-      : super(key: key);
+  final int libraryId;
+  MangaReader({
+    Key? key,
+    required this.readerController,
+    required this.initialPage,
+    required this.libraryId,
+  }) : super(key: key);
 
   @override
   _MangaReaderState createState() => _MangaReaderState();
@@ -86,8 +90,8 @@ class _MangaReaderState extends State<MangaReader> {
   }
 
   Future<List<int>> getBookmarks() async {
-    final bookmarks = await DatabaseMangaHelpers.getBookmarkPagesFromPath(
-        path: readerController.book.path);
+    final bookmarks = await DatabaseMangaHelpers.getBookmarkedPagesForBook(
+        book: readerController.book.id, path: readerController.book.path);
 
     return bookmarks;
   }
@@ -129,10 +133,13 @@ class _MangaReaderState extends State<MangaReader> {
     setState(() {
       disableBookmarkButton = true;
     });
-    final bm = await DatabaseMangaHelpers.bookmark(
-        bookID: readerController.book.id ?? -1,
+
+    final bm = await DatabaseMangaHelpers.bookmark(BookmarkEvent(
+        page: readerController.getCurrentPages().first,
         path: readerController.book.path,
-        page: readerController.getCurrentPages().first);
+        book: readerController.book.id ?? -1,
+        library: widget.libraryId));
+
     setState(() {
       disableBookmarkButton = false;
       bookmarks = bm;
@@ -152,10 +159,9 @@ class _MangaReaderState extends State<MangaReader> {
     } else {
       pageIndexes = readerController.getCurrentPages().reversed.toList();
     }
-
     // Calculate new aspect ratio
-    pageIndexes.forEach((imageIndex) {
-      final img = readerController.pages[imageIndex].entry.image;
+    for (var i = 0; i < pageIndexes.length; i++) {
+      final img = readerController.pages[i].entry.image;
       final w = img.width ?? 1;
       final h = img.height ?? 1;
       final isWide = w > h;
@@ -165,28 +171,21 @@ class _MangaReaderState extends State<MangaReader> {
         "area": area,
         "aspect": ar,
       });
-    });
+    }
 
     //simplest way to iterate aspects
     int imageIndex = 0;
-    // 1.3 is a magic number arrived at with testing
-    final imgWidth = ((size.width * 1.3) / pageIndexes.length);
+    final aspect = aspects[imageIndex]["aspect"];
+    final imgWidth = ((size.width * (aspect ?? 1)) / pageIndexes.length);
     pageIndexes.forEach((pageIndex) {
-      final imgHeight = imgWidth / (aspects[imageIndex]["aspect"] ?? 1);
-
-      // Image(
-      //   image: readerController.pages[imageIndex].entry.image.image,
-      //   height: imgWidth,
-      //   width:  imgHeight,
-      //   alignment: setAliment(readerController.isDoublePageView, count),
-      // )
+      final imgHeight = imgWidth / (aspect ?? 1);
       pages.add(
         SingleImage(
-            isDouble: readerController.isDoublePageView,
-            increment: handleMouseClick,
-            image: readerController.pages[pageIndex].entry.image,
-            imageIndex: imageIndex,
-            size: Size(imgHeight, imgWidth),
+          isDouble: pageIndexes.length == 2,
+          increment: handleMouseClick,
+          image: readerController.pages[pageIndex].entry.image,
+          imageIndex: imageIndex,
+          size: Size(imgHeight, imgWidth),
         ),
       );
       imageIndex++;

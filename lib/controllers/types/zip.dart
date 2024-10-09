@@ -4,8 +4,8 @@ import 'package:flutter/foundation.dart';
 import 'package:mangakolekt/models/book.dart';
 import 'package:mangakolekt/models/ffi.dart';
 import 'package:mangakolekt/services/archive/archive.dart';
-import 'package:mangakolekt/services/ffi/ffi.dart';
 import 'package:mangakolekt/controllers/archive.dart';
+import 'package:mangakolekt/services/ffi/zip.dart';
 
 class ZipBookController extends BaseBookController {
   final List<String> fileTypes = ['zip', 'cbz'];
@@ -15,15 +15,12 @@ class ZipBookController extends BaseBookController {
       {required List<String> files, required String out}) async {
     if (Platform.isLinux || Platform.isWindows || Platform.isAndroid) {
       try {
-        final start = DateTime.now().millisecondsSinceEpoch;
-        final res =
-            await compute((message) => ffiUnzipCovers(message), [files, out]);
-
-        // final res = await compute(
-        // (message) => unzipArchiveCoversDart(message), [files, out]);
-        final end = DateTime.now().millisecondsSinceEpoch;
-        print("Time to unzip all covers:: ${(end - start) / 1000}");
-        return res;
+        if (Platform.isWindows) {
+          return await compute(
+              (message) => unzipArchiveCoversDart(message), [files, out]);
+        }
+        return await compute(
+            (message) => ffiUnzipCovers(message), [files, out]);
       } catch (e) {
         return [];
       }
@@ -31,15 +28,15 @@ class ZipBookController extends BaseBookController {
     return [];
   }
 
-  // TODO: Decouple the unzip logic from loading the books
   @override
   Future<Book?> unpack(String pathToBook, String dest) async {
     try {
+      if (Platform.isWindows) {
+        return await unzipArchiveBookDart(pathToBook);
+      }
       return await unzipArchiveBook(pathToBook);
-      return await unzipArchiveBookDart(pathToBook);
     } catch (e) {
-      print("Problbem with ffi");
-      print(e);
+      return null;
     }
   }
 
