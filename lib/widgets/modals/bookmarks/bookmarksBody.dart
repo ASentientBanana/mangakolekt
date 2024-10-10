@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:mangakolekt/locator.dart';
 import 'package:mangakolekt/models/database/bookmark.dart';
 import 'package:mangakolekt/services/navigationService.dart';
-import 'package:mangakolekt/util/database/databaseHelpers.dart';
+import 'package:mangakolekt/services/database/databaseHelpers.dart';
 import 'package:mangakolekt/widgets/modals/bookmarks/bookmarkContent.dart';
 
 class BookmarksBody extends StatefulWidget {
@@ -19,11 +19,11 @@ class _BookmarksBodyState extends State<BookmarksBody> {
   Future<Bookmarks?> bookmarks = Future(() => null);
 
   void getBookmarks() {
-    bookmarks = DatabaseMangaHelpers.getBookmarks();
+    bookmarks = DatabaseMangaHelpers.getAllBookmarks();
   }
 
   Future<void> deleteBookmark(int book, int page) async {
-    await DatabaseMangaHelpers.removeBookmark(book: book, page: page);
+    // await DatabaseMangaHelpers.removeBookmark(book: book, page: page);
     setState(() {
       getBookmarks();
     });

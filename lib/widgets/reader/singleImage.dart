@@ -1,63 +1,70 @@
 import 'package:flutter/material.dart';
+import 'package:mangakolekt/controllers/reader.dart';
 import 'package:mangakolekt/models/util.dart';
+import 'package:mangakolekt/util/platform.dart';
+import 'package:mangakolekt/util/reader.dart';
 
 class SingleImage extends StatefulWidget {
+
+  const SingleImage({
+        super.key,
+        required this.isDouble,
+        required this.imageIndex,
+        required this.size,
+        required this.image,
+        this.increment,
+        this.onDrag
+      });
+  final void Function(PointerDownEvent)? increment;
+  final void Function(DragEndDetails details)? onDrag ;
+  final Size size;
+  final int imageIndex;
   final Image image;
-  final ScaleTo scaleTo;
-  final int index;
   final bool isDouble;
-  final ScrollController? readerScrollController;
-  const SingleImage(
-      {super.key,
-      required this.readerScrollController,
-      required this.isDouble,
-      required this.image,
-      required this.scaleTo,
-      required this.index});
 
   @override
   _SingleImageState createState() => _SingleImageState();
 }
 
 class _SingleImageState extends State<SingleImage> {
-  @override
-  // void initState() {
-  //   // TODO: implement initState
-  //   _imageScrollController = widget.readerScrollController;
-  //   super.initState();
-  // }
 
-  // @override
-  // void dispose() {
-  //   widget.readerScrollController.dispose();
-  //   super.dispose();
-  // }
-
-  Alignment setAliment(bool isDouble, int index) {
-    if (!isDouble) {
-      return Alignment.center;
-    }
-    // This is to keep the images together when in double page view
-    return index == 0 ? Alignment.centerRight : Alignment.centerLeft;
-  }
+  final ScrollController scrollController = ScrollController();
+  bool isDoubleTouch = false;
 
   @override
   Widget build(BuildContext context) {
-    //Check scaling type
-    if (!widget.isDouble && widget.scaleTo == ScaleTo.width) {
-      return Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 14),
-        child: SingleChildScrollView(
-          controller: widget.readerScrollController,
-          child: Image(image: widget.image.image, fit: BoxFit.cover),
-        ),
+    Widget _image;
+
+    if(widget.isDouble){
+      _image = Image(
+          alignment: setAliment(widget.isDouble, widget.imageIndex),
+          height: widget.size.height,
+          width: widget.size.width,
+          image: widget.image.image
+      );
+    }else{
+      //TODO: Add width/height scaling
+      _image =
+        Image(
+          alignment: setAliment(widget.isDouble ,widget.imageIndex),
+          height: widget.size.height,
+          width: widget.size.width,
+          image: widget.image.image,
       );
     }
-    return Container(
-      //Colors for debug purposes
-      // color: widget.index == 0 ? Colors.blue : Colors.red,
-      alignment: setAliment(widget.isDouble, widget.index),
-      child: widget.image,
+
+    if(isMobile()) {
+      return GestureDetector(
+        onVerticalDragEnd: widget.onDrag,
+        child: _image,
+      );
+    }
+
+    return (
+        Listener(
+          onPointerDown: widget.increment,
+          child: _image,
+        )
     );
   }
 }

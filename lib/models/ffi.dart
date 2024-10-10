@@ -26,9 +26,9 @@ class FFICoverOutputResult{
   FFICoverOutputResult({required this.archiveName, required this.directoryFile, required this.destinationPath});
  static FFICoverOutputResult? fromMap(Map<String,dynamic> map){
  const fields = [
- "archiveName",
- "destinationPath",
- "directoryFile"
+   "archiveName",
+   "destinationPath",
+   "directoryFile"
  ];
  bool isValid = true;
  fields.forEach((element) {

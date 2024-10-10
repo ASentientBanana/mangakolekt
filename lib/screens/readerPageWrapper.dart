@@ -15,10 +15,15 @@ import 'package:mangakolekt/widgets/loadingDog.dart';
 class ReaderPageWrapper extends StatefulWidget {
   final String path;
   final int id;
+  int libraryId;
   late final int initialPage;
 
   ReaderPageWrapper(
-      {Key? key, required this.path, required this.id, int? initialPage})
+      {Key? key,
+      required this.path,
+      required this.id,
+      int? initialPage,
+      this.libraryId = -1})
       : super(key: key) {
     this.initialPage = initialPage ?? 0;
   }
@@ -80,9 +85,11 @@ class _ReaderPageWrapperState extends State<ReaderPageWrapper> {
             return MangaReaderMobile(
               initialPage: widget.initialPage,
               readerController: readerController,
+              libraryId: widget.libraryId,
             );
           }
           return MangaReader(
+            libraryId: widget.libraryId,
             initialPage: widget.initialPage,
             readerController: readerController,
           );

@@ -2,7 +2,7 @@ import 'package:easy_debounce/easy_throttle.dart';
 import 'package:mangakolekt/models/book.dart';
 import 'package:mangakolekt/models/settings.dart';
 import 'package:mangakolekt/models/util.dart';
-import 'package:mangakolekt/util/database/databaseHelpers.dart';
+import 'package:mangakolekt/services/database/databaseHelpers.dart';
 
 class ReaderController {
   late List<BookPage> pages;

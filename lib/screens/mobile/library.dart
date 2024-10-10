@@ -36,6 +36,7 @@ class _MyHomePageState extends State<MyHomePageMobile> {
     final lib = libraryStore.library
         .where((element) => element.name.contains(libraryStore.searchTerm))
         .toList();
+    
     return Padding(
       padding: const EdgeInsets.only(top: 40),
       child: ListView.separated(
