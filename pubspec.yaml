@@ -20,7 +20,7 @@ publish_to: "none" # Remove this line if you wish to publish to pub.dev
 version: 1.0.0+1
 
 environment:
-  sdk: ">=3.0.0 <3.16.9"
+  sdk: "^3.5.3"
 
 # Dependencies specify other packages that your package needs in order to work.
 # To automatically upgrade your package dependencies to the latest versions
@@ -54,7 +54,7 @@ dependencies:
   sqlite3_flutter_libs: ^0.5.20
   url_launcher: ^6.2.4
   uuid: ^3.0.7
-  vm_service: ^13.0.0
+  vm_service: ^14.2.5
   yaml: ^3.1.1
   mangakolekt_archive_lib:
     path: "./packages/mangakolekt_archive_lib/"
