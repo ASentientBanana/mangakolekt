@@ -4,14 +4,15 @@ import 'package:mangakolekt/controllers/archive.dart';
 import 'package:mangakolekt/locator.dart';
 import 'package:mangakolekt/services/navigationService.dart';
 import 'package:mangakolekt/store/library.dart';
-import 'package:mangakolekt/util/database/databaseHelpers.dart';
+import 'package:mangakolekt/services/database/databaseHelpers.dart';
 import 'package:mangakolekt/util/files.dart';
 import 'package:mangakolekt/widgets/loadingDog.dart';
+import 'package:path/path.dart' as path;
 
 class CreateLibraryMobile extends StatefulWidget {
   final String path;
 
-  CreateLibraryMobile({Key? key, required this.path}) : super(key: key);
+  const CreateLibraryMobile({Key? key, required this.path}) : super(key: key);
 
   @override
   State<CreateLibraryMobile> createState() => _CreateLibraryMobileState();
@@ -29,6 +30,12 @@ class _CreateLibraryMobileState extends State<CreateLibraryMobile> {
 
   void handleCancel() {
     _navigationService.goBack();
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    textController.text = path.basenameWithoutExtension(widget.path);
   }
 
   void handleConfirm() async {
@@ -81,7 +88,7 @@ class _CreateLibraryMobileState extends State<CreateLibraryMobile> {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           const Text('Enter a name for the lib located at:'),
-          Text(widget.path),
+          Text(path.basenameWithoutExtension(widget.path)),
           Padding(
             padding: const EdgeInsets.only(left: 20, right: 20, top: 50),
             child: TextFormField(
@@ -91,14 +98,10 @@ class _CreateLibraryMobileState extends State<CreateLibraryMobile> {
               decoration: InputDecoration(
                 hintText: "Enter a label for the lib",
                 hintStyle: const TextStyle(color: Colors.white60),
-                focusedBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.zero,
-                  borderSide: BorderSide(width: 1, color: colorScheme.tertiary),
-                ),
                 enabledBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.zero,
                   borderSide:
-                      BorderSide(width: 1, color: colorScheme.secondary),
+                      BorderSide(width: 2, color: colorScheme.tertiary),
                 ),
               ),
             ),
@@ -112,14 +115,15 @@ class _CreateLibraryMobileState extends State<CreateLibraryMobile> {
             child: ElevatedButton(
               style: ElevatedButton.styleFrom(
                   elevation: 0,
-                  // backgroundColor: colorScheme.tertiary,
+                  backgroundColor: colorScheme.tertiary,
                   shape: const BeveledRectangleBorder(),
-                  side: BorderSide(color: colorScheme.secondary)),
+                  // side: BorderSide(color: colorScheme.secondary),
+                ),
               onPressed: () => handleConfirm(),
               child: const Text(
                 "Add",
                 style:
-                    TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+                    TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
               ),
             ),
           ),
@@ -129,13 +133,15 @@ class _CreateLibraryMobileState extends State<CreateLibraryMobile> {
             child: ElevatedButton(
               style: ElevatedButton.styleFrom(
                   elevation: 0,
+                  backgroundColor: Colors.white,
                   shape: const BeveledRectangleBorder(),
-                  side: BorderSide(color: colorScheme.secondary)),
+                  side: const BorderSide(color: Colors.white),
+              ),
               onPressed: handleCancel,
               child: const Text(
                 "Cancel",
                 style:
-                    TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+                    TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
               ),
             ),
           ),

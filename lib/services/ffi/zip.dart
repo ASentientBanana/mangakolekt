@@ -1,15 +1,11 @@
-part of ffi_service;
+import 'package:mangakolekt/models/ffi.dart';
+import 'package:mangakolekt_archive_lib/mangakolekt_archive_zip/mangakolekt_archive_cover.dart';
 
 List<FFICoverOutputResult> ffiUnzipCovers(List<dynamic> props) {
   List<String> files = props[0];
   String out = props[1];
-  // List<FFICoverOutputResult> covers = [];
-  final start = DateTime.now().millisecondsSinceEpoch;
 
-  // final start = DateTime.now().millisecondsSinceEpoch;
   final covers = mangakolektUnzipArchiveCover(files, out);
-
-
 
   return covers
       .map(

@@ -1,9 +1,6 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:isolate_pool_2/isolate_pool_2.dart';
 import 'package:mangakolekt/models/book.dart';
 import 'package:mangakolekt/models/ffi.dart';
-import 'package:mangakolekt/services/ffi/ffi.dart';
 import 'package:mangakolekt/util/util.dart';
 import "dart:io";
 import 'package:mangakolekt_archive_lib/mangakolekt_archive_zip/mangakolekt_archive_book.dart';
@@ -16,18 +13,6 @@ Future<void> recreateDirectory(String directoryPath) async {
   final dir = Directory(directoryPath);
   await dir.delete(recursive: true);
   await dir.create();
-}
-
-class UnzipCoversJob extends PooledJob<List<FFICoverOutputResult>> {
-  final List<String> files;
-  final String out;
-  UnzipCoversJob({required this.files, required this.out});
-
-  @override
-  Future<List<FFICoverOutputResult>> job() async {
-    return ffiUnzipCovers([files, out]);
-    // return await _unzipArchiveCovers([files, out]);
-  }
 }
 
 List<List<String>> chunkify(List<String> files) {
@@ -54,12 +39,7 @@ Future<List<FFICoverOutputResult>> unzipArchiveCoversDart(
     List<dynamic> props) async {
   List<String> files = props[0];
   String out = props[1];
-
-  final start = DateTime.now().millisecondsSinceEpoch;
-
   final res = _unzipArchiveCovers([files, out]);
-
-  final end = DateTime.now().millisecondsSinceEpoch;
   return res;
 }
 
@@ -73,7 +53,6 @@ Future<List<FFICoverOutputResult>> _unzipArchiveCovers(
 
   for (var i = 0; i < files.length; i++) {
     final file = files[i];
-    final start = DateTime.now().millisecondsSinceEpoch;
     // final openedFile = File(file);
     final inputStream = InputFileStream(file);
     // final archiveFile = await openedFile.readAsBytes();
@@ -104,8 +83,6 @@ Future<List<FFICoverOutputResult>> _unzipArchiveCovers(
           directoryFile: file));
       break;
     }
-    final end = DateTime.now().millisecondsSinceEpoch;
-    print("Unzipping cover in dart ${(end - start) / 1000}s");
     inputStream.close();
   }
 
@@ -118,7 +95,6 @@ Future<Book?> unzipArchiveBook(String zipPath) async {
   final List<PageEntry> pages = [];
   List<mangaLibBook.Page> _pages = [];
   try {
-    print("Unziping: ${p.basenameWithoutExtension(zipPath)}");
     _pages = await Future(() => mangakolektUnzipArchiveBook(zipPath));
   } catch (e) {
     print(e);
@@ -134,7 +110,8 @@ Future<Book?> unzipArchiveBook(String zipPath) async {
 
     bool isDouble = false;
     if (image.width != null && image.height != null) {
-      isDouble = image.width! >= image.height!;
+      isDouble =
+          (image.width! >= image.height!) || image.width! == image.height!;
     }
 
     pages.add(PageEntry(name: p.name, image: image, isDouble: isDouble));
@@ -155,8 +132,8 @@ Future<Book?> unzipArchiveBookDart(String zipPath) async {
   final archiveFile = ZipDecoder().decodeBytes(archiveBytes);
 
   for (var f in archiveFile) {
-    final start = DateTime.now().millisecondsSinceEpoch;
-
+    //TODO: Remove start and end tracking evan in comment form
+    // final start = DateTime.now().millisecondsSinceEpoch;
     if (!f.isFile) {
       continue;
     }
@@ -172,8 +149,8 @@ Future<Book?> unzipArchiveBookDart(String zipPath) async {
       isDouble = true;
     }
     pages.add(PageEntry(name: imageName, image: image, isDouble: isDouble));
-    final end = DateTime.now().millisecondsSinceEpoch;
-    print("Time per page:: ${(end - start) / 1000}");
+    // final end = DateTime.now().millisecondsSinceEpoch;
+    // print("Time per page:: ${(end - start) / 1000}");
   }
   return Book(
       name: p.basename(zipPath),

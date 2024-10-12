@@ -1,11 +1,7 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:mangakolekt/locator.dart';
 import 'package:mangakolekt/models/settings.dart';
 import 'package:mangakolekt/widgets/settings/checkbox.dart';
-import 'package:path/path.dart';
-import 'package:path_provider/path_provider.dart';
 
 class SettingsMobile extends StatefulWidget {
   SettingsMobile({Key? key}) : super(key: key);

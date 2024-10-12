@@ -9,10 +9,6 @@ import 'package:mangakolekt/widgets/modals/bookmarks.dart';
 import 'package:mangakolekt/widgets/modals/createLib.dart';
 import 'package:mangakolekt/widgets/modals/help.dart';
 import 'package:mangakolekt/widgets/modals/settings.dart';
-import 'package:mangakolekt_archive_lib/mangakolekt_archive_lib.dart' as mkh;
-import 'package:mangakolekt_archive_lib/mangakolekt_archive_zip/mangakolekt_archive_cover.dart';
-import 'package:path/path.dart';
-import 'package:path_provider/path_provider.dart';
 
 class MangaMenuBar extends StatelessWidget {
   final Widget child;
@@ -34,6 +30,7 @@ class MangaMenuBar extends StatelessWidget {
   void quitHandler() {
     // TODO: This is going to be a problem for mac os, it is not allowed
     SystemNavigator.pop();
+
   }
 
   Future<void> pickDirHandler(BuildContext context,
@@ -43,11 +40,9 @@ class MangaMenuBar extends StatelessWidget {
       return;
     }
     if (readDir) {
-      // _navigationService.navigateTo(, arguments)
       return;
     }
     showCreateLibDialog(context, dir);
-    //  dir
   }
 
   @override
@@ -113,7 +108,7 @@ class MangaMenuBar extends StatelessWidget {
                         child: TextField(
                       style: const TextStyle(fontSize: 13),
                       decoration: InputDecoration(
-                        contentPadding: EdgeInsets.symmetric(horizontal: 5),
+                        contentPadding: const EdgeInsets.symmetric(horizontal: 5),
                         hintText: "Search books",
                         hintStyle: TextStyle(color: colorScheme.onPrimary),
                         fillColor: colorScheme.background,

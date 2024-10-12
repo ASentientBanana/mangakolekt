@@ -4,7 +4,7 @@ import 'package:mangakolekt/locator.dart';
 import 'package:mangakolekt/models/library.dart';
 import 'package:mangakolekt/services/navigationService.dart';
 import 'package:mangakolekt/store/library.dart';
-import 'package:mangakolekt/util/database/databaseHelpers.dart';
+import 'package:mangakolekt/services/database/databaseHelpers.dart';
 import 'package:mangakolekt/util/files.dart';
 import 'package:mangakolekt/util/platform.dart';
 

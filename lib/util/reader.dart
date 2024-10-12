@@ -8,6 +8,14 @@ import 'package:mangakolekt/util/files.dart';
 import 'package:path/path.dart' as p;
 import 'package:collection/collection.dart';
 
+Alignment setAliment(bool isDouble, int index) {
+  if (!isDouble) {
+    return Alignment.center;
+  }
+  // This is to keep the images together when in double page view
+  return index == 0 ? Alignment.centerRight : Alignment.centerLeft;
+}
+
 Future<Book?> getBook(BuildContext context, String bookPath, int? id) async {
   final dest = await getCurrentDirPath();
   Book? book;

@@ -3,7 +3,6 @@ import 'dart:io';
 
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
-import 'package:mangakolekt/controllers/types/rar.dart';
 import 'package:mangakolekt/controllers/types/zip.dart';
 import 'package:mangakolekt/models/book.dart';
 import 'package:mangakolekt/models/ffi.dart';
@@ -34,7 +33,6 @@ class ArchiveController {
   // Add controllers for the file types
   static List<BaseBookController> controllers = [
     ZipBookController(),
-    RarBookController(),
   ];
 
   static BaseBookController? getTypeController(String type) {
@@ -51,18 +49,13 @@ class ArchiveController {
     final type = args[0];
     final pathToBook = args[1];
     final dest = args[2];
+    //TODO: Use id its just hanging here.
     final String id = args[3];
     final controller = ArchiveController.getTypeController(type);
     if (controller == null) {
       throw Error.safeToString('Unsupported file type selected.');
     }
-    //unzip to the current dir.
-
     return await controller.unpack(pathToBook, dest);
-    //load book here from current dir
-    // final book = await loadBook(dest, pathToBook, id);
-    // return book;
-    // return null;
   }
 
   static Future<List<String>> loadPagesRecursive(String dirPath) async {

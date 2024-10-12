@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:mangakolekt_archive_lib/mangakolekt_archive_lib.dart';
 import 'package:mangakolekt_archive_lib/models/ffi_cover_output_result.dart';
 import 'package:mangakolekt_archive_lib/zip_bindings_generated.dart' as nb;
@@ -8,9 +10,10 @@ import 'package:ffi/ffi.dart';
 List<FFILibCoverOutputResult> mangakolektUnzipArchiveCover(
     List<String> files, String output) {
   //init native lib
-
   final dyLib = getDyLib();
   final nb.NativeLibrary _bindings = nb.NativeLibrary(dyLib);
+
+  print('Start');
 
   String type = '';
   final zeroPtr = calloc.allocate<Int>(1)..value = 0;
@@ -19,8 +22,6 @@ List<FFILibCoverOutputResult> mangakolektUnzipArchiveCover(
 
   final List<FFILibCoverOutputResult> covers = [];
   for (var file in files) {
-    final start = DateTime.now().millisecondsSinceEpoch;
-
     final Pointer<Utf8> fileStringPtr = file.toNativeUtf8();
     name = basenameWithoutExtension(file);
 
@@ -53,7 +54,6 @@ List<FFILibCoverOutputResult> mangakolektUnzipArchiveCover(
           _bindings.zip_fopen_index(archive, i, nb.ZIP_FL_UNCHANGED);
 
       Pointer<Char> content = malloc(size);
-
       if (_bindings.zip_fread(f, content.cast(), size) == 0) {
         calloc.free(content);
         calloc.free(statbuf);
@@ -69,9 +69,11 @@ List<FFILibCoverOutputResult> mangakolektUnzipArchiveCover(
         outputPath.toNativeUtf8().cast<Char>(),
         "wb".toNativeUtf8().cast<Char>(),
       );
+      final written = _bindings.fwrite(
+          content.cast<Void>(), sizeOf<Char>(), size, outputFile);
 
-      _bindings.fwrite(
-          Pointer.fromAddress(content.address), size, size, outputFile);
+      print("starting cover export");
+      print("Written $written of $size");
 
       _bindings.fclose(outputFile);
       calloc.free(content);
@@ -83,20 +85,10 @@ List<FFILibCoverOutputResult> mangakolektUnzipArchiveCover(
         directoryFile: file,
         destinationPath: outputPath,
       ));
-      final end = DateTime.now().millisecondsSinceEpoch;
-      print("Time per cover:: ${(end - start) / 1000}");
       break;
     }
   }
   calloc.free(zeroPtr);
 
   return covers;
-  // if (name.isEmpty) {
-  //   return null;
-  // }
-  // return FFILibCoverOutputResult(
-  //   archiveName: name,
-  //   directoryFile: bookPath,
-  //   destinationPath: outputPath,
-  // );
 }

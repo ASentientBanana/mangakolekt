@@ -29,6 +29,7 @@ class AppWidget extends StatelessWidget {
               initialPage: args['initialPage'],
               path: args["path"],
               id: args["id"],
+              libraryId: args['libraryId'],
             ));
       case "/home":
         return pageRouteBuilderWrapper(settings,

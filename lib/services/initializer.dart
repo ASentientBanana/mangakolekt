@@ -1,5 +1,5 @@
 import 'package:mangakolekt/models/settings.dart';
-import 'package:mangakolekt/util/database/databaseCore.dart';
+import 'package:mangakolekt/services/database/databaseCore.dart';
 import 'package:mangakolekt/util/files.dart';
 import 'package:mangakolekt/util/util.dart';
 import 'package:permission_handler/permission_handler.dart';

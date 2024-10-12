@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:mangakolekt/generated/archive_ffi.dart';
 import 'package:mangakolekt/locator.dart';
 import 'package:mangakolekt/models/settings.dart';
 
