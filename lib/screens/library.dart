@@ -30,13 +30,13 @@ class _MyHomePageState extends State<MyHomePage> {
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
     return Scaffold(
-      backgroundColor: colorScheme.background,
+      backgroundColor: colorScheme.surface,
       body: SafeArea(
         top: (Platform.isAndroid || Platform.isIOS),
         child: MangaMenuBar(
           child: Container(
             padding: const EdgeInsets.all(4),
-            color: colorScheme.background,
+            color: colorScheme.surface,
             child: Row(
               children: [
                 Observer(builder: (_) {

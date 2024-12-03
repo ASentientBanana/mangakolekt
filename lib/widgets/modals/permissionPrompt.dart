@@ -14,7 +14,7 @@ Future<void> showPermissionDialog(BuildContext context, {confirm}) async {
     return;
   }
 
-  final _navigationService = locator<NavigationService>();
+  final navigationService = locator<NavigationService>();
 
   final isAgreed = await showDialog<bool>(
       barrierDismissible: false,
@@ -27,13 +27,13 @@ Future<void> showPermissionDialog(BuildContext context, {confirm}) async {
           actions: [
             ElevatedButton(
               onPressed: () {
-                _navigationService.goBack(data: false);
+                navigationService.goBack(data: false);
               },
               child: const Text("Decline"),
             ),
             ElevatedButton(
               onPressed: () {
-                _navigationService.goBack(data: true);
+                navigationService.goBack(data: true);
               },
               child: const Text("Accept"),
             )

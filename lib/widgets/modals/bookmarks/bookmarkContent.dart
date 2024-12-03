@@ -44,10 +44,10 @@ class _BookmarkContentState extends State<BookmarkContent> {
   @override
   void initState() {
     super.initState();
-    widget.bookmarks.data.forEach((element) {
+    for (var element in widget.bookmarks.data) {
       print("Listning elements");
       print(element.name);
-    });
+    }
   }
 
   @override

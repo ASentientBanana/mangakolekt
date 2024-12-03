@@ -37,21 +37,18 @@ class _LibListItemState extends State<LibListItem> {
   }
 
   Future<void> handleRefreshLib(BuildContext context) async {
-    final name = widget.item.name;
-    final path = widget.item.path;
-    // final path = widget.item.books.first.path;
-    final out = await getGlobalCoversDir();
-
-    final res = await ArchiveController.unpackCovers(widget.item.path, out);
-
     if (!context.mounted) {
       return;
     }
-    await handleDeleteFromLib(false);
 
+    final name = widget.item.name;
+    final path = widget.item.path;
+    final out = await getGlobalCoversDir();
+    final res = await ArchiveController.unpackCovers(widget.item.path, out);
     if (res == null) {
       return;
     }
+    await handleDeleteFromLib(false);
 
     // Add manga to Manga table in db
     await DatabaseMangaHelpers.addLibrary(
@@ -63,11 +60,18 @@ class _LibListItemState extends State<LibListItem> {
     }
   }
 
+  Future<void> onTapHandler() async {
+  libraryStore.selectCover(widget.index);
+  if (isMobile()) {
+  _navigationService.navigateTo('/grid', null);
+  }
+}
+
   @override
   Widget build(BuildContext context) {
     return LayoutBuilder(builder: (context, constraints) {
       final theme = Theme.of(context);
-      final GlobalKey _menuKey = GlobalKey();
+      final GlobalKey menuKey = GlobalKey();
       return Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
@@ -79,13 +83,8 @@ class _LibListItemState extends State<LibListItem> {
             ),
             width:
                 constraints.maxWidth * (constraints.maxWidth > 130 ? 0.7 : 0.5),
-            child: OutlinedButton(
-              onPressed: () async {
-                libraryStore.selectCover(widget.index);
-                if (isMobile()) {
-                  _navigationService.navigateTo('/grid', null);
-                }
-              },
+            child: InkWell(
+              onTap:onTapHandler ,
               child: Center(
                 child: Text(
                   widget.item.name,
@@ -98,8 +97,8 @@ class _LibListItemState extends State<LibListItem> {
             ),
           ),
           PopupMenuButton(
-            color: Theme.of(context).colorScheme.background,
-            key: _menuKey,
+            color: Theme.of(context).colorScheme.surface,
+            key: menuKey,
             icon: Icon(
               Icons.more_vert_rounded,
               color: Theme.of(context).colorScheme.tertiary,

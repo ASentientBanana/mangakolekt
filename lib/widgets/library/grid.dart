@@ -30,7 +30,7 @@ class _LibGridState extends State<LibGrid> {
     return 2;
   }
 
-  List<Widget> filterList(String _search, List<GridItem> list) {
+  List<Widget> filterList(String search, List<GridItem> list) {
     if (libraryStore.searchTerm.isEmpty) {
       return list;
     }

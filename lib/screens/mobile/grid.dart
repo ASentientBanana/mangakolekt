@@ -9,7 +9,7 @@ class MobileGreedScreen extends StatelessWidget {
     final colorScheme = Theme.of(context).colorScheme;
     return Scaffold(
       appBar: AppBar(),
-      backgroundColor: colorScheme.background,
+      backgroundColor: colorScheme.surface,
       body: const LibGrid(),
     );
   }

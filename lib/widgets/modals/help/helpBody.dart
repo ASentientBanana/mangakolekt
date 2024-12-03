@@ -34,7 +34,7 @@ class HelpBody extends StatelessWidget {
               width: 650,
               bottom: 30,
               child: Padding(
-                padding: EdgeInsets.symmetric(horizontal: 100, vertical: 1),
+                padding: const EdgeInsets.symmetric(horizontal: 100, vertical: 1),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   mainAxisSize: MainAxisSize.max,

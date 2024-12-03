@@ -31,11 +31,11 @@ environment:
 dependencies:
   archive: ^3.6.1
   cupertino_icons: ^1.0.2
-  desktop_drop: ^0.4.4
+  desktop_drop: ^0.5.0
   easy_debounce: ^2.0.3
   equatable: ^2.0.5
   ffi: ^2.0.2
-  file_picker: ^5.2.6
+  file_picker: ^8.1.3
   flutter:
     sdk: flutter
   flutter_bloc: ^8.0.0
@@ -53,17 +53,18 @@ dependencies:
   sqflite_common_ffi: ^2.3.0+2
   sqlite3_flutter_libs: ^0.5.20
   url_launcher: ^6.2.4
-  uuid: ^3.0.7
+  uuid: ^4.5.1
   vm_service: ^14.2.5
   yaml: ^3.1.1
   mangakolekt_archive_lib:
     path: "./packages/mangakolekt_archive_lib/"
 
+  collection: any
 dev_dependencies:
-  ffigen: ^9.0.1
+  ffigen: ^14.0.1
   build_runner: ^2.4.9
   mobx_codegen: ^2.6.1
-  flutter_lints: ^2.0.0
+  flutter_lints: ^5.0.0
   flutter_test:
     sdk: flutter
   msix: ^3.16.1

@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:mangakolekt/controllers/reader.dart';
-import 'package:mangakolekt/models/util.dart';
 import 'package:mangakolekt/util/platform.dart';
 import 'package:mangakolekt/util/reader.dart';
 
@@ -33,10 +31,10 @@ class _SingleImageState extends State<SingleImage> {
 
   @override
   Widget build(BuildContext context) {
-    Widget _image;
+    Widget image;
 
     if(widget.isDouble){
-      _image = Image(
+      image = Image(
           alignment: setAliment(widget.isDouble, widget.imageIndex),
           height: widget.size.height,
           width: widget.size.width,
@@ -44,7 +42,7 @@ class _SingleImageState extends State<SingleImage> {
       );
     }else{
       //TODO: Add width/height scaling
-      _image =
+      image =
         Image(
           alignment: setAliment(widget.isDouble ,widget.imageIndex),
           height: widget.size.height,
@@ -56,14 +54,14 @@ class _SingleImageState extends State<SingleImage> {
     if(isMobile()) {
       return GestureDetector(
         onVerticalDragEnd: widget.onDrag,
-        child: _image,
+        child: image,
       );
     }
 
     return (
         Listener(
           onPointerDown: widget.increment,
-          child: _image,
+          child: image,
         )
     );
   }

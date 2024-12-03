@@ -1,4 +1,3 @@
-import 'dart:ffi';
 
 import 'package:flutter/material.dart';
 import 'package:mangakolekt/locator.dart';
@@ -23,8 +22,8 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Theme.of(context).colorScheme.background,
-      body: Center(
+      backgroundColor: Theme.of(context).colorScheme.surface,
+      body: const Center(
         child: LoadingDog(),
       ),
     );

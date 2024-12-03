@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:mangakolekt/util/files.dart';
 import 'package:mangakolekt/util/platform.dart';
 import 'package:path/path.dart';
-import 'package:path_provider/path_provider.dart';
 
 enum BookReadStatus { read, unread }
 

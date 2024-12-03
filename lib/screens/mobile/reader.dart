@@ -136,7 +136,7 @@ class _MangaReaderState extends State<MangaReaderMobile>
     }
 
     // Calculate new aspect ratio
-    pageIndexes.forEach((imageIndex) {
+    for (var imageIndex in pageIndexes) {
       final img = readerController.pages[imageIndex].entry.image;
       final w = img.width ?? 1;
       final h = img.height ?? 1;
@@ -147,13 +147,13 @@ class _MangaReaderState extends State<MangaReaderMobile>
         "area": area,
         "aspect": ar,
       });
-    });
+    }
 
     //simplest way to iterate aspects
     int imageIndex = 0;
     // 1.3 is a magic number arrived at with testing
     final imgWidth = ((size.width * 1.3) / pageIndexes.length);
-    pageIndexes.forEach((pageIndex) {
+    for (var pageIndex in pageIndexes) {
       final imgHeight = imgWidth / (aspects[imageIndex]["aspect"] ?? 1);
 
       // Image(
@@ -172,7 +172,7 @@ class _MangaReaderState extends State<MangaReaderMobile>
         ),
       );
       imageIndex++;
-    });
+    }
     return pages;
   }
 
@@ -193,7 +193,7 @@ class _MangaReaderState extends State<MangaReaderMobile>
       canRequestFocus: false,
       child: Scaffold(
         extendBodyBehindAppBar: isHidden,
-        backgroundColor: colorScheme.background,
+        backgroundColor: colorScheme.surface,
         drawer: Drawer(
           backgroundColor: colorScheme.primary,
           child: ListPreview(

@@ -75,15 +75,15 @@ class _CreateLibraryMobileState extends State<CreateLibraryMobile> {
 
     if (isLoadingCovers) {
       return Scaffold(
-        backgroundColor: colorScheme.background,
-        body: Center(
+        backgroundColor: colorScheme.surface,
+        body: const Center(
           child: LoadingDog(),
         ),
       );
     }
 
     return Scaffold(
-      backgroundColor: colorScheme.background,
+      backgroundColor: colorScheme.surface,
       body: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 class LoadingDog extends StatefulWidget {
-  LoadingDog({Key? key}) : super(key: key);
+  const LoadingDog({Key? key}) : super(key: key);
 
   @override
   State<LoadingDog> createState() => _LoadingDogState();

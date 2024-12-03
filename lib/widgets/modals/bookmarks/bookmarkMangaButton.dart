@@ -22,12 +22,12 @@ class BookmarkMangaButton extends StatelessWidget {
           ),
       child: ElevatedButton(
         style: const ButtonStyle().copyWith(
-          shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+          shape: WidgetStateProperty.all<RoundedRectangleBorder>(
             const RoundedRectangleBorder(
               borderRadius: BorderRadius.zero,
             ),
           ),
-          backgroundColor: MaterialStatePropertyAll(
+          backgroundColor: WidgetStatePropertyAll(
               selected ? colorScheme.tertiary : colorScheme.onPrimary),
         ),
         onPressed: () => selectBookmarkCb(index),

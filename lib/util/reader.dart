@@ -1,6 +1,5 @@
 import 'dart:io';
 
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:mangakolekt/controllers/archive.dart';
 import 'package:mangakolekt/models/book.dart';
@@ -37,7 +36,7 @@ Future<Book?> getBook(BuildContext context, String bookPath, int? id) async {
           e.toString(),
           style: const TextStyle(color: Colors.white),
         ),
-        backgroundColor: Theme.of(context).colorScheme.background,
+        backgroundColor: Theme.of(context).colorScheme.surface,
       ),
     );
   }

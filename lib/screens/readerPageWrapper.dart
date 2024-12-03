@@ -1,4 +1,3 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:mangakolekt/controllers/reader.dart';
 import 'package:mangakolekt/locator.dart';
@@ -65,8 +64,8 @@ class _ReaderPageWrapperState extends State<ReaderPageWrapper> {
           if (!snapshot.hasData) {
             if (snapshot.connectionState == ConnectionState.waiting) {
               return Scaffold(
-                backgroundColor: Theme.of(context).colorScheme.background,
-                body: Center(
+                backgroundColor: Theme.of(context).colorScheme.surface,
+                body: const Center(
                   child: SizedBox(
                     width: 200,
                     height: 200,

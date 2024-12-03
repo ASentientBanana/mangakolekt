@@ -18,11 +18,11 @@ List<Page> mangakolektUnzipArchiveBook(String bookPath) {
   final Pointer<nb.zip_t> archive =
       _bindings.zip_open(fileStringPtr.cast<Char>(), 0, zeroPtr);
 
-  final number_of_entries = _bindings.zip_get_num_entries(archive, 0);
+  final numberOfEntries = _bindings.zip_get_num_entries(archive, 0);
 
   final List<Page> pages = [];
 
-  for (int i = 0; i < number_of_entries; i++) {
+  for (int i = 0; i < numberOfEntries; i++) {
     Pointer<nb.zip_stat_t> statbuf = malloc();
 
     if (_bindings.zip_stat_index(archive, i, 0, statbuf) != 0) {

@@ -4,7 +4,7 @@ import 'package:mangakolekt/models/settings.dart';
 import 'package:mangakolekt/widgets/settings/checkbox.dart';
 
 class SettingsMobile extends StatefulWidget {
-  SettingsMobile({Key? key}) : super(key: key);
+  const SettingsMobile({Key? key}) : super(key: key);
 
   @override
   State<SettingsMobile> createState() => _SettingsMobileState();
@@ -25,10 +25,10 @@ class _SettingsMobileState extends State<SettingsMobile> {
     final colorScheme = Theme.of(context).colorScheme;
 
     return Scaffold(
-      backgroundColor: colorScheme.background,
+      backgroundColor: colorScheme.surface,
       appBar: AppBar(
         actions: [
-          IconButton(onPressed: (){handleResetToDefaults();}, icon: Icon(Icons.restart_alt))
+          IconButton(onPressed: (){handleResetToDefaults();}, icon: const Icon(Icons.restart_alt))
         ],
         title: const Text("Settings"),
       ),
@@ -37,7 +37,7 @@ class _SettingsMobileState extends State<SettingsMobile> {
           padding: const EdgeInsets.only(top: 10),
           child: ListView(
             padding: const EdgeInsets.only(left: 10),
-            children: [
+            children: const [
               SettingsCheckbox(
                 name: "RTL",
               ),

@@ -1,7 +1,4 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
-import 'package:flutter/widgets.dart';
 import 'package:mangakolekt/controllers/input.dart';
 import 'package:mangakolekt/controllers/reader.dart';
 import 'package:mangakolekt/constants.dart';
@@ -17,7 +14,7 @@ class MangaReader extends StatefulWidget {
   final ReaderController readerController;
   final int initialPage;
   final int libraryId;
-  MangaReader({
+  const MangaReader({
     Key? key,
     required this.readerController,
     required this.initialPage,
@@ -177,7 +174,7 @@ class _MangaReaderState extends State<MangaReader> {
     int imageIndex = 0;
     final aspect = aspects[imageIndex]["aspect"];
     final imgWidth = ((size.width * (aspect ?? 1)) / pageIndexes.length);
-    pageIndexes.forEach((pageIndex) {
+    for (var pageIndex in pageIndexes) {
       final imgHeight = imgWidth / (aspect ?? 1);
       pages.add(
         SingleImage(
@@ -189,7 +186,7 @@ class _MangaReaderState extends State<MangaReader> {
         ),
       );
       imageIndex++;
-    });
+    }
     return pages;
   }
 
@@ -232,7 +229,7 @@ class _MangaReaderState extends State<MangaReader> {
             children: [
               Container(
                 width: SIDEBAR_WIDTH,
-                color: colorScheme.background,
+                color: colorScheme.surface,
                 child: ListPreview(
                   readerController: readerController,
                   sc: _scrollController,
@@ -241,7 +238,7 @@ class _MangaReaderState extends State<MangaReader> {
               ),
               // I dont like this but it seems the most intuitive way to do this.
               Container(
-                color: colorScheme.background,
+                color: colorScheme.surface,
                 // color: Colors.purpleAccent,
                 width: readerWidth,
                 child: LayoutBuilder(

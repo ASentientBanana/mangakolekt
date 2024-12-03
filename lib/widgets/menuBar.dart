@@ -22,7 +22,12 @@ class MangaMenuBar extends StatelessWidget {
     final file = await pickFile();
 
     if (file != null) {
-      _navigationService.navigateTo('/reader', {"id": 0, "path": file});
+      _navigationService.navigateTo('/reader', {
+        "id": -1,
+        "initialPage": 0,
+        "libraryId": -1,
+        "path": file,
+      });
     }
     return;
   }
@@ -67,11 +72,11 @@ class MangaMenuBar extends StatelessWidget {
                           onPressed: pickFileHandler,
                           child: const Text("Open"),
                         ),
-                        MenuItemButton(
-                          onPressed: () =>
-                              pickDirHandler(context, readDir: true),
-                          child: const Text("Open directory"),
-                        ),
+                        // MenuItemButton(
+                        //   onPressed: () =>
+                        //       pickDirHandler(context, readDir: true),
+                        //   child: const Text("Open directory"),
+                        // ),
                         MenuItemButton(
                           onPressed: () => pickDirHandler(context),
                           child: const Text("Add library"),
@@ -111,7 +116,7 @@ class MangaMenuBar extends StatelessWidget {
                         contentPadding: const EdgeInsets.symmetric(horizontal: 5),
                         hintText: "Search books",
                         hintStyle: TextStyle(color: colorScheme.onPrimary),
-                        fillColor: colorScheme.background,
+                        fillColor: colorScheme.surface,
                         filled: true,
                         focusedBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.zero,
@@ -134,7 +139,7 @@ class MangaMenuBar extends StatelessWidget {
                     )),
                   ),
                   Positioned(
-                    top: 4,
+                    // top: 0,
                     right: 25,
                     child: Icon(
                       Icons.search_sharp,

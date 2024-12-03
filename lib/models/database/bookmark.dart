@@ -1,6 +1,4 @@
-import 'dart:math';
 
-import 'package:mangakolekt/util/util.dart';
 
 class Bookmark {
   final int page;
@@ -43,23 +41,23 @@ class Bookmarks {
 
   bool containsBookmark(String path, int page) {
     bool containsBookmark = false;
-    data.forEach((element) {
+    for (var element in data) {
       final foundBook = path == element.path;
       if (!foundBook) {
-        return;
+        continue;
       }
       for (var i = 0; i < element.bookmarks.length; i++) {
-        final _page = element.bookmarks[i].page;
-        if (_page == page) {
+        final page0 = element.bookmarks[i].page;
+        if (page0 == page) {
           containsBookmark = true;
-          return;
+          continue;
         }
       }
-    });
+    }
     return containsBookmark;
   }
 
-  Bookmarks.fromMaps(List<Map<String, dynamic>> _maps) {
+  Bookmarks.fromMaps(List<Map<String, dynamic>> maps) {
     // Reformat the data to look like
     /*
       [
@@ -69,7 +67,7 @@ class Bookmarks {
 
     final Map<int, BookmarksData> map = {};
     data = [];
-    for (var element in _maps) {
+    for (var element in maps) {
       try {
         final bm = Bookmark(
             page: element['page'],
@@ -90,10 +88,10 @@ class Bookmarks {
         print(e);
       }
     }
-    map.keys.forEach((element) {
+    for (var element in map.keys) {
       if (map[element] != null) {
         data.add(map[element]!);
       }
-    });
+    }
   }
 }

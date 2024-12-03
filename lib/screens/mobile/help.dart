@@ -1,6 +1,4 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:mangakolekt/widgets/buttons/squareButton.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -12,7 +10,7 @@ class HelpScreenMobile extends StatelessWidget {
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
     return Scaffold(
-      backgroundColor: colorScheme.background,
+      backgroundColor: colorScheme.surface,
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [

@@ -93,14 +93,14 @@ Future<List<FFICoverOutputResult>> _unzipArchiveCovers(
 
 Future<Book?> unzipArchiveBook(String zipPath) async {
   final List<PageEntry> pages = [];
-  List<mangaLibBook.Page> _pages = [];
+  List<mangaLibBook.Page> pages0 = [];
   try {
-    _pages = await Future(() => mangakolektUnzipArchiveBook(zipPath));
+    pages0 = await Future(() => mangakolektUnzipArchiveBook(zipPath));
   } catch (e) {
     print(e);
     return null;
   }
-  for (var p in _pages) {
+  for (var p in pages0) {
     Image image;
     try {
       image = await imageFromBytes(p.image);

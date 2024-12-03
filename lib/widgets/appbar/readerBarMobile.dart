@@ -3,11 +3,10 @@ import 'package:mangakolekt/constants.dart';
 import 'package:mangakolekt/controllers/reader.dart';
 import 'package:mangakolekt/models/util.dart';
 // import 'package:mangakolekt/controllers/reader.dart';
-import 'package:mangakolekt/widgets/appbar/backButton.dart';
 
 class SlidingAppBar extends StatelessWidget implements PreferredSizeWidget {
-  SlidingAppBar(
-      {required this.controller,
+  const SlidingAppBar(
+      {super.key, required this.controller,
       required this.isBookmarkedColor,
       required this.isNotBookmarkedColor,
       required this.readerController,
@@ -101,7 +100,7 @@ class SlidingAppBar extends StatelessWidget implements PreferredSizeWidget {
   Widget build(BuildContext context) {
     !isHidden ? controller.reverse() : controller.forward();
     return SlideTransition(
-      position: Tween<Offset>(begin: Offset.zero, end: Offset(0, -1)).animate(
+      position: Tween<Offset>(begin: Offset.zero, end: const Offset(0, -1)).animate(
         CurvedAnimation(parent: controller, curve: Curves.fastOutSlowIn),
       ),
       child: AppBar(
@@ -112,7 +111,7 @@ class SlidingAppBar extends StatelessWidget implements PreferredSizeWidget {
             return PopupMenuButton(
                 icon:
                     Icon(Icons.more_vert_rounded, color: colorScheme.tertiary),
-                color: colorScheme.background,
+                color: colorScheme.surface,
                 itemBuilder: menuBuilder);
           })
         ],

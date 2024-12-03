@@ -56,12 +56,12 @@ class _MyHomePageState extends State<MyHomePageMobile> {
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
     return Scaffold(
-      backgroundColor: colorScheme.background,
+      backgroundColor: colorScheme.surface,
       drawer: SafeArea(child: LibraryDrawer()),
       appBar: AppBar(
           shape:
               const Border(bottom: BorderSide(color: Colors.white, width: 1)),
-          actions: [
+          actions: const [
             SearchButton(),
           ]),
       body: SafeArea(
@@ -72,7 +72,7 @@ class _MyHomePageState extends State<MyHomePageMobile> {
       ),
       // child: LibList(),
 
-      floatingActionButton: CreateLibraryActionButton(),
+      floatingActionButton: const CreateLibraryActionButton(),
     );
     // return
   }

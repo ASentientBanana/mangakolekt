@@ -26,8 +26,8 @@ class _SettingsContentState extends State<SettingsContent> {
     final colorScheme = Theme.of(context).colorScheme;
     return Expanded(
       child: ListView(
-        padding: EdgeInsets.only(left: 10),
-        children: [
+        padding: const EdgeInsets.only(left: 10),
+        children: const [
           SettingsCheckbox(
             name: "RTL",
           ),

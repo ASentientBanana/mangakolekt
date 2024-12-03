@@ -152,11 +152,11 @@ class DatabaseMangaHelpers {
           where: 'path = ? AND book = ?', whereArgs: [path, -1]);
     }
     final List<int> pages = [];
-    results.forEach((b) {
+    for (var b in results) {
       if (b['page'] != Null) {
         pages.add(b['page']! as int);
       }
-    });
+    }
     return pages;
   }
 
@@ -187,11 +187,11 @@ class DatabaseMangaHelpers {
     db.close();
 
     final List<int> pages = [];
-    queryResult.forEach((b) {
+    for (var b in queryResult) {
       if (b['page'] != Null) {
         pages.add(b['page']! as int);
       }
-    });
+    }
     return pages;
   }
 
@@ -202,8 +202,6 @@ class DatabaseMangaHelpers {
         'SELECT ${DatabaseTables.Library}.name, ${DatabaseTables.Bookmarks}.* FROM ${DatabaseTables.Bookmarks} LEFT JOIN ${DatabaseTables.Library} ON ${DatabaseTables.Bookmarks}.library = ${DatabaseTables.Library}.id;';
     final queryResult = await db.rawQuery(sql);
 
-    print(sql);
-
     if (queryResult.isEmpty) {
       db.close();
       return Bookmarks.Empty();
@@ -211,6 +209,15 @@ class DatabaseMangaHelpers {
 
     db.close();
     return Bookmarks.fromMaps(queryResult);
+  }
+
+  static Future<Bookmarks> removeBookmark(int bookmarkID, int page) async{
+    print("Start delete");
+    final db = await DatabaseCore.openDB();
+    final res =await db.delete(DatabaseTables.Bookmarks, where: 'id = ? AND page = ?', whereArgs: [bookmarkID, page]);
+    print("Delete res response: $res");
+    await db.close();
+    return getAllBookmarks();
   }
 }
 

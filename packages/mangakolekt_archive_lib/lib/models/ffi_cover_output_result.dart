@@ -9,11 +9,11 @@ class FFILibCoverOutputResult {
   static FFILibCoverOutputResult? fromMap(Map<String, dynamic> map) {
     const fields = ["archiveName", "destinationPath", "directoryFile"];
     bool isValid = true;
-    fields.forEach((element) {
+    for (var element in fields) {
       if (map[element] == null) {
         isValid = false;
       }
-    });
+    }
 
     if (!isValid) {
       return null;

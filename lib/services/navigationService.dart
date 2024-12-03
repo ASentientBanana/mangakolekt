@@ -26,7 +26,7 @@ class NavigationService {
         builder: (context) {
           final colorScheme = Theme.of(context).colorScheme;
           return AlertDialog(
-            backgroundColor: colorScheme.background,
+            backgroundColor: colorScheme.surface,
             title: const Text("A problem occurred"),
             content: Text(error),
             actions: [

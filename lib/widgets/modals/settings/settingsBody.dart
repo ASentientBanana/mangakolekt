@@ -59,13 +59,13 @@ class SettingsBody extends StatelessWidget {
                 children: [
                   ElevatedButton(
                     style: const ButtonStyle().copyWith(
-                      shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                      shape: WidgetStateProperty.all<RoundedRectangleBorder>(
                         const RoundedRectangleBorder(
                           borderRadius: BorderRadius.zero,
                         ),
                       ),
                       backgroundColor:
-                          MaterialStatePropertyAll(colorScheme.tertiary),
+                          WidgetStatePropertyAll(colorScheme.tertiary),
                     ),
                     onPressed: handleOnSave,
                     child: const Center(
@@ -80,13 +80,13 @@ class SettingsBody extends StatelessWidget {
                   ),
                   ElevatedButton(
                     style: const ButtonStyle().copyWith(
-                      shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                      shape: WidgetStateProperty.all<RoundedRectangleBorder>(
                         const RoundedRectangleBorder(
                           borderRadius: BorderRadius.zero,
                         ),
                       ),
                       backgroundColor:
-                          MaterialStatePropertyAll(colorScheme.onPrimary),
+                          WidgetStatePropertyAll(colorScheme.onPrimary),
                     ),
                     onPressed: () {
                       _navigationService.goBack();

@@ -56,9 +56,9 @@ class _GridItemState extends State<GridItem> with TickerProviderStateMixin {
         padding: EdgeInsets.all(isHovering ? 20 : 50),
         child: InkWell(
           hoverColor: Colors.transparent,
-          onHover: (_isHovering) {
+          onHover: (isHovering) {
             setState(() {
-              isHovering = _isHovering;
+              isHovering = isHovering;
             });
           },
           onTap: () {
