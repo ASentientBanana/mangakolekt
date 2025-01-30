@@ -9,7 +9,7 @@ import 'package:mangakolekt/widgets/loadingDog.dart';
 import 'package:mangakolekt/widgets/modals/permissionPrompt.dart';
 
 class SplashScreen extends StatefulWidget {
-  const SplashScreen({Key? key}) : super(key: key);
+  const SplashScreen({super.key});
 
   @override
   State<SplashScreen> createState() => _SplashScreenState();

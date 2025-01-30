@@ -4,7 +4,7 @@ import 'package:mangakolekt/models/settings.dart';
 import 'package:mangakolekt/widgets/settings/checkbox.dart';
 
 class SettingsMobile extends StatefulWidget {
-  const SettingsMobile({Key? key}) : super(key: key);
+  const SettingsMobile({super.key});
 
   @override
   State<SettingsMobile> createState() => _SettingsMobileState();

@@ -4,7 +4,7 @@ import 'package:mangakolekt/models/settings.dart';
 
 class SettingsCheckbox extends StatefulWidget {
   final String name;
-  const SettingsCheckbox({Key? key, required this.name}) : super(key: key);
+  const SettingsCheckbox({super.key, required this.name});
 
   @override
   State<SettingsCheckbox> createState() => _SettingsCheckboxState();

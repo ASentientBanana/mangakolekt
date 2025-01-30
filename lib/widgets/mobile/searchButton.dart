@@ -3,7 +3,7 @@ import 'package:mangakolekt/locator.dart';
 import 'package:mangakolekt/store/library.dart';
 
 class SearchButton extends StatefulWidget {
-  const SearchButton({Key? key}) : super(key: key);
+  const SearchButton({super.key});
 
   @override
   State<SearchButton> createState() => _SearchButtonState();

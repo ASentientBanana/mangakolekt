@@ -6,12 +6,11 @@ class BookmarkMangaButton extends StatelessWidget {
   final int index;
   final void Function(int) selectBookmarkCb;
   const BookmarkMangaButton(
-      {Key? key,
+      {super.key,
       required this.name,
       required this.index,
       required this.selected,
-      required this.selectBookmarkCb})
-      : super(key: key);
+      required this.selectBookmarkCb});
 
   @override
   Widget build(BuildContext context) {

@@ -5,7 +5,7 @@ import 'package:mangakolekt/widgets/modals/bookmarks/bookmarkElement.dart';
 import 'package:mangakolekt/widgets/modals/bookmarks/bookmarkMangaButton.dart';
 
 class BookmarksMobile extends StatefulWidget {
-  const BookmarksMobile({Key? key}) : super(key: key);
+  const BookmarksMobile({super.key});
 
   @override
   _BookmarksMobileState createState() => _BookmarksMobileState();

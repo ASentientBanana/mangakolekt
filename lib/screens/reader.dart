@@ -15,11 +15,11 @@ class MangaReader extends StatefulWidget {
   final int initialPage;
   final int libraryId;
   const MangaReader({
-    Key? key,
+    super.key,
     required this.readerController,
     required this.initialPage,
     required this.libraryId,
-  }) : super(key: key);
+  });
 
   @override
   _MangaReaderState createState() => _MangaReaderState();

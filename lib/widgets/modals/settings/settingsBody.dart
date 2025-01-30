@@ -11,7 +11,7 @@ class SettingsBody extends StatelessWidget {
   final _navigationService = locator<NavigationService>();
   final _settingsService = locator<Settings>();
 
-  SettingsBody({Key? key, required this.dismissCb}) : super(key: key);
+  SettingsBody({super.key, required this.dismissCb});
 
   void handleOnSave() async {
     final docsDir = await getApplicationDocumentsDirectory();

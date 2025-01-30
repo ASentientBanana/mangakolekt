@@ -8,7 +8,7 @@ import 'package:mangakolekt/widgets/modals/createLib.dart';
 class DragAndDropSurface extends StatelessWidget {
   final _navigationService = locator<NavigationService>();
 
-  DragAndDropSurface({Key? key}) : super(key: key);
+  DragAndDropSurface({super.key});
 
   void onDragDoneHandler(DropDoneDetails details, BuildContext context) async {
     try {

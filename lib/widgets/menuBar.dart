@@ -12,7 +12,7 @@ import 'package:mangakolekt/widgets/modals/settings.dart';
 
 class MangaMenuBar extends StatelessWidget {
   final Widget child;
-  MangaMenuBar({Key? key, required this.child}) : super(key: key);
+  MangaMenuBar({super.key, required this.child});
 
   final _navigationService = locator<NavigationService>();
   final textEditingController = TextEditingController();

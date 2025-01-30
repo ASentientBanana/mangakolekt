@@ -8,7 +8,7 @@ import 'package:mangakolekt/widgets/modals/bookmarks/bookmarkContent.dart';
 class BookmarksBody extends StatefulWidget {
   final void Function() dismissCb;
 
-  const BookmarksBody({Key? key, required this.dismissCb}) : super(key: key);
+  const BookmarksBody({super.key, required this.dismissCb});
 
   @override
   State<BookmarksBody> createState() => _BookmarksBodyState();

@@ -8,8 +8,7 @@ import 'package:mangakolekt/services/navigationService.dart';
 class GridItem extends StatefulWidget {
   final BookCover item;
   final int libraryId;
-  const GridItem({Key? key, required this.item, this.libraryId = -1})
-      : super(key: key);
+  const GridItem({super.key, required this.item, this.libraryId = -1});
 
   @override
   State<GridItem> createState() => _GridItemState();

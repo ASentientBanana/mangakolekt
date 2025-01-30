@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 
 class HomeLogo extends StatelessWidget {
   String? text = '';
-  HomeLogo({Key? key, this.text}) : super(key: key);
+  HomeLogo({super.key, this.text});
 
   @override
   Widget build(BuildContext context) {

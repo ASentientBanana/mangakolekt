@@ -12,7 +12,7 @@ import 'package:path/path.dart' as path;
 class CreateLibraryMobile extends StatefulWidget {
   final String path;
 
-  const CreateLibraryMobile({Key? key, required this.path}) : super(key: key);
+  const CreateLibraryMobile({super.key, required this.path});
 
   @override
   State<CreateLibraryMobile> createState() => _CreateLibraryMobileState();

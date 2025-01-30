@@ -5,8 +5,7 @@ class ReaderPage extends StatelessWidget {
   final PageEntry item;
   final bool isGridView;
 
-  const ReaderPage({Key? key, required this.item, required this.isGridView})
-      : super(key: key);
+  const ReaderPage({super.key, required this.item, required this.isGridView});
 
   @override
   Widget build(BuildContext context) {

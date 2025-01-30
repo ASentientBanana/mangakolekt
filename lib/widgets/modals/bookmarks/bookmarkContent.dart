@@ -8,8 +8,7 @@ class BookmarkContent extends StatefulWidget {
   final Future<void> Function(int, int) deleteBookmarkCb;
 
   const BookmarkContent(
-      {Key? key, required this.bookmarks, required this.deleteBookmarkCb})
-      : super(key: key);
+      {super.key, required this.bookmarks, required this.deleteBookmarkCb});
 
   @override
   State<BookmarkContent> createState() => _BookmarkContentState();

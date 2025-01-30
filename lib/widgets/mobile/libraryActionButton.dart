@@ -6,7 +6,7 @@ import 'package:mangakolekt/services/navigationService.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 class CreateLibraryActionButton extends StatefulWidget {
-  const CreateLibraryActionButton({Key? key}) : super(key: key);
+  const CreateLibraryActionButton({super.key});
 
   @override
   State<CreateLibraryActionButton> createState() =>

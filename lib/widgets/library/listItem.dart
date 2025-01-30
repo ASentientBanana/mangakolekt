@@ -14,8 +14,7 @@ class LibListItem extends StatefulWidget {
 
   final libraryStore = locator<LibraryStore>();
 
-  LibListItem({Key? key, required this.item, required this.index})
-      : super(key: key);
+  LibListItem({super.key, required this.item, required this.index});
 
   @override
   _LibListItemState createState() => _LibListItemState();

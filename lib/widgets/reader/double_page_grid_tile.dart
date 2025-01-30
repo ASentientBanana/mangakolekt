@@ -6,8 +6,7 @@ class ReaderPage extends StatelessWidget {
   final bool isDoublePageView;
 
   const ReaderPage(
-      {Key? key, required this.item, required this.isDoublePageView})
-      : super(key: key);
+      {super.key, required this.item, required this.isDoublePageView});
 
   @override
   Widget build(BuildContext context) {

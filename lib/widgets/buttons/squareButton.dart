@@ -2,14 +2,11 @@ import 'package:flutter/material.dart';
 
 class SquareButton extends ElevatedButton {
   SquareButton(
-      {Key? key,
-      required void Function()? onPressed,
-      required Widget child,
+      {super.key,
+      required super.onPressed,
+      required Widget super.child,
       Color? backgroundColor})
       : super(
-          key: key,
-          onPressed: onPressed,
-          child: child,
           style: ButtonStyle(
               foregroundColor: WidgetStateProperty.all<Color>(Colors.white),
               backgroundColor: WidgetStateProperty.all<Color>(

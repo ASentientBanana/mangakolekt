@@ -11,12 +11,11 @@ class BookmarkElement extends StatefulWidget {
   final void Function() refetch;
 
   const BookmarkElement(
-      {Key? key,
+      {super.key,
       required this.bookmarkItem,
       required this.bookData,
       required this.refetch,
-      required this.deleteBookmarkCb})
-      : super(key: key);
+      required this.deleteBookmarkCb});
 
   @override
   State<BookmarkElement> createState() => _BookmarkElementState();
