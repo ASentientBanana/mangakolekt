@@ -148,7 +148,7 @@ class _MangaReaderState extends State<MangaReader> {
     final List<int> pageIndexes;
 
     final List<Widget> pages = [];
-    final List<Map<String, double>> aspects = [];
+    // final List<Map<String, double>> aspects = [];
 
     //check if double page view is toggled
     if (readerController.isRightToLeftMode) {
@@ -159,25 +159,29 @@ class _MangaReaderState extends State<MangaReader> {
 
     final isDouble = pageIndexes.length == 2;
 
-    final img = readerController.pages[0].entry.image;
+    final img = readerController.pages[pageIndexes[0]].entry.image;
     final w = img.width ?? 1;
     final h = img.height ?? 1;
     final isWide = w > h;
-    final ar = isWide ? w / h : h / w;
-    // final area = w * h;
-    final aspect = ar;
+    final aspect = isWide ? w / h : h / w;
 
-    final imgWidth = ((size.width * (aspect)) / pageIndexes.length) / 2;
-    final imgHeight = imgWidth * (aspect);
+    double imgWidth;
+    if (isWide) {
+      imgWidth = size.width;
+    } else {
+      imgWidth = size.width / 2;
+    }
+    final imgHeight = imgWidth * aspect;
 
-    for (var pageIndex in pageIndexes) {
+    for (var i = 0; i < pageIndexes.length; i++) {
+      final pageIndex = pageIndexes[i];
       pages.add(
         SingleImage(
-          isDouble: pageIndexes.length == 2,
+          isDouble: isDouble,
           increment: handleMouseClick,
           image: readerController.pages[pageIndex].entry.image,
-          imageIndex: pageIndex,
-          size: Size(imgWidth - 171, imgHeight),
+          imageIndex: i,
+          size: Size(imgWidth, imgHeight),
           // size: Size(imgHeight, imgWidth),
         ),
       );

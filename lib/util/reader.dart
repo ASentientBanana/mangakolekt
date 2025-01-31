@@ -7,7 +7,7 @@ import 'package:mangakolekt/util/files.dart';
 import 'package:path/path.dart' as p;
 import 'package:collection/collection.dart';
 
-Alignment setAliment(bool isDouble, int index) {
+Alignment getAliment(bool isDouble, int index) {
   if (!isDouble) {
     return Alignment.center;
   }

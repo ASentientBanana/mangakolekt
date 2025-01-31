@@ -34,14 +34,13 @@ class _SingleImageState extends State<SingleImage> {
 
     if (widget.isDouble) {
       image = Image(
-          fit: BoxFit.fitWidth,
-          alignment: setAliment(widget.isDouble, widget.imageIndex),
-          // alignment: Alignment.center,
           height: widget.size.height,
           width: widget.size.width,
+          fit: BoxFit.scaleDown,
+          // alignment: Alignment.centerRight,
+          alignment: getAliment(widget.isDouble, widget.imageIndex),
           image: widget.image.image);
     } else {
-      //TODO: Add width/height scaling
       image = Image(
         alignment: Alignment.center,
         height: widget.size.height,
@@ -64,7 +63,8 @@ class _SingleImageState extends State<SingleImage> {
             top: 0,
             child: Container(
               color: const Color.fromARGB(166, 0, 0, 0),
-              child: Text("w:${widget.image.width}x${widget.image.height}"),
+              child: Text(
+                  "w:${widget.size.width.round()}x${widget.size.height.round()}"),
             ),
           )
         : SizedBox.shrink();
