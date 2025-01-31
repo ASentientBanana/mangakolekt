@@ -10,7 +10,6 @@ import 'package:mangakolekt/screens/reader.dart';
 import 'package:mangakolekt/services/navigationService.dart';
 import 'package:mangakolekt/util/platform.dart';
 import 'package:mangakolekt/util/reader.dart';
-import 'package:mangakolekt/widgets/loadingDog.dart';
 
 class ReaderPageWrapper extends StatefulWidget {
   final String path;
@@ -62,8 +61,7 @@ class _ReaderPageWrapperState extends State<ReaderPageWrapper> {
             return OpenBookError();
           }
           //Check if we got the data
-          if (!snapshot.hasData ||
-              snapshot.connectionState != ConnectionState.done) {
+          if (snapshot.connectionState != ConnectionState.done) {
             return LoadingScreen();
           }
           // instantiate reader controller

@@ -11,6 +11,7 @@ import 'package:mangakolekt/util/util.dart';
 import 'package:path/path.dart' as p;
 
 abstract class BaseBookController {
+  List<String> fileTypes = [];
   bool checkType(String type);
   Future<Book?> unpack(String pathToBook, String dest);
   Future<List<FFICoverOutputResult>> unpackCovers(String pathToDir,
@@ -34,6 +35,15 @@ class ArchiveController {
   static List<BaseBookController> controllers = [
     ZipBookController(),
   ];
+
+  static List<String> supportedFormats() {
+    final List<String> types = [];
+    final len = ArchiveController.controllers.length;
+    for (var i = 0; i < len; i++) {
+      types.addAll(ArchiveController.controllers[i].fileTypes);
+    }
+    return types;
+  }
 
   static BaseBookController? getTypeController(String type) {
     for (var controller in ArchiveController.controllers) {

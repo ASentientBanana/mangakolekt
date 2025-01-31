@@ -1,6 +1,6 @@
-
 import 'package:flutter/material.dart';
 import 'package:mangakolekt/locator.dart';
+import 'package:mangakolekt/models/dialog.dart';
 import 'package:mangakolekt/services/initializer.dart';
 import 'package:mangakolekt/services/navigationService.dart';
 import 'package:mangakolekt/store/library.dart';
@@ -49,7 +49,8 @@ class _SplashScreenState extends State<SplashScreen> {
       if (!context.mounted) {
         return;
       }
-      _navigationService.errorDialog(error: e.toString());
+      _navigationService.openDialog(
+          type: DialogType.error, content: e.toString());
     }
   }
 

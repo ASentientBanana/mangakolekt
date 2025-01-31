@@ -156,36 +156,31 @@ class _MangaReaderState extends State<MangaReader> {
     } else {
       pageIndexes = readerController.getCurrentPages().reversed.toList();
     }
-    // Calculate new aspect ratio
-    for (var i = 0; i < pageIndexes.length; i++) {
-      final img = readerController.pages[i].entry.image;
-      final w = img.width ?? 1;
-      final h = img.height ?? 1;
-      final isWide = w > h;
-      final ar = isWide ? w / h : h / w;
-      final area = w * h;
-      aspects.add({
-        "area": area,
-        "aspect": ar,
-      });
-    }
 
-    //simplest way to iterate aspects
-    int imageIndex = 0;
-    final aspect = aspects[imageIndex]["aspect"];
-    final imgWidth = ((size.width * (aspect ?? 1)) / pageIndexes.length);
+    final isDouble = pageIndexes.length == 2;
+
+    final img = readerController.pages[0].entry.image;
+    final w = img.width ?? 1;
+    final h = img.height ?? 1;
+    final isWide = w > h;
+    final ar = isWide ? w / h : h / w;
+    // final area = w * h;
+    final aspect = ar;
+
+    final imgWidth = ((size.width * (aspect)) / pageIndexes.length) / 2;
+    final imgHeight = imgWidth * (aspect);
+
     for (var pageIndex in pageIndexes) {
-      final imgHeight = imgWidth / (aspect ?? 1);
       pages.add(
         SingleImage(
           isDouble: pageIndexes.length == 2,
           increment: handleMouseClick,
           image: readerController.pages[pageIndex].entry.image,
-          imageIndex: imageIndex,
-          size: Size(imgHeight, imgWidth),
+          imageIndex: pageIndex,
+          size: Size(imgWidth - 171, imgHeight),
+          // size: Size(imgHeight, imgWidth),
         ),
       );
-      imageIndex++;
     }
     return pages;
   }
@@ -252,18 +247,3 @@ class _MangaReaderState extends State<MangaReader> {
     ); // return
   }
 }
-
-//
-// Positioned(
-// bottom: 0,
-// right: 0,
-// child: Padding(
-// padding: const EdgeInsets.only(right: 20),
-// child: CurrentPageIndexView(
-// currentPages: readerController
-//     .getCurrentPages()
-//     .map((e) => e + 1)
-//     .join('-'),
-// totalPages: readerController.pages.length.toString(),
-// ),
-// ))

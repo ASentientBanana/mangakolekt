@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:mangakolekt/widgets/loadingDog.dart';
 
 class LoadingScreen extends StatelessWidget {
-  const LoadingScreen({Key? key}) : super(key: key);
+  const LoadingScreen({super.key});
 
   @override
   Widget build(BuildContext context) {

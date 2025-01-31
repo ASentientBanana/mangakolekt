@@ -109,51 +109,55 @@ class ReaderController {
     }
   }
 
-  int checkInBounds(PageAction pa) {
-    if (currentPageIndex >= pageMap[isDoublePageView ? 1 : 0]!.length - 1 &&
-        pa == PageAction.next) {
+  int getDirectionFromAction(PageAction pa) {
+    if (pa == PageAction.next) {
+      if (currentPageIndex == pageMap[isDoublePageView ? 1 : 0]!.length - 1) {
+        return 0;
+      }
       return 1;
     }
-    if (currentPageIndex <= 0 && pa == PageAction.previous) {
+
+    if (pa == PageAction.previous) {
+      if (currentPageIndex == 0) {
+        return 0;
+      }
       return -1;
     }
+
     return 0;
   }
 
-  void checkBookBoundaries(int dir) {
+  String? checkBookBoundaries(PageAction pa) {
     if (openBook == null) {
-      return;
+      return null;
     }
-    if (nextBookPath != null && dir > 0) {
-      openBook!('/reader', {
-        "id": 0,
-        "path": nextBookPath,
-        "initialPage": 0,
-      });
-      return;
+
+    String? nextBook;
+
+    if (pa == PageAction.next) {
+      nextBook = nextBookPath;
     }
-    if (prevBookPath != null && dir < 0) {
-      openBook!('/reader', {
-        "id": 0,
-        "path": prevBookPath,
-        "initialPage": 0,
-      });
-      return;
+    if (pa == PageAction.previous) {
+      nextBook = prevBookPath;
     }
+
+    return nextBook;
   }
 
   void pageAction(PageAction pa) {
-    final dir = checkInBounds(pa);
-    if (dir != 0) {
-      checkBookBoundaries(dir);
-      return;
+    final direction = getDirectionFromAction(pa);
+
+    if (direction == 0) {
+      final nextBook = checkBookBoundaries(pa);
+      if (nextBook != null) {
+        openBook!('/reader',
+            {"id": 0, "path": nextBook, "initialPage": 0, "libraryId": 0});
+
+        return;
+      }
     }
 
-    if (pa == PageAction.next) {
-      currentPageIndex++;
-    } else {
-      currentPageIndex--;
-    }
+    currentPageIndex = currentPageIndex + (direction);
     EasyThrottle.throttle('reader', const Duration(seconds: 1), () async {
       await DatabaseMangaHelpers.setCurrentlyReading(
           book.path, getCurrentPages().first);
