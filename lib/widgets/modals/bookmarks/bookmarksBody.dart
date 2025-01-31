@@ -8,7 +8,7 @@ import 'package:mangakolekt/widgets/modals/bookmarks/bookmarkContent.dart';
 class BookmarksBody extends StatefulWidget {
   final void Function() dismissCb;
 
-  const BookmarksBody({Key? key, required this.dismissCb}) : super(key: key);
+  const BookmarksBody({super.key, required this.dismissCb});
 
   @override
   State<BookmarksBody> createState() => _BookmarksBodyState();
@@ -19,11 +19,11 @@ class _BookmarksBodyState extends State<BookmarksBody> {
   Future<Bookmarks?> bookmarks = Future(() => null);
 
   void getBookmarks() {
-    bookmarks = DatabaseMangaHelpers.getBookmarks();
+    bookmarks = DatabaseMangaHelpers.getAllBookmarks();
   }
 
   Future<void> deleteBookmark(int book, int page) async {
-    await DatabaseMangaHelpers.removeBookmark(book: book, page: page);
+    await DatabaseMangaHelpers.removeBookmark(book, page);
     setState(() {
       getBookmarks();
     });
@@ -37,19 +37,7 @@ class _BookmarksBodyState extends State<BookmarksBody> {
 
   Widget builder(BuildContext context, AsyncSnapshot snapshot) {
     if (snapshot.connectionState == ConnectionState.waiting) {
-      return SizedBox(
-        width: 700,
-        height: 500,
-        child: Center(
-          child: SizedBox(
-            height: 50,
-            width: 50,
-            child: CircularProgressIndicator(
-              color: Theme.of(context).colorScheme.tertiary,
-            ),
-          ),
-        ),
-      );
+      return BookmarkContent(bookmarks: Bookmarks.Empty(), deleteBookmarkCb:(_,__)async{});
     }
 
     if (!snapshot.hasData) {
@@ -75,12 +63,12 @@ class _BookmarksBodyState extends State<BookmarksBody> {
           right: 20,
           child: ElevatedButton(
             style: const ButtonStyle().copyWith(
-              shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+              shape: WidgetStateProperty.all<RoundedRectangleBorder>(
                 const RoundedRectangleBorder(
                   borderRadius: BorderRadius.zero,
                 ),
               ),
-              backgroundColor: MaterialStatePropertyAll(colorScheme.onPrimary),
+              backgroundColor: WidgetStatePropertyAll(colorScheme.onPrimary),
             ),
             onPressed: () {
               _navigationService.goBack();

@@ -1,14 +1,13 @@
 import 'dart:io';
 
 import 'package:mangakolekt/models/global.dart';
-import 'package:mangakolekt/services/database/databaseTable.dart';
 import 'package:mangakolekt/services/database/table_definitions.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 import 'package:path/path.dart' as p;
 
 class DatabaseCore {
-  static List<DatabaseTable> tables = databaseTableDefinitions;
+  // static List<DatabaseTable> tables = databaseTableDefinitions;
 
   static Future<void> initDatabase() async {
     sqfliteFfiInit();
@@ -23,7 +22,7 @@ class DatabaseCore {
     var databaseFactory = databaseFactoryFfi;
     var db = await databaseFactory.openDatabase(dbPath);
 
-    for (var table in DatabaseCore.tables) {
+    for (var table in databaseTableDefinitions) {
       await db.execute(table.build());
     }
     await db.close();

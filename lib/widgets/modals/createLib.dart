@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:mangakolekt/widgets/modals/createLib/createLibBody.dart';
-import 'package:mangakolekt/widgets/modals/help/helpBody.dart';
 
 void showCreateLibDialog(BuildContext context, String dir) {
   showDialog(

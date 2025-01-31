@@ -6,7 +6,7 @@ import '../../util/util.dart';
 
 class ReaderGrid extends StatefulWidget {
   final Book book;
-  const ReaderGrid({Key? key, required this.book}) : super(key: key);
+  const ReaderGrid({super.key, required this.book});
   @override
   _ReaderGridState createState() => _ReaderGridState();
 }

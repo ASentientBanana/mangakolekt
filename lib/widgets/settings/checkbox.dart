@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:mangakolekt/generated/archive_ffi.dart';
 import 'package:mangakolekt/locator.dart';
 import 'package:mangakolekt/models/settings.dart';
 
 class SettingsCheckbox extends StatefulWidget {
   final String name;
-  SettingsCheckbox({Key? key, required this.name}) : super(key: key);
+  const SettingsCheckbox({super.key, required this.name});
 
   @override
   State<SettingsCheckbox> createState() => _SettingsCheckboxState();
@@ -17,9 +16,9 @@ class _SettingsCheckboxState extends State<SettingsCheckbox> {
 
   @override
   void initState() {
-    final _index = _settingsService.getIndexByName(widget.name);
-    if(_index != -1){
-      settingIndex = _index;
+    final index = _settingsService.getIndexByName(widget.name);
+    if(index != -1){
+      settingIndex = index;
     }
     super.initState();
   }
@@ -47,7 +46,7 @@ class _SettingsCheckboxState extends State<SettingsCheckbox> {
         Text(_settingsService.data[settingIndex!].description),
         Checkbox(
           checkColor: Colors.white,
-          fillColor: MaterialStateProperty.all(colorScheme.background),
+          fillColor: WidgetStateProperty.all(colorScheme.surface),
           value: _settingsService.data.isEmpty || settingIndex == null
               ? false
               : _settingsService.data[settingIndex!].value as bool,

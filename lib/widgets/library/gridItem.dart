@@ -7,7 +7,8 @@ import 'package:mangakolekt/services/navigationService.dart';
 
 class GridItem extends StatefulWidget {
   final BookCover item;
-  const GridItem({Key? key, required this.item}) : super(key: key);
+  final int libraryId;
+  const GridItem({super.key, required this.item, this.libraryId = -1});
 
   @override
   State<GridItem> createState() => _GridItemState();
@@ -37,14 +38,6 @@ class _GridItemState extends State<GridItem> with TickerProviderStateMixin {
         return Image.asset('assets/images/dog_color.png');
       },
     );
-
-    // final fileByteData = await coverFile.readAsBytes();
-    //   return Image.memory(
-    //     fileByteData,
-    //     errorBuilder: (_, __, ___) {
-    //       return Image.asset('assets/images/dog_color.png');
-    //     },
-    //   );
   }
 
   @override
@@ -62,14 +55,18 @@ class _GridItemState extends State<GridItem> with TickerProviderStateMixin {
         padding: EdgeInsets.all(isHovering ? 20 : 50),
         child: InkWell(
           hoverColor: Colors.transparent,
-          onHover: (_isHovering) {
+          onHover: (isHovering) {
             setState(() {
-              isHovering = _isHovering;
+              isHovering = isHovering;
             });
           },
           onTap: () {
-            _navigationService.navigateTo('/reader',
-                {"path": widget.item.bookPath, "id": widget.item.id});
+            // print(widget.libraryId);
+            _navigationService.navigateTo('/reader', {
+              "path": widget.item.bookPath,
+              "id": widget.item.id,
+              "libraryId": widget.libraryId
+            });
           },
           child: FutureBuilder<Widget>(
             builder: imageBuilder,

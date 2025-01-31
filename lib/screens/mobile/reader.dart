@@ -4,16 +4,19 @@ import 'package:mangakolekt/controllers/reader.dart';
 import 'package:mangakolekt/services/database/databaseHelpers.dart';
 import 'package:mangakolekt/util/reader.dart';
 import 'package:mangakolekt/widgets/appbar/readerBarMobile.dart';
-import 'package:mangakolekt/widgets/reader/curentPageIndexView.dart';
+import 'package:mangakolekt/widgets/reader/currentPageIndexView.dart';
 import 'package:mangakolekt/widgets/reader/list_preview.dart';
 import 'package:mangakolekt/widgets/reader/singleImage.dart';
 
 class MangaReaderMobile extends StatefulWidget {
   final ReaderController readerController;
   final int initialPage;
+  final int libraryId;
   const MangaReaderMobile(
-      {Key? key, required this.readerController, required this.initialPage})
-      : super(key: key);
+      {super.key,
+      required this.readerController,
+      required this.initialPage,
+      required this.libraryId});
 
   @override
   _MangaReaderState createState() => _MangaReaderState();
@@ -49,8 +52,8 @@ class _MangaReaderState extends State<MangaReaderMobile>
   }
 
   Future<List<int>> getBookmarks() async {
-    final bookmarks = await DatabaseMangaHelpers.getBookmarkPagesFromPath(
-        path: readerController.book.path);
+    final bookmarks = await DatabaseMangaHelpers.getBookmarkedPagesForBook(
+        book: readerController.book.id, path: readerController.book.path);
 
     return bookmarks;
   }
@@ -91,10 +94,11 @@ class _MangaReaderState extends State<MangaReaderMobile>
       disableBookmarkButton = true;
     });
 
-    final bm = await DatabaseMangaHelpers.bookmark(
-        bookID: readerController.book.id ?? -1,
+    final bm = await DatabaseMangaHelpers.bookmark(BookmarkEvent(
+        page: readerController.getCurrentPages().first,
         path: readerController.book.path,
-        page: readerController.getCurrentPages().first);
+        book: readerController.book.id ?? -1,
+        library: widget.libraryId));
 
     setState(() {
       bookmarks = bm;
@@ -131,7 +135,7 @@ class _MangaReaderState extends State<MangaReaderMobile>
     }
 
     // Calculate new aspect ratio
-    pageIndexes.forEach((imageIndex) {
+    for (var imageIndex in pageIndexes) {
       final img = readerController.pages[imageIndex].entry.image;
       final w = img.width ?? 1;
       final h = img.height ?? 1;
@@ -142,13 +146,13 @@ class _MangaReaderState extends State<MangaReaderMobile>
         "area": area,
         "aspect": ar,
       });
-    });
+    }
 
     //simplest way to iterate aspects
     int imageIndex = 0;
     // 1.3 is a magic number arrived at with testing
     final imgWidth = ((size.width * 1.3) / pageIndexes.length);
-    pageIndexes.forEach((pageIndex) {
+    for (var pageIndex in pageIndexes) {
       final imgHeight = imgWidth / (aspects[imageIndex]["aspect"] ?? 1);
 
       // Image(
@@ -167,7 +171,7 @@ class _MangaReaderState extends State<MangaReaderMobile>
         ),
       );
       imageIndex++;
-    });
+    }
     return pages;
   }
 
@@ -188,7 +192,7 @@ class _MangaReaderState extends State<MangaReaderMobile>
       canRequestFocus: false,
       child: Scaffold(
         extendBodyBehindAppBar: isHidden,
-        backgroundColor: colorScheme.background,
+        backgroundColor: colorScheme.surface,
         drawer: Drawer(
           backgroundColor: colorScheme.primary,
           child: ListPreview(
@@ -220,9 +224,8 @@ class _MangaReaderState extends State<MangaReaderMobile>
                         isHidden = !isHidden;
                       });
                     },
-                    child: Container(
+                    child: SizedBox(
                       height: MediaQuery.of(context).size.height,
-                      // color: Theme.of(context).colorScheme.background,
                       width: size.width,
                       child: Row(
                         crossAxisAlignment: CrossAxisAlignment.center,

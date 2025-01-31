@@ -38,9 +38,7 @@ int parseIntPrefix(String s) {
 int compareIntPrefixes(String a, String b) {
   var aValue = parseIntPrefix(a);
   var bValue = parseIntPrefix(b);
-  if (aValue != null && bValue != null) {
-    return aValue - bValue;
-  }
+  return aValue - bValue;
 
   if (aValue == null && bValue == null) {
     // If neither string has an integer prefix, sort the strings lexically.
@@ -48,11 +46,7 @@ int compareIntPrefixes(String a, String b) {
   }
 
   // Sort strings with integer prefixes before strings without.
-  if (aValue == null) {
-    return 1;
-  } else {
-    return -1;
-  }
+  return -1;
 }
 
 List<BookCover> sortCoversNumeric(List<BookCover> list) {
@@ -76,8 +70,7 @@ List<BookCover> sortCoversNumeric(List<BookCover> list) {
     });
 }
 
-List<PageEntry> sortCoversPagesNumeric(List<PageEntry> _list) {
-  final list = [..._list];
+List<PageEntry> sortCoversPagesNumeric(List<PageEntry> list) {
   return list
     ..sort(
       (a, b) {

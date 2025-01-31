@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:mangakolekt/models/book.dart';
 import 'package:mangakolekt/models/database/bookmark.dart';
 import 'package:mangakolekt/models/ffi.dart';
@@ -135,68 +137,102 @@ class DatabaseMangaHelpers {
     }
   }
 
-  static Future<Bookmarks> getBookmarks() async {
-    try {
-      final db = await DatabaseCore.openDB();
-      // final results = await db.rawQuery(
-      //     "SELECT * FROM ${DatabaseTables.Bookmarks} RIGHT JOIN ${DatabaseTables.Book} ON ${DatabaseTables.Book}.id = ${DatabaseTables.Bookmarks}.book;");
+  // Bookmark
+  static Future<List<int>> getBookmarkedPagesForBook(
+      {String? path, int? book}) async {
+    final db = await DatabaseCore.openDB();
 
-      final query =
-          "SELECT ${DatabaseTables.Library}.path as lib_path, ${DatabaseTables.Book}.path as book_path, ${DatabaseTables.Library}.name as lib_name, * FROM ${DatabaseTables.Bookmarks} INNER JOIN ${DatabaseTables.Book} ON ${DatabaseTables.Book}.id = ${DatabaseTables.Bookmarks}.book INNER JOIN Library ON ${DatabaseTables.Library}.id = ${DatabaseTables.Book}.library;";
-      final results = await db.rawQuery(query);
+    List<Map<String, dynamic>> results = [];
+
+    if (book != null && book != -1) {
+      results = await db.query(DatabaseTables.Bookmarks,
+          where: 'book = ?', whereArgs: [book]);
+    } else if (path != null) {
+      results = await db.query(DatabaseTables.Bookmarks,
+          where: 'path = ? AND book = ?', whereArgs: [path, -1]);
+    }
+    final List<int> pages = [];
+    for (var b in results) {
+      if (b['page'] != Null) {
+        pages.add(b['page']! as int);
+      }
+    }
+    return pages;
+  }
+
+  // add a bookmark
+  static Future<List<int>> bookmark(BookmarkEvent event) async {
+    final db = await DatabaseCore.openDB();
+
+    final results = await db.query(DatabaseTables.Bookmarks,
+        where: 'path = ? AND book = ? AND page = ?',
+        whereArgs: [event.path, event.book, event.page]);
+
+    final isBookmarked = results.isNotEmpty;
+
+    if (isBookmarked) {
+      await db.delete(
+        DatabaseTables.Bookmarks,
+        where: 'path = ? AND book = ? AND page = ?',
+        whereArgs: [event.path, event.book, event.page],
+      );
+    }
+
+    if (!isBookmarked) {
+      await db.insert(DatabaseTables.Bookmarks, event.toMap());
+    }
+    final queryResult = await db.query(DatabaseTables.Bookmarks,
+        where: "book = ?", whereArgs: [event.book]);
+
+    db.close();
+
+    final List<int> pages = [];
+    for (var b in queryResult) {
+      if (b['page'] != Null) {
+        pages.add(b['page']! as int);
+      }
+    }
+    return pages;
+  }
+
+  static Future<Bookmarks> getAllBookmarks() async {
+    final db = await DatabaseCore.openDB();
+
+    final sql =
+        'SELECT ${DatabaseTables.Library}.name, ${DatabaseTables.Bookmarks}.* FROM ${DatabaseTables.Bookmarks} LEFT JOIN ${DatabaseTables.Library} ON ${DatabaseTables.Bookmarks}.library = ${DatabaseTables.Library}.id;';
+    final queryResult = await db.rawQuery(sql);
+
+    if (queryResult.isEmpty) {
       db.close();
-      final b = Bookmarks.fromMaps(results);
-      return b;
-    } catch (e) {
       return Bookmarks.Empty();
     }
-  }
 
-  static Future<List<int>> getBookmarkPagesFromPath(
-      {required String path}) async {
-    try {
-      final results = await DatabaseCore.queryDB(
-          table: DatabaseTables.Bookmarks, where: "path=?", args: [path]);
-      return results.map((e) => (e["page"] as int)).toList();
-    } catch (e) {
-      return [];
-    }
-  }
-
-  static Future<void> addBookmark(
-      {required int book, required int page, required String path}) async {
-    final db = await DatabaseCore.openDB();
-    await db.insert(DatabaseTables.Bookmarks, {
-      "book": book,
-      "page": page,
-      "path": path,
-      "created_at": DateTime.now().millisecondsSinceEpoch
-    });
-    await db.close();
-  }
-
-  static Future<void> removeBookmark(
-      {required int book, required int page}) async {
-    if (book == -1) {
-      return;
-    }
-    final db = await DatabaseCore.openDB();
-    await db.delete(DatabaseTables.Bookmarks,
-        where: 'book=? AND page=?', whereArgs: [book, page]);
     db.close();
-    // await DatabaseCore.deleteFromDB(
-    //);
+    return Bookmarks.fromMaps(queryResult);
   }
 
-  static Future<List<int>> bookmark(
-      {int bookID = -1, required String path, required int page}) async {
-    final bookmarks = await getBookmarks();
-    final hasBookmark = bookmarks.containsBookmark(path, page);
-    if (!hasBookmark) {
-      await addBookmark(book: bookID, path: path, page: page);
-    } else {
-      await removeBookmark(book: bookID, page: page);
-    }
-    return await getBookmarkPagesFromPath(path: path);
+  static Future<Bookmarks> removeBookmark(int bookmarkID, int page) async{
+    print("Start delete");
+    final db = await DatabaseCore.openDB();
+    final res =await db.delete(DatabaseTables.Bookmarks, where: 'id = ? AND page = ?', whereArgs: [bookmarkID, page]);
+    print("Delete res response: $res");
+    await db.close();
+    return getAllBookmarks();
+  }
+}
+
+class BookmarkEvent {
+  int page;
+  String path;
+  int book;
+  int library;
+  BookmarkEvent(
+      {required this.page,
+      required this.path,
+      this.book = -1,
+      this.library = -1});
+
+  Map<String, dynamic> toMap() {
+    return {'page': page, 'path': path, 'book': book, 'library': library};
   }
 }

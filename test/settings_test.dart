@@ -21,7 +21,6 @@ void main() {
 
   test('init', () async {
     const path = '/home/petar/Documents/mangakolekt';
-    final _default = Settings.defaultConfig();
-    expect(_default.data.length, 2);
+    expect(Settings.defaultConfig().data.length, 2);
   });
 }

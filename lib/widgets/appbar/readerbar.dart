@@ -4,7 +4,7 @@ import 'package:mangakolekt/models/util.dart';
 import 'package:mangakolekt/widgets/appbar/backButton.dart';
 
 class ReaderAppbar extends AppBar {
-  ReaderAppbar({
+  ReaderAppbar({super.key, 
     required Color isBookmarkedColor,
     required Color isNotBookmarkedColor,
     required readerController,

@@ -3,7 +3,7 @@ import 'package:mangakolekt/locator.dart';
 import 'package:mangakolekt/services/navigationService.dart';
 
 class CustomBackButton extends StatelessWidget {
-  CustomBackButton({Key? key}) : super(key: key);
+  CustomBackButton({super.key});
 
   final _navigationService = locator<NavigationService>();
   @override

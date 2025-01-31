@@ -1,4 +1,3 @@
-import 'dart:io';
 
 import 'package:mangakolekt_archive_lib/mangakolekt_archive_lib.dart';
 import 'package:mangakolekt_archive_lib/models/ffi_cover_output_result.dart';
@@ -11,7 +10,7 @@ List<FFILibCoverOutputResult> mangakolektUnzipArchiveCover(
     List<String> files, String output) {
   //init native lib
   final dyLib = getDyLib();
-  final nb.NativeLibrary _bindings = nb.NativeLibrary(dyLib);
+  final nb.NativeLibrary bindings = nb.NativeLibrary(dyLib);
 
   print('Start');
 
@@ -27,15 +26,15 @@ List<FFILibCoverOutputResult> mangakolektUnzipArchiveCover(
 
     //open archive
     final Pointer<nb.zip_t> archive =
-        _bindings.zip_open(fileStringPtr.cast<Char>(), 0, zeroPtr);
+        bindings.zip_open(fileStringPtr.cast<Char>(), 0, zeroPtr);
 
-    final numberOfEntries = _bindings.zip_get_num_entries(archive, 0);
+    final numberOfEntries = bindings.zip_get_num_entries(archive, 0);
 
     //Loop over files and find first file.
     for (int i = 0; i < numberOfEntries; i++) {
       Pointer<nb.zip_stat_t> statbuf = malloc();
 
-      if (_bindings.zip_stat_index(archive, i, 0, statbuf) != 0) {
+      if (bindings.zip_stat_index(archive, i, 0, statbuf) != 0) {
         continue;
       }
 
@@ -51,10 +50,10 @@ List<FFILibCoverOutputResult> mangakolektUnzipArchiveCover(
       }
       // open file in archive by index
       Pointer<nb.zip_file_t> f =
-          _bindings.zip_fopen_index(archive, i, nb.ZIP_FL_UNCHANGED);
+          bindings.zip_fopen_index(archive, i, nb.ZIP_FL_UNCHANGED);
 
       Pointer<Char> content = malloc(size);
-      if (_bindings.zip_fread(f, content.cast(), size) == 0) {
+      if (bindings.zip_fread(f, content.cast(), size) == 0) {
         calloc.free(content);
         calloc.free(statbuf);
         break;
@@ -65,20 +64,20 @@ List<FFILibCoverOutputResult> mangakolektUnzipArchiveCover(
 
       outputPath = join(output, randomName);
 
-      Pointer<nb.FILE> outputFile = _bindings.fopen(
+      Pointer<nb.FILE> outputFile = bindings.fopen(
         outputPath.toNativeUtf8().cast<Char>(),
         "wb".toNativeUtf8().cast<Char>(),
       );
-      final written = _bindings.fwrite(
+      final written = bindings.fwrite(
           content.cast<Void>(), sizeOf<Char>(), size, outputFile);
 
       print("starting cover export");
       print("Written $written of $size");
 
-      _bindings.fclose(outputFile);
+      bindings.fclose(outputFile);
       calloc.free(content);
       calloc.free(statbuf);
-      _bindings.zip_close(archive);
+      bindings.zip_close(archive);
 
       covers.add(FFILibCoverOutputResult(
         archiveName: name,

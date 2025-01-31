@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:mangakolekt/locator.dart';
 import 'package:mangakolekt/store/library.dart';
 
 class SearchButton extends StatefulWidget {
-  SearchButton({Key? key}) : super(key: key);
+  const SearchButton({super.key});
 
   @override
   State<SearchButton> createState() => _SearchButtonState();
@@ -23,7 +22,7 @@ class _SearchButtonState extends State<SearchButton> {
 
     if (!showSearchBar) {
       return Container(
-        color: colorScheme.background,
+        color: colorScheme.surface,
         child: IconButton(
           onPressed: () {
             setState(() {
@@ -51,7 +50,7 @@ class _SearchButtonState extends State<SearchButton> {
           contentPadding: const EdgeInsets.symmetric(horizontal: 5),
           hintText: "Search books",
           hintStyle: TextStyle(color: colorScheme.onPrimary),
-          fillColor: colorScheme.background,
+          fillColor: colorScheme.surface,
           filled: true,
           focusedBorder: OutlineInputBorder(
             borderRadius: BorderRadius.zero,

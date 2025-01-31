@@ -5,7 +5,7 @@ import 'package:mangakolekt/widgets/buttons/squareButton.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class HelpBody extends StatelessWidget {
-  HelpBody({Key? key}) : super(key: key);
+  HelpBody({super.key});
   final _navigationService = locator<NavigationService>();
   final url = Uri.parse("https://mangakolekt.com");
   @override
@@ -34,7 +34,7 @@ class HelpBody extends StatelessWidget {
               width: 650,
               bottom: 30,
               child: Padding(
-                padding: EdgeInsets.symmetric(horizontal: 100, vertical: 1),
+                padding: const EdgeInsets.symmetric(horizontal: 100, vertical: 1),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   mainAxisSize: MainAxisSize.max,

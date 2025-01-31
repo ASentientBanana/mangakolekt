@@ -24,12 +24,14 @@ class AppWidget extends StatelessWidget {
       case '/reader':
         final args = (settings.arguments as Map<String, dynamic>);
         return pageRouteBuilderWrapper(
-            settings,
-            ReaderPageWrapper(
-              initialPage: args['initialPage'],
-              path: args["path"],
-              id: args["id"],
-            ));
+          settings,
+          ReaderPageWrapper(
+            initialPage: args['initialPage'],
+            path: args["path"],
+            id: args["id"],
+            libraryId: args['libraryId'],
+          ),
+        );
       case "/home":
         return pageRouteBuilderWrapper(settings,
             (isMobile()) ? const MyHomePageMobile() : const MyHomePage());
@@ -37,7 +39,7 @@ class AppWidget extends StatelessWidget {
         return pageRouteBuilderWrapper(settings, const SplashScreen());
       case "/settings":
         // return DialogRoute(context: , builder: builder)
-        return pageRouteBuilderWrapper(settings, SettingsMobile());
+        return pageRouteBuilderWrapper(settings, const SettingsMobile());
       case "/help":
         // return DialogRoute(context: , builder: builder)
         return pageRouteBuilderWrapper(settings, HelpScreenMobile());
@@ -65,7 +67,7 @@ class AppWidget extends StatelessWidget {
       theme: ThemeData().copyWith(
         // canvasColor: Colors.red,
         scrollbarTheme: const ScrollbarThemeData().copyWith(
-          thumbColor: const MaterialStatePropertyAll(
+          thumbColor: const WidgetStatePropertyAll(
             Color(0xFFc1cc9c),
           ),
         ),
@@ -87,8 +89,6 @@ class AppWidget extends StatelessWidget {
           onSecondary: Color(0xFFc1cc9c),
           error: MangaColors.primary,
           onError: Color(0xFFc1cc9c),
-          background: MangaColors.background,
-          onBackground: MangaColors.background,
           surface: Color(0xFF081822),
           onSurface: Color(0xFFeef5ee),
           tertiary: Color(0xFFc1cc9c),
