@@ -37,7 +37,6 @@ class _SingleImageState extends State<SingleImage> {
           height: widget.size.height,
           width: widget.size.width,
           fit: BoxFit.scaleDown,
-          // alignment: Alignment.centerRight,
           alignment: getAliment(widget.isDouble, widget.imageIndex),
           image: widget.image.image);
     } else {
@@ -46,13 +45,6 @@ class _SingleImageState extends State<SingleImage> {
         height: widget.size.height,
         width: widget.size.width,
         image: widget.image.image,
-      );
-    }
-
-    if (isMobile()) {
-      return GestureDetector(
-        onVerticalDragEnd: widget.onDrag,
-        child: image,
       );
     }
 

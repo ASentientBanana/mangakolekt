@@ -37,3 +37,5 @@ class MangaColors {
   static const onSurface = Color(0xFFeef5ee);
   static const tertiary = Color(0xFFc1cc9c);
 }
+
+const SWIPE_DEADZONE = 70;

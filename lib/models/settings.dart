@@ -47,8 +47,6 @@ class Setting {
 class Settings {
   List<Setting> data = [];
 
-  Settings();
-
   Settings.defaultConfig() {
     data = [
       Setting(
@@ -62,7 +60,15 @@ class Settings {
           description: 'Default to double page view',
           value: false),
       Setting(
-          type: 'bool', name: "showControlBar", description: "Default to show UI reader control bar", value: false),
+          type: 'bool',
+          name: "showControlBar",
+          description: "Default to show UI reader control bar",
+          value: false),
+      Setting(
+          type: 'bool',
+          name: "invertPageSwipe",
+          description: "The swipe direction when reading, inverted by default.",
+          value: true)
     ];
   }
 
@@ -138,23 +144,19 @@ class Settings {
     }
 
     final fSettings = await load(file: file);
-    print("loading settings into mem");
     settingsService.data = fSettings;
   }
 
-  static Future<File> getSettingsFile()async{
+  static Future<File> getSettingsFile() async {
     final path = (await getApplicationDocumentsDirectory()).path;
     final file = File(join(path, 'mangakolekt', 'settings.json'));
     return file;
   }
 
-  static Future<void> resetSettingsToDefault()async{
+  static Future<void> resetSettingsToDefault() async {
     final file = await getSettingsFile();
     await Settings.save(Settings.defaultConfig(), file: file);
   }
-  // Future<void> syncFile(String path) async {
-  //   // save(settings, path)
-  // }
 
   Setting getByNameFromFile(String name) {
     return data.firstWhere((element) => element.name == name);
@@ -166,7 +168,6 @@ class Settings {
 
   int getIndexByName(String name) {
     return data.indexWhere((element) {
-      print("Looking for $name comparing to ${element.name}");
       return element.name == name;
     });
   }
