@@ -5,7 +5,7 @@ import 'package:mangakolekt/widgets/modals/bookmarks/bookmarkElement.dart';
 import 'package:mangakolekt/widgets/modals/bookmarks/bookmarkMangaButton.dart';
 
 class BookmarksMobile extends StatefulWidget {
-  const BookmarksMobile({Key? key}) : super(key: key);
+  const BookmarksMobile({super.key});
 
   @override
   _BookmarksMobileState createState() => _BookmarksMobileState();
@@ -18,7 +18,7 @@ class _BookmarksMobileState extends State<BookmarksMobile> {
 
   void getBookmarks() {
     setState(() {
-      // bookmarksFuture = DatabaseMangaHelpers.getBookmarks();
+      bookmarksFuture = DatabaseMangaHelpers.getAllBookmarks();
     });
   }
 
@@ -39,13 +39,12 @@ class _BookmarksMobileState extends State<BookmarksMobile> {
   }
 
   Widget bookmarkElementBuilder(BookmarksData item, int index) {
-    return SizedBox.shrink();
-    // return BookmarkElement(
-    //     refetch: getBookmarks,
-    //     bookmarkItem: item.bookmarks[index],
-    //     bookData: item,
-    //     deleteBookmarkCb: (int p1, int p2) =>
-    //         DatabaseMangaHelpers.removeBookmark(book: p1, page: p2));
+    return BookmarkElement(
+        refetch: getBookmarks,
+        bookmarkItem: item.bookmarks[index],
+        bookData: item,
+      deleteBookmarkCb:(int id, int page) =>
+            DatabaseMangaHelpers.removeBookmark(id,page));
   }
 
   Widget futureContentBuilder(
@@ -97,7 +96,7 @@ class _BookmarksMobileState extends State<BookmarksMobile> {
     final colorScheme = Theme.of(context).colorScheme;
 
     return Scaffold(
-      backgroundColor: colorScheme.background,
+      backgroundColor: colorScheme.surface,
       drawer:
           FutureBuilder(future: bookmarksFuture, builder: futureListBuilder),
       appBar: AppBar(

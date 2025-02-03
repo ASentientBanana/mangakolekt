@@ -5,7 +5,7 @@ import 'package:mangakolekt/services/navigationService.dart';
 import 'package:mangakolekt/util/files.dart';
 
 class LibraryDrawer extends StatelessWidget {
-  LibraryDrawer({Key? key}) : super(key: key);
+  LibraryDrawer({super.key});
   final _navigationService = locator<NavigationService>();
 
   final List<NavigationItem> items = [];

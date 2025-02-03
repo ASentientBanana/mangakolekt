@@ -1,4 +1,3 @@
-import 'dart:ffi';
 
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
@@ -7,7 +6,7 @@ import 'package:mangakolekt/services/navigationService.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 class CreateLibraryActionButton extends StatefulWidget {
-  CreateLibraryActionButton({Key? key}) : super(key: key);
+  const CreateLibraryActionButton({super.key});
 
   @override
   State<CreateLibraryActionButton> createState() =>
@@ -52,7 +51,7 @@ class _CreateLibraryActionButtonState extends State<CreateLibraryActionButton> {
           side: const BorderSide(
               width: 3, color: Color.fromARGB(255, 238, 245, 238)),
           borderRadius: BorderRadius.circular(100)),
-      backgroundColor: colorScheme.background,
+      backgroundColor: colorScheme.surface,
       onPressed: () => handleAdd(context),
       child: const Icon(size: 42, Icons.add),
     );

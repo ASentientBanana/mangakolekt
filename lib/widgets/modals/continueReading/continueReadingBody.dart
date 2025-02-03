@@ -4,7 +4,7 @@ import 'package:mangakolekt/services/navigationService.dart';
 import 'package:mangakolekt/widgets/buttons/squareButton.dart';
 
 class HelpBody extends StatelessWidget {
-  HelpBody({Key? key}) : super(key: key);
+  HelpBody({super.key});
   final _navigationService = locator<NavigationService>();
 
   @override
@@ -27,7 +27,7 @@ class HelpBody extends StatelessWidget {
               width: 650,
               bottom: 30,
               child: Padding(
-                padding: EdgeInsets.symmetric(horizontal: 100, vertical: 1),
+                padding: const EdgeInsets.symmetric(horizontal: 100, vertical: 1),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   mainAxisSize: MainAxisSize.max,

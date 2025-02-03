@@ -17,12 +17,6 @@ class _LibListState extends State<LibList> {
   bool hidden = false;
 
   @override
-  void initState() {
-    // db = DatabaseMangaHelpers.getCovers(id:);
-    super.initState();
-  }
-
-  @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
     return Container(
@@ -56,7 +50,7 @@ class _LibListState extends State<LibList> {
               height: 40,
             ),
             controller: _firstController,
-            itemCount: widget.libraryList.length ?? 0,
+            itemCount: widget.libraryList.length,
             // crossAxisAlignment: CrossAxisAlignment.center,
             itemBuilder: (context, i) => hidden
                 ? null

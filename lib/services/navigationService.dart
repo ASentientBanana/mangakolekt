@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mangakolekt/widgets/dialog.dart';
 
 class NavigationService {
   final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
@@ -17,27 +18,16 @@ class NavigationService {
     navigatorKey.currentState?.pop(data);
   }
 
-  void errorDialog({required String error}) {
+  void openDialog({required String content, required type}) {
     if (navigatorKey.currentContext == null) {
       return;
     }
+
     showDialog(
-        context: navigatorKey.currentContext!,
-        builder: (context) {
-          final colorScheme = Theme.of(context).colorScheme;
-          return AlertDialog(
-            backgroundColor: colorScheme.background,
-            title: const Text("A problem occurred"),
-            content: Text(error),
-            actions: [
-              ElevatedButton(
-                onPressed: () {
-                  Navigator.of(context).pop();
-                },
-                child: const Text("Ok"),
-              )
-            ],
-          );
-        });
+      context: navigatorKey.currentContext!,
+      builder: (context) => MangaDialog(
+        content: content,
+      ),
+    );
   }
 }

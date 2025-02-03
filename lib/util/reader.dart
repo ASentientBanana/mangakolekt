@@ -1,6 +1,5 @@
 import 'dart:io';
 
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:mangakolekt/controllers/archive.dart';
 import 'package:mangakolekt/models/book.dart';
@@ -8,7 +7,7 @@ import 'package:mangakolekt/util/files.dart';
 import 'package:path/path.dart' as p;
 import 'package:collection/collection.dart';
 
-Alignment setAliment(bool isDouble, int index) {
+Alignment getAliment(bool isDouble, int index) {
   if (!isDouble) {
     return Alignment.center;
   }
@@ -27,7 +26,7 @@ Future<Book?> getBook(BuildContext context, String bookPath, int? id) async {
   try {
     final params = [bookPath.split('.').last, bookPath, dest, id.toString()];
     book = await ArchiveController.unpack(params);
-    if(id != null && book?.id == null){
+    if (id != null && book?.id == null) {
       book?.id = id;
     }
   } catch (e) {
@@ -37,7 +36,7 @@ Future<Book?> getBook(BuildContext context, String bookPath, int? id) async {
           e.toString(),
           style: const TextStyle(color: Colors.white),
         ),
-        backgroundColor: Theme.of(context).colorScheme.background,
+        backgroundColor: Theme.of(context).colorScheme.surface,
       ),
     );
   }

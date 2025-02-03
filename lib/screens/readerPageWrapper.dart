@@ -1,16 +1,15 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:mangakolekt/controllers/reader.dart';
 import 'package:mangakolekt/locator.dart';
 import 'package:mangakolekt/models/book.dart';
 import 'package:mangakolekt/models/settings.dart';
+import 'package:mangakolekt/screens/loadingScreen.dart';
 import 'package:mangakolekt/screens/mobile/reader.dart';
 import 'package:mangakolekt/screens/openBookError.dart';
 import 'package:mangakolekt/screens/reader.dart';
 import 'package:mangakolekt/services/navigationService.dart';
 import 'package:mangakolekt/util/platform.dart';
 import 'package:mangakolekt/util/reader.dart';
-import 'package:mangakolekt/widgets/loadingDog.dart';
 
 class ReaderPageWrapper extends StatefulWidget {
   final String path;
@@ -19,12 +18,11 @@ class ReaderPageWrapper extends StatefulWidget {
   late final int initialPage;
 
   ReaderPageWrapper(
-      {Key? key,
+      {super.key,
       required this.path,
       required this.id,
       int? initialPage,
-      this.libraryId = -1})
-      : super(key: key) {
+      this.libraryId = -1}) {
     this.initialPage = initialPage ?? 0;
   }
 
@@ -57,25 +55,14 @@ class _ReaderPageWrapperState extends State<ReaderPageWrapper> {
   Widget build(BuildContext context) {
     return FutureBuilder(
         future: _book,
+        initialData: null,
         builder: (context, snapshot) {
-          if (snapshot.error != null) {
+          if (snapshot.hasError) {
             return OpenBookError();
           }
           //Check if we got the data
-          if (!snapshot.hasData) {
-            if (snapshot.connectionState == ConnectionState.waiting) {
-              return Scaffold(
-                backgroundColor: Theme.of(context).colorScheme.background,
-                body: Center(
-                  child: SizedBox(
-                    width: 200,
-                    height: 200,
-                    child: LoadingDog(),
-                  ),
-                ),
-              );
-            }
-            return OpenBookError();
+          if (snapshot.connectionState != ConnectionState.done) {
+            return LoadingScreen();
           }
           // instantiate reader controller
           final readerController = ReaderController(book: snapshot.data!);

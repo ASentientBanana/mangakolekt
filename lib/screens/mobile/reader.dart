@@ -1,23 +1,23 @@
 import 'package:flutter/material.dart';
+import 'package:mangakolekt/constants.dart';
 import 'package:mangakolekt/controllers/input.dart';
 import 'package:mangakolekt/controllers/reader.dart';
 import 'package:mangakolekt/services/database/databaseHelpers.dart';
 import 'package:mangakolekt/util/reader.dart';
 import 'package:mangakolekt/widgets/appbar/readerBarMobile.dart';
 import 'package:mangakolekt/widgets/reader/currentPageIndexView.dart';
+import 'package:mangakolekt/widgets/reader/imageContainer.dart';
 import 'package:mangakolekt/widgets/reader/list_preview.dart';
-import 'package:mangakolekt/widgets/reader/singleImage.dart';
 
 class MangaReaderMobile extends StatefulWidget {
   final ReaderController readerController;
   final int initialPage;
   final int libraryId;
   const MangaReaderMobile(
-      {Key? key,
+      {super.key,
       required this.readerController,
       required this.initialPage,
-      required this.libraryId})
-      : super(key: key);
+      required this.libraryId});
 
   @override
   _MangaReaderState createState() => _MangaReaderState();
@@ -29,6 +29,8 @@ class _MangaReaderState extends State<MangaReaderMobile>
   List<int> bookmarks = [];
   bool isHidden = false;
   bool disableBookmarkButton = false;
+
+  Offset? dragStart;
 
   late final AnimationController appBarAnimationController =
       AnimationController(
@@ -107,73 +109,37 @@ class _MangaReaderState extends State<MangaReaderMobile>
     });
   }
 
-  void handleDragEnd(DragEndDetails details) {
-    if (details.primaryVelocity! > 0) {
-      setState(() {
-        readerController.decrementPage();
-      });
-      // handleScrollAnimation();
-    } else if (details.primaryVelocity! < 0) {
-      setState(() {
-        readerController.incrementPage();
-        // handleScrollAnimation();
-      });
-    }
+  void handleDragStart(DragStartDetails details) {
+    setState(() {
+      dragStart = details.globalPosition;
+    });
   }
 
-  List<Widget> renderPages(Size size) {
-    // A more verbose page rendering way.
-    final List<int> pageIndexes;
-
-    final List<Widget> pages = [];
-    final List<Map<String, double>> aspects = [];
-
-    //check if double page view is toggled
-    if (readerController.isRightToLeftMode) {
-      pageIndexes = readerController.getCurrentPages();
-    } else {
-      pageIndexes = readerController.getCurrentPages().reversed.toList();
+  void handleDragEnd(DragEndDetails details) {
+    if (dragStart == null) {
+      return;
     }
-
-    // Calculate new aspect ratio
-    pageIndexes.forEach((imageIndex) {
-      final img = readerController.pages[imageIndex].entry.image;
-      final w = img.width ?? 1;
-      final h = img.height ?? 1;
-      final isWide = w > h;
-      final ar = isWide ? w / h : h / w;
-      final area = w * h;
-      aspects.add({
-        "area": area,
-        "aspect": ar,
-      });
+    final d = details.globalPosition.dx - dragStart!.dx;
+    //TODO: THe page  position/count is not updating on page increment
+    //Arbitrary number for swipe dead zone
+    if (d.abs() < SWIPE_DEADZONE) {
+      return;
+    }
+    setState(() {
+      if (d < 0) {
+        readerController.incrementPage();
+        // handleScrollAnimation();
+      } else if (d > 0) {
+        readerController.decrementPage();
+        // handleScrollAnimation();
+      }
     });
+  }
 
-    //simplest way to iterate aspects
-    int imageIndex = 0;
-    // 1.3 is a magic number arrived at with testing
-    final imgWidth = ((size.width * 1.3) / pageIndexes.length);
-    pageIndexes.forEach((pageIndex) {
-      final imgHeight = imgWidth / (aspects[imageIndex]["aspect"] ?? 1);
-
-      // Image(
-      //   image: readerController.pages[imageIndex].entry.image.image,
-      //   height: imgWidth,
-      //   width:  imgHeight,
-      //   alignment: setAliment(readerController.isDoublePageView, count),
-      // )
-      pages.add(
-        SingleImage(
-          isDouble: readerController.isDoublePageView,
-          onDrag: handleDragEnd,
-          image: readerController.pages[pageIndex].entry.image,
-          imageIndex: imageIndex,
-          size: Size(imgHeight, imgWidth),
-        ),
-      );
-      imageIndex++;
+  void handleOnTap() {
+    setState(() {
+      isHidden = !isHidden;
     });
-    return pages;
   }
 
   @override
@@ -193,7 +159,7 @@ class _MangaReaderState extends State<MangaReaderMobile>
       canRequestFocus: false,
       child: Scaffold(
         extendBodyBehindAppBar: isHidden,
-        backgroundColor: colorScheme.background,
+        backgroundColor: colorScheme.surface,
         drawer: Drawer(
           backgroundColor: colorScheme.primary,
           child: ListPreview(
@@ -219,20 +185,15 @@ class _MangaReaderState extends State<MangaReaderMobile>
               // I don't like this but it seems the most intuitive way to do this.
               Stack(
                 children: [
-                  InkWell(
-                    onTap: () {
-                      setState(() {
-                        isHidden = !isHidden;
-                      });
-                    },
-                    child: SizedBox(
-                      height: MediaQuery.of(context).size.height,
-                      width: size.width,
-                      child: Row(
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: renderPages(size),
-                      ),
+                  SizedBox(
+                    height: MediaQuery.of(context).size.height,
+                    width: size.width,
+                    child: ReaderImageContainer(
+                      onTap: handleOnTap,
+                      onDragEnd: handleDragEnd,
+                      onDragStart: handleDragStart,
+                      size: size,
+                      rc: readerController,
                     ),
                   ),
                   Positioned(

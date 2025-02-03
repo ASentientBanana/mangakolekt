@@ -47,9 +47,7 @@ Future<List<FFICoverOutputResult>> _unzipArchiveCovers(
     List<dynamic> props) async {
   final List<String> files = props[0];
   final String out = props[1];
-  const ext = [".jpg", ".jpeg", ".png", ".gif"];
   final List<FFICoverOutputResult> response = [];
-  final start = DateTime.now().millisecondsSinceEpoch;
 
   for (var i = 0; i < files.length; i++) {
     final file = files[i];
@@ -86,21 +84,19 @@ Future<List<FFICoverOutputResult>> _unzipArchiveCovers(
     inputStream.close();
   }
 
-  final end = DateTime.now().millisecondsSinceEpoch;
-  print("Unzip finished in ${(end - start) / 1000}s");
   return response;
 }
 
 Future<Book?> unzipArchiveBook(String zipPath) async {
   final List<PageEntry> pages = [];
-  List<mangaLibBook.Page> _pages = [];
+  List<mangaLibBook.Page> pages0 = [];
   try {
-    _pages = await Future(() => mangakolektUnzipArchiveBook(zipPath));
+    pages0 = await Future(() => mangakolektUnzipArchiveBook(zipPath));
   } catch (e) {
     print(e);
     return null;
   }
-  for (var p in _pages) {
+  for (var p in pages0) {
     Image image;
     try {
       image = await imageFromBytes(p.image);
@@ -109,6 +105,7 @@ Future<Book?> unzipArchiveBook(String zipPath) async {
     }
 
     bool isDouble = false;
+
     if (image.width != null && image.height != null) {
       isDouble =
           (image.width! >= image.height!) || image.width! == image.height!;

@@ -11,7 +11,7 @@ class SettingsBody extends StatelessWidget {
   final _navigationService = locator<NavigationService>();
   final _settingsService = locator<Settings>();
 
-  SettingsBody({Key? key, required this.dismissCb}) : super(key: key);
+  SettingsBody({super.key, required this.dismissCb});
 
   void handleOnSave() async {
     final docsDir = await getApplicationDocumentsDirectory();
@@ -59,13 +59,13 @@ class SettingsBody extends StatelessWidget {
                 children: [
                   ElevatedButton(
                     style: const ButtonStyle().copyWith(
-                      shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                      shape: WidgetStateProperty.all<RoundedRectangleBorder>(
                         const RoundedRectangleBorder(
                           borderRadius: BorderRadius.zero,
                         ),
                       ),
                       backgroundColor:
-                          MaterialStatePropertyAll(colorScheme.tertiary),
+                          WidgetStatePropertyAll(colorScheme.tertiary),
                     ),
                     onPressed: handleOnSave,
                     child: const Center(
@@ -80,13 +80,13 @@ class SettingsBody extends StatelessWidget {
                   ),
                   ElevatedButton(
                     style: const ButtonStyle().copyWith(
-                      shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                      shape: WidgetStateProperty.all<RoundedRectangleBorder>(
                         const RoundedRectangleBorder(
                           borderRadius: BorderRadius.zero,
                         ),
                       ),
                       backgroundColor:
-                          MaterialStatePropertyAll(colorScheme.onPrimary),
+                          WidgetStatePropertyAll(colorScheme.onPrimary),
                     ),
                     onPressed: () {
                       _navigationService.goBack();

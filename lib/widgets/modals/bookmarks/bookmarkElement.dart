@@ -11,12 +11,11 @@ class BookmarkElement extends StatefulWidget {
   final void Function() refetch;
 
   const BookmarkElement(
-      {Key? key,
+      {super.key,
       required this.bookmarkItem,
       required this.bookData,
       required this.refetch,
-      required this.deleteBookmarkCb})
-      : super(key: key);
+      required this.deleteBookmarkCb});
 
   @override
   State<BookmarkElement> createState() => _BookmarkElementState();
@@ -39,6 +38,8 @@ class _BookmarkElementState extends State<BookmarkElement> {
     setState(() {
       _isLoading = true;
     });
+    print(
+        "For:: bookmark id: ${widget.bookmarkItem.id} and page: ${widget.bookmarkItem.page}");
     await widget.deleteBookmarkCb(
         widget.bookmarkItem.id, widget.bookmarkItem.page);
     widget.refetch();
@@ -52,6 +53,7 @@ class _BookmarkElementState extends State<BookmarkElement> {
     final colorScheme = Theme.of(context).colorScheme;
     final screenWidth = MediaQuery.of(context).size.width;
     final isWide = screenWidth > 900;
+    final isNotInLib = widget.bookmarkItem.book == "-1";
     return Container(
       padding: const EdgeInsets.only(left: 15),
       height: isWide ? 30 : 90,
@@ -70,7 +72,8 @@ class _BookmarkElementState extends State<BookmarkElement> {
                   : () {
                       _navigationService.pushAndPop('/reader', {
                         "initialPage": widget.bookmarkItem.page,
-                        "path": widget.bookmarkItem.book,
+                        "path": widget.bookData.path,
+                        "libraryId": -1,
                         "id": widget.bookData.id,
                       });
                     },
@@ -81,16 +84,19 @@ class _BookmarkElementState extends State<BookmarkElement> {
                     : CrossAxisAlignment.start,
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Tooltip(
-                    message: widget.bookmarkItem.book,
-                    child: SizedBox(
-                      width: 150,
-                      child: Text(
-                        widget.bookmarkItem.book,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    ),
-                  ),
+                  isNotInLib
+                      ? Text("Not in library")
+                      : Tooltip(
+                          message:
+                              "${widget.bookData.name} [${widget.bookmarkItem.page}]",
+                          child: SizedBox(
+                            width: 150,
+                            child: Text(
+                              widget.bookmarkItem.book,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
+                        ),
                   Text("Page: ${widget.bookmarkItem.page + 1}"),
                   Text(
                     formatDateTime(

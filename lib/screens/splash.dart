@@ -1,7 +1,6 @@
-import 'dart:ffi';
-
 import 'package:flutter/material.dart';
 import 'package:mangakolekt/locator.dart';
+import 'package:mangakolekt/models/dialog.dart';
 import 'package:mangakolekt/services/initializer.dart';
 import 'package:mangakolekt/services/navigationService.dart';
 import 'package:mangakolekt/store/library.dart';
@@ -10,7 +9,7 @@ import 'package:mangakolekt/widgets/loadingDog.dart';
 import 'package:mangakolekt/widgets/modals/permissionPrompt.dart';
 
 class SplashScreen extends StatefulWidget {
-  const SplashScreen({Key? key}) : super(key: key);
+  const SplashScreen({super.key});
 
   @override
   State<SplashScreen> createState() => _SplashScreenState();
@@ -23,8 +22,8 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Theme.of(context).colorScheme.background,
-      body: Center(
+      backgroundColor: Theme.of(context).colorScheme.surface,
+      body: const Center(
         child: LoadingDog(),
       ),
     );
@@ -50,7 +49,8 @@ class _SplashScreenState extends State<SplashScreen> {
       if (!context.mounted) {
         return;
       }
-      _navigationService.errorDialog(error: e.toString());
+      _navigationService.openDialog(
+          type: DialogType.error, content: e.toString());
     }
   }
 

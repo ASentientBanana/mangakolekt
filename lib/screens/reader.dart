@@ -1,7 +1,4 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
-import 'package:flutter/widgets.dart';
 import 'package:mangakolekt/controllers/input.dart';
 import 'package:mangakolekt/controllers/reader.dart';
 import 'package:mangakolekt/constants.dart';
@@ -17,12 +14,12 @@ class MangaReader extends StatefulWidget {
   final ReaderController readerController;
   final int initialPage;
   final int libraryId;
-  MangaReader({
-    Key? key,
+  const MangaReader({
+    super.key,
     required this.readerController,
     required this.initialPage,
     required this.libraryId,
-  }) : super(key: key);
+  });
 
   @override
   _MangaReaderState createState() => _MangaReaderState();
@@ -151,7 +148,7 @@ class _MangaReaderState extends State<MangaReader> {
     final List<int> pageIndexes;
 
     final List<Widget> pages = [];
-    final List<Map<String, double>> aspects = [];
+    // final List<Map<String, double>> aspects = [];
 
     //check if double page view is toggled
     if (readerController.isRightToLeftMode) {
@@ -159,48 +156,48 @@ class _MangaReaderState extends State<MangaReader> {
     } else {
       pageIndexes = readerController.getCurrentPages().reversed.toList();
     }
-    // Calculate new aspect ratio
-    for (var i = 0; i < pageIndexes.length; i++) {
-      final img = readerController.pages[i].entry.image;
-      final w = img.width ?? 1;
-      final h = img.height ?? 1;
-      final isWide = w > h;
-      final ar = isWide ? w / h : h / w;
-      final area = w * h;
-      aspects.add({
-        "area": area,
-        "aspect": ar,
-      });
-    }
 
-    //simplest way to iterate aspects
-    int imageIndex = 0;
-    final aspect = aspects[imageIndex]["aspect"];
-    final imgWidth = ((size.width * (aspect ?? 1)) / pageIndexes.length);
-    pageIndexes.forEach((pageIndex) {
-      final imgHeight = imgWidth / (aspect ?? 1);
+    final isDouble = pageIndexes.length == 2;
+
+    final img = readerController.pages[pageIndexes[0]].entry.image;
+    final w = img.width ?? 1;
+    final h = img.height ?? 1;
+    final isWide = w > h;
+    final aspect = isWide ? w / h : h / w;
+
+    double imgWidth;
+    if (isWide) {
+      imgWidth = size.width;
+    } else {
+      imgWidth = size.width / 2;
+    }
+    final imgHeight = imgWidth * aspect;
+
+    for (var i = 0; i < pageIndexes.length; i++) {
+      final pageIndex = pageIndexes[i];
       pages.add(
         SingleImage(
-          isDouble: pageIndexes.length == 2,
+          isDouble: isDouble,
           increment: handleMouseClick,
           image: readerController.pages[pageIndex].entry.image,
-          imageIndex: imageIndex,
-          size: Size(imgHeight, imgWidth),
+          imageIndex: i,
+          size: Size(imgWidth, imgHeight),
+          // size: Size(imgHeight, imgWidth),
         ),
       );
-      imageIndex++;
-    });
+    }
     return pages;
   }
 
   Widget readerLayoutBuilder(
       BuildContext context, BoxConstraints constraints, double width) {
     return Center(
-        child: Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      mainAxisSize: MainAxisSize.max,
-      children: renderPages(Size(width, constraints.maxHeight)),
-    ));
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        mainAxisSize: MainAxisSize.max,
+        children: renderPages(Size(width, constraints.maxHeight)),
+      ),
+    );
   }
 
   @override
@@ -208,7 +205,6 @@ class _MangaReaderState extends State<MangaReader> {
     final colorScheme = Theme.of(context).colorScheme;
     final screenSize = MediaQuery.of(context).size;
     final screenWidth = screenSize.width;
-    // final screenHeight = screenSize.height;
     final isBookmark =
         bookmarks.contains(readerController.getCurrentPages().first);
     final readerWidth = screenWidth - SIDEBAR_WIDTH;
@@ -232,7 +228,7 @@ class _MangaReaderState extends State<MangaReader> {
             children: [
               Container(
                 width: SIDEBAR_WIDTH,
-                color: colorScheme.background,
+                color: colorScheme.surface,
                 child: ListPreview(
                   readerController: readerController,
                   sc: _scrollController,
@@ -241,7 +237,7 @@ class _MangaReaderState extends State<MangaReader> {
               ),
               // I dont like this but it seems the most intuitive way to do this.
               Container(
-                color: colorScheme.background,
+                color: colorScheme.surface,
                 // color: Colors.purpleAccent,
                 width: readerWidth,
                 child: LayoutBuilder(
@@ -255,18 +251,3 @@ class _MangaReaderState extends State<MangaReader> {
     ); // return
   }
 }
-
-//
-// Positioned(
-// bottom: 0,
-// right: 0,
-// child: Padding(
-// padding: const EdgeInsets.only(right: 20),
-// child: CurrentPageIndexView(
-// currentPages: readerController
-//     .getCurrentPages()
-//     .map((e) => e + 1)
-//     .join('-'),
-// totalPages: readerController.pages.length.toString(),
-// ),
-// ))

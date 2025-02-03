@@ -6,12 +6,11 @@ class BookmarkMangaButton extends StatelessWidget {
   final int index;
   final void Function(int) selectBookmarkCb;
   const BookmarkMangaButton(
-      {Key? key,
+      {super.key,
       required this.name,
       required this.index,
       required this.selected,
-      required this.selectBookmarkCb})
-      : super(key: key);
+      required this.selectBookmarkCb});
 
   @override
   Widget build(BuildContext context) {
@@ -22,12 +21,12 @@ class BookmarkMangaButton extends StatelessWidget {
           ),
       child: ElevatedButton(
         style: const ButtonStyle().copyWith(
-          shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+          shape: WidgetStateProperty.all<RoundedRectangleBorder>(
             const RoundedRectangleBorder(
               borderRadius: BorderRadius.zero,
             ),
           ),
-          backgroundColor: MaterialStatePropertyAll(
+          backgroundColor: WidgetStatePropertyAll(
               selected ? colorScheme.tertiary : colorScheme.onPrimary),
         ),
         onPressed: () => selectBookmarkCb(index),

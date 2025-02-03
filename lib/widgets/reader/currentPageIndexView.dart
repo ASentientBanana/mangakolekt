@@ -3,8 +3,7 @@ import 'package:flutter/material.dart';
 class CurrentPageIndexView extends StatelessWidget {
   String current = '';
   String total = '';
-  CurrentPageIndexView({Key? key, String? currentPages, String? totalPages})
-      : super(key: key) {
+  CurrentPageIndexView({super.key, String? currentPages, String? totalPages}) {
     if (currentPages != null) {
       current = currentPages;
     }

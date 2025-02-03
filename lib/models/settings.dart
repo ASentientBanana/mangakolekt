@@ -47,8 +47,6 @@ class Setting {
 class Settings {
   List<Setting> data = [];
 
-  Settings();
-
   Settings.defaultConfig() {
     data = [
       Setting(
@@ -62,7 +60,15 @@ class Settings {
           description: 'Default to double page view',
           value: false),
       Setting(
-          type: 'bool', name: "showControlBar", description: "Default to show UI reader control bar", value: false),
+          type: 'bool',
+          name: "showControlBar",
+          description: "Default to show UI reader control bar",
+          value: false),
+      Setting(
+          type: 'bool',
+          name: "invertPageSwipe",
+          description: "The swipe direction when reading, inverted by default.",
+          value: true)
     ];
   }
 
@@ -78,25 +84,25 @@ class Settings {
     if (file == null && path == null) {
       throw Exception('File or path must be provided.');
     }
-    final File _file;
+    final File file0;
 
     if (file != null) {
-      _file = file;
+      file0 = file;
     } else {
-      _file = File(path!);
+      file0 = File(path!);
     }
     // final file = File(path);
-    if (!(await _file.exists())) {
+    if (!(await file0.exists())) {
       return [];
     }
-    final map = await _file.readAsString();
+    final map = await file0.readAsString();
     final jsonData = jsonDecode(map) as List<dynamic>;
-    final _data = jsonData
-        .map((_map) => Setting.fromMap(_map))
+    final data = jsonData
+        .map((map) => Setting.fromMap(map))
         .where((element) => element.value != null)
         .toList();
 
-    return _data;
+    return data;
   }
 
   static Future<void> save(Settings settings,
@@ -104,18 +110,18 @@ class Settings {
     if (file == null && path == null) {
       throw Exception("File or path must be provided.");
     }
-    final File _file;
+    final File file0;
 
     if (file != null) {
-      _file = file;
+      file0 = file;
     } else {
-      _file = File(path!);
+      file0 = File(path!);
     }
     // final file = File(path);
-    if (!await _file.exists()) {
+    if (!await file0.exists()) {
       return;
     }
-    final _map = settings.data
+    final map = settings.data
         .map((e) => {
               "type": e.type,
               "name": e.name,
@@ -123,8 +129,8 @@ class Settings {
               "value": e.value
             })
         .toList();
-    final jsonString = jsonEncode(_map);
-    await _file.writeAsString(jsonString);
+    final jsonString = jsonEncode(map);
+    await file0.writeAsString(jsonString);
   }
 
   static Future<void> init() async {
@@ -133,29 +139,24 @@ class Settings {
     final file = File(join(path, 'mangakolekt', 'settings.json'));
     if (!(await file.exists())) {
       await file.create();
-      final _default = Settings.defaultConfig();
-      await save(_default, file: file);
+      await save(Settings.defaultConfig(), file: file);
       return;
     }
 
     final fSettings = await load(file: file);
-    print("loading settings into mem");
     settingsService.data = fSettings;
   }
 
-  static Future<File> getSettingsFile()async{
+  static Future<File> getSettingsFile() async {
     final path = (await getApplicationDocumentsDirectory()).path;
     final file = File(join(path, 'mangakolekt', 'settings.json'));
     return file;
   }
 
-  static Future<void> resetSettingsToDefault()async{
+  static Future<void> resetSettingsToDefault() async {
     final file = await getSettingsFile();
     await Settings.save(Settings.defaultConfig(), file: file);
   }
-  // Future<void> syncFile(String path) async {
-  //   // save(settings, path)
-  // }
 
   Setting getByNameFromFile(String name) {
     return data.firstWhere((element) => element.name == name);
@@ -167,7 +168,6 @@ class Settings {
 
   int getIndexByName(String name) {
     return data.indexWhere((element) {
-      print("Looking for $name comparing to ${element.name}");
       return element.name == name;
     });
   }

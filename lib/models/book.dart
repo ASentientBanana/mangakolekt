@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:mangakolekt/util/files.dart';
 import 'package:mangakolekt/util/platform.dart';
 import 'package:path/path.dart';
-import 'package:path_provider/path_provider.dart';
 
 enum BookReadStatus { read, unread }
 
@@ -28,7 +27,7 @@ class BookCover {
   String get mapString => "$name;$path;$bookPath";
 
   // Example path in android:
-  // /data/user/0/com.example.mangakolekt/app_flutter/mangakolekt/covers/1727543076847446.jpg
+  // /data/user/0/com.yepex.mangakolekt/app_flutter/mangakolekt/covers/1727543076847446.jpg
   Future<String> getPath() async {
     final appDir = await getGlobalCoversDir();
     final l = [];
@@ -37,12 +36,12 @@ class BookCover {
       d.list().forEach((elem) {
         l.add(elem);
       });
-    
+
       final file = join(appDir, basename(path));
       final e = File(file).existsSync();
       final e2 = File(path).existsSync();
-      // /data/user/0/com.example.mangakolekt/app_flutter/mangakolekt/covers/1727543076861272.jpg: true
-      // /data/user/0/com.example.mangakolekt/app_flutter/mangakolekt/covers/1727543076861272.jpg: true
+      // /data/user/0/com.yepex.mangakolekt/app_flutter/mangakolekt/covers/1727543076861272.jpg: true
+      // /data/user/0/com.yepex.mangakolekt/app_flutter/mangakolekt/covers/1727543076861272.jpg: true
       print("");
       print("\n$file: $e");
       print("$path: $e2");

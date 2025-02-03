@@ -1,5 +1,5 @@
 abstract class BaseFFIService {
-  Future<List<String>> ffiUnzipSingleBook(String _bookPath, String _targetPath);
+  Future<List<String>> ffiUnzipSingleBook(String bookPath, String targetPath);
 
   Future<List<FFICoverOutputResult>> ffiUnzipCovers(
       List<String> files, String path, String out);
@@ -14,7 +14,7 @@ class UnsupportedNativePlatformService extends BaseFFIService {
   }
 
   @override
-  ffiUnzipSingleBook(String _bookPath, String _targetPath) async {
+  ffiUnzipSingleBook(String bookPath, String targetPath) async {
     return [];
   }
 }
@@ -31,11 +31,11 @@ class FFICoverOutputResult{
    "directoryFile"
  ];
  bool isValid = true;
- fields.forEach((element) {
+ for (var element in fields) {
    if(map[element] == null){
      isValid = false;
    }
- });
+ }
 
   if(!isValid){
     return null;

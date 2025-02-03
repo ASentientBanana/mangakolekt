@@ -11,6 +11,7 @@ import 'package:mangakolekt/util/util.dart';
 import 'package:path/path.dart' as p;
 
 abstract class BaseBookController {
+  List<String> fileTypes = [];
   bool checkType(String type);
   Future<Book?> unpack(String pathToBook, String dest);
   Future<List<FFICoverOutputResult>> unpackCovers(String pathToDir,
@@ -34,6 +35,15 @@ class ArchiveController {
   static List<BaseBookController> controllers = [
     ZipBookController(),
   ];
+
+  static List<String> supportedFormats() {
+    final List<String> types = [];
+    final len = ArchiveController.controllers.length;
+    for (var i = 0; i < len; i++) {
+      types.addAll(ArchiveController.controllers[i].fileTypes);
+    }
+    return types;
+  }
 
   static BaseBookController? getTypeController(String type) {
     for (var controller in ArchiveController.controllers) {
@@ -96,22 +106,22 @@ class ArchiveController {
     // List<String> _pages = await compute((message) async {
     // return await _loadPagesRecursive(message);
     // }, target);
-    final _pages = await loadPagesRecursive(target);
-    _pages.sort(compareNatural);
+    final pages0 = await loadPagesRecursive(target);
+    pages0.sort(compareNatural);
     // // _pages = sortNumeric(_pages);
 
     final List<PageEntry> pages = [];
 
-    for (var i = 0; i < _pages.length; i++) {
+    for (var i = 0; i < pages0.length; i++) {
       if (i < 0) {
         continue;
       }
-      final file = File(_pages[i]);
+      final file = File(pages0[i]);
       if (!(await file.exists())) {
         continue;
       }
       pages.add(PageEntry(
-          name: p.split(_pages[i]).last,
+          name: p.split(pages0[i]).last,
           image: Image.file(file),
           isDouble: false));
     }
@@ -133,9 +143,9 @@ class ArchiveController {
     }
 
     // get a list of files
-    final _files = (await getFilesFromDir(dir));
+    final files = (await getFilesFromDir(dir));
     //Build map of types
-    for (var element in _files) {
+    for (var element in files) {
       final type = p.extension(element).substring(1);
 
       if (types[type] == null) {

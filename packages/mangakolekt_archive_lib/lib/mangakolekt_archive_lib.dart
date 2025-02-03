@@ -2,7 +2,6 @@ import 'dart:ffi';
 import 'package:ffi/ffi.dart';
 import 'dart:io';
 
-import 'zip_bindings_generated.dart' as nb;
 
 const String _libName = 'libzip';
 

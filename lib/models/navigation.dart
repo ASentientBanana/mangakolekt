@@ -3,8 +3,7 @@ import 'package:flutter/material.dart';
 class NavigationItem extends StatelessWidget {
   void Function()? onPressed;
   Widget child;
-  NavigationItem({Key? key, this.onPressed, required this.child})
-      : super(key: key);
+  NavigationItem({super.key, this.onPressed, required this.child});
 
   @override
   Widget build(BuildContext context) {

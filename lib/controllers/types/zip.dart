@@ -8,6 +8,7 @@ import 'package:mangakolekt/controllers/archive.dart';
 import 'package:mangakolekt/services/ffi/zip.dart';
 
 class ZipBookController extends BaseBookController {
+  @override
   final List<String> fileTypes = ['zip', 'cbz'];
 
   @override
