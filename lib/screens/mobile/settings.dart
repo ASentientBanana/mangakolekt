@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:mangakolekt/locator.dart';
 import 'package:mangakolekt/models/settings.dart';
+import 'package:mangakolekt/util/platform.dart';
 import 'package:mangakolekt/widgets/settings/checkbox.dart';
 
 class SettingsMobile extends StatefulWidget {
@@ -13,7 +14,7 @@ class SettingsMobile extends StatefulWidget {
 class _SettingsMobileState extends State<SettingsMobile> {
   final _settingsService = locator<Settings>();
 
-  Future<void> handleResetToDefaults()async{
+  Future<void> handleResetToDefaults() async {
     await Settings.resetSettingsToDefault();
     setState(() {
       _settingsService.data = Settings.defaultConfig().data;
@@ -28,7 +29,11 @@ class _SettingsMobileState extends State<SettingsMobile> {
       backgroundColor: colorScheme.surface,
       appBar: AppBar(
         actions: [
-          IconButton(onPressed: (){handleResetToDefaults();}, icon: const Icon(Icons.restart_alt))
+          IconButton(
+              onPressed: () {
+                handleResetToDefaults();
+              },
+              icon: const Icon(Icons.restart_alt))
         ],
         title: const Text("Settings"),
       ),
@@ -44,7 +49,8 @@ class _SettingsMobileState extends State<SettingsMobile> {
               SettingsCheckbox(
                 name: "doublePage",
               ),
-              SettingsCheckbox(name:"showControlBar"),
+              SettingsCheckbox(name: "showControlBar"),
+              SettingsCheckbox(name: "invertPageSwipe"),
             ],
           ),
         ),

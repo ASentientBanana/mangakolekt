@@ -192,11 +192,12 @@ class _MangaReaderState extends State<MangaReader> {
   Widget readerLayoutBuilder(
       BuildContext context, BoxConstraints constraints, double width) {
     return Center(
-        child: Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      mainAxisSize: MainAxisSize.max,
-      children: renderPages(Size(width, constraints.maxHeight)),
-    ));
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        mainAxisSize: MainAxisSize.max,
+        children: renderPages(Size(width, constraints.maxHeight)),
+      ),
+    );
   }
 
   @override
@@ -204,7 +205,6 @@ class _MangaReaderState extends State<MangaReader> {
     final colorScheme = Theme.of(context).colorScheme;
     final screenSize = MediaQuery.of(context).size;
     final screenWidth = screenSize.width;
-    // final screenHeight = screenSize.height;
     final isBookmark =
         bookmarks.contains(readerController.getCurrentPages().first);
     final readerWidth = screenWidth - SIDEBAR_WIDTH;
