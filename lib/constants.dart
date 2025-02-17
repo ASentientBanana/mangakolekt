@@ -28,6 +28,7 @@ const TextStyle TEXT_STYLE_DISABLED = TextStyle(color: Colors.grey);
 
 const SIDEBAR_WIDTH = 200.0;
 
+
 class MangaColors {
   static const primary = Color(0xFF244769);
   static const secondary = Color(0xFFb5d1f1);
