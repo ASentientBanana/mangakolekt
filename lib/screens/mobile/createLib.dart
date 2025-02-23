@@ -25,6 +25,7 @@ class _CreateLibraryMobileState extends State<CreateLibraryMobile> {
   final libraryStore = locator<LibraryStore>();
 
   final _navigationService = locator<NavigationService>();
+  final archiveService = locator<ArchiveController>();
 
   final double buttonHorizontalMargins = 20;
 
@@ -44,7 +45,7 @@ class _CreateLibraryMobileState extends State<CreateLibraryMobile> {
       isLoadingCovers = true;
     });
     try {
-      final res=  await ArchiveController.unpackCovers(widget.path, out);
+      final res = await archiveService.unpackCovers(widget.path, out);
 
       if (res.isEmpty) {
         return;

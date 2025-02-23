@@ -18,6 +18,7 @@ class MangaMenuBar extends StatelessWidget {
   MangaMenuBar({super.key, required this.child});
 
   final _navigationService = locator<NavigationService>();
+  final archiveService = locator<ArchiveController>();
   final textEditingController = TextEditingController();
   final libraryStore = locator<LibraryStore>();
 
@@ -30,7 +31,7 @@ class MangaMenuBar extends StatelessWidget {
 
     final ext = extractType(file);
 
-    final isSupported = ArchiveController.isSupportedType(ext);
+    final isSupported = archiveService.isSupportedType(ext);
 
     if (!isSupported) {
       _navigationService.openDialog(

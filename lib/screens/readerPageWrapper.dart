@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mangakolekt/controllers/archive.dart';
 import 'package:mangakolekt/controllers/reader.dart';
 import 'package:mangakolekt/locator.dart';
 import 'package:mangakolekt/models/book.dart';
@@ -40,12 +41,13 @@ class _ReaderPageWrapperState extends State<ReaderPageWrapper> {
   Future<Book?> _book = Future(() => null);
   final _navigationService = locator<NavigationService>();
   final _settingsService = locator<Settings>();
+  final archiveService = locator<ArchiveController>();
 
   @override
   void initState() {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       setState(() {
-        _book = getBook(context, widget.path, widget.id);
+        _book = getBook(context, widget.path, widget.id, archiveService);
       });
     });
     super.initState();

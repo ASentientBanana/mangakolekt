@@ -13,11 +13,11 @@ abstract class BaseBookController {
 }
 
 class ArchiveController {
-  static List<BaseBookController> controllers = [];
+  List<BaseBookController> controllers = [];
 
-  static Map<String, int> controllerMap = {};
+  Map<String, int> controllerMap = {};
 
-  static void registerControllers(List<BaseBookController> _controllers) {
+  ArchiveController(List<BaseBookController> _controllers) {
     final int index = controllers.length;
     for (var c in _controllers) {
       controllers.add(c);
@@ -29,11 +29,11 @@ class ArchiveController {
     }
   }
 
-  static bool isSupportedType(type) {
+  bool isSupportedType(type) {
     return controllerMap[type] != null;
   }
 
-  static BaseBookController? getControllerForType(type) {
+  BaseBookController? getControllerForType(type) {
     final controllerIndex = controllerMap[type];
     if (controllerIndex == null) {
       return null;
@@ -42,13 +42,13 @@ class ArchiveController {
     return controller;
   }
 
-  static Future<Book?> unpack(String path,
+  Future<Book?> unpack(String path,
       {String? type, required String dest, String? id}) async {
     String _type = type ?? extractType(path);
     return await getControllerForType(_type)?.unpack(path, dest);
   }
 
-  static Future<List<FFICoverOutputResult>> unpackCovers(
+  Future<List<FFICoverOutputResult>> unpackCovers(
       String path, String outputPath) async {
     final dir = Directory(path);
     final files = await getFilesFromDir(dir);

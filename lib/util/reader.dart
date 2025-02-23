@@ -15,7 +15,8 @@ Alignment getAliment(bool isDouble, int index) {
   return index == 0 ? Alignment.centerRight : Alignment.centerLeft;
 }
 
-Future<Book?> getBook(BuildContext context, String bookPath, int? id) async {
+Future<Book?> getBook(BuildContext context, String bookPath, int? id,
+    ArchiveController archiveService) async {
   if (!context.mounted) {
     return null;
   }
@@ -24,7 +25,7 @@ Future<Book?> getBook(BuildContext context, String bookPath, int? id) async {
   imageCache.clear();
 
   try {
-    book = await ArchiveController.unpack(bookPath,
+    book = await archiveService.unpack(bookPath,
         type: extractType(bookPath), dest: dest);
     if (id != null && book?.id == null) {
       book?.id = id;
