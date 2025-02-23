@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:mangakolekt/controllers/archive.dart';
+import 'package:mangakolekt/controllers/types/zip.dart';
 import 'package:mangakolekt/locator.dart';
 import 'package:mangakolekt/models/dialog.dart';
 import 'package:mangakolekt/services/initializer.dart';
@@ -35,6 +37,10 @@ class _SplashScreenState extends State<SplashScreen> {
       if (!context.mounted) {
         return;
       }
+
+      ArchiveController.registerControllers([
+        ZipBookController(),
+      ]);
       await showPermissionDialog(context);
       await initAppStructure();
       final mangaList = await DatabaseMangaHelpers.getAllBooksFromLibrary();

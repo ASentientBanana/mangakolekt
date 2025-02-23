@@ -28,9 +28,9 @@ class MangaMenuBar extends StatelessWidget {
       return;
     }
 
-    final ext = path.extension(file);
+    final ext = extractType(file);
 
-    final isSupported = ArchiveController.supportedFormats().contains(ext);
+    final isSupported = ArchiveController.isSupportedType(ext);
 
     if (!isSupported) {
       _navigationService.openDialog(

@@ -51,35 +51,39 @@ class _ReaderPageWrapperState extends State<ReaderPageWrapper> {
     super.initState();
   }
 
+  Widget builder(context, snapshot) {
+    if (snapshot.hasError) {
+      return OpenBookError();
+    }
+    //Check if we got the data
+    if (snapshot.connectionState != ConnectionState.done) {
+      return LoadingScreen();
+    }
+
+    if (snapshot.data == null) {
+      return OpenBookError();
+    }
+
+    // instantiate reader controller
+    final readerController = ReaderController(book: snapshot.data!);
+    readerController.openBook = _navigationService.pushAndPop;
+    readerController.loadSettings(_settingsService);
+    if (isMobile()) {
+      return MangaReaderMobile(
+        initialPage: widget.initialPage,
+        readerController: readerController,
+        libraryId: widget.libraryId,
+      );
+    }
+    return MangaReader(
+      libraryId: widget.libraryId,
+      initialPage: widget.initialPage,
+      readerController: readerController,
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder(
-        future: _book,
-        initialData: null,
-        builder: (context, snapshot) {
-          if (snapshot.hasError) {
-            return OpenBookError();
-          }
-          //Check if we got the data
-          if (snapshot.connectionState != ConnectionState.done) {
-            return LoadingScreen();
-          }
-          // instantiate reader controller
-          final readerController = ReaderController(book: snapshot.data!);
-          readerController.openBook = _navigationService.pushAndPop;
-          readerController.loadSettings(_settingsService);
-          if (isMobile()) {
-            return MangaReaderMobile(
-              initialPage: widget.initialPage,
-              readerController: readerController,
-              libraryId: widget.libraryId,
-            );
-          }
-          return MangaReader(
-            libraryId: widget.libraryId,
-            initialPage: widget.initialPage,
-            readerController: readerController,
-          );
-        });
+    return FutureBuilder(future: _book, initialData: null, builder: builder);
   }
 }

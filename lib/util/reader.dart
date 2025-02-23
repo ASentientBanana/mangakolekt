@@ -16,16 +16,16 @@ Alignment getAliment(bool isDouble, int index) {
 }
 
 Future<Book?> getBook(BuildContext context, String bookPath, int? id) async {
+  if (!context.mounted) {
+    return null;
+  }
   final dest = await getCurrentDirPath();
   Book? book;
   imageCache.clear();
 
-  if (!(Platform.isLinux || Platform.isWindows || Platform.isAndroid)) {
-    return null;
-  }
   try {
-    final params = [bookPath.split('.').last, bookPath, dest, id.toString()];
-    book = await ArchiveController.unpack(params);
+    book = await ArchiveController.unpack(bookPath,
+        type: extractType(bookPath), dest: dest);
     if (id != null && book?.id == null) {
       book?.id = id;
     }

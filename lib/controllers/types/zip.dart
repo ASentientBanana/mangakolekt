@@ -6,6 +6,7 @@ import 'package:mangakolekt/models/ffi.dart';
 import 'package:mangakolekt/services/archive/archive.dart';
 import 'package:mangakolekt/controllers/archive.dart';
 import 'package:mangakolekt/services/ffi/zip.dart';
+import 'package:mangakolekt/util/platform.dart';
 
 class ZipBookController extends BaseBookController {
   @override
@@ -14,19 +15,19 @@ class ZipBookController extends BaseBookController {
   @override
   Future<List<FFICoverOutputResult>> unpackCovers(String pathToDir,
       {required List<String> files, required String out}) async {
-    if (Platform.isLinux || Platform.isWindows || Platform.isAndroid) {
-      try {
-        if (Platform.isWindows) {
-          return await compute(
-              (message) => unzipArchiveCoversDart(message), [files, out]);
-        }
-        return await compute(
-            (message) => ffiUnzipCovers(message), [files, out]);
-      } catch (e) {
-        return [];
-      }
+    if (!isSupportedPlatform()) {
+      return [];
     }
-    return [];
+    try {
+      if (Platform.isWindows) {
+        return await compute(
+            (message) => unzipArchiveCoversDart(message), [files, out]);
+      }
+      print("Starting unzip");
+      return await compute((message) => ffiUnzipCovers(message), [files, out]);
+    } catch (e) {
+      return [];
+    }
   }
 
   @override

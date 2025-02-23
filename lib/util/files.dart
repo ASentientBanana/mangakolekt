@@ -116,3 +116,12 @@ Future<void> deleteFiles(List<String> files) async {
     }
   }
 }
+
+String extractType(String path) {
+  final ext = p.extension(path);
+
+  if (ext.length == 1) {
+    return ext;
+  }
+  return ext.substring(1);
+}

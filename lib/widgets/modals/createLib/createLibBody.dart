@@ -37,13 +37,8 @@ class CreateLibBodyState extends State<CreateLibBody> {
 
   Future<List<FFICoverOutputResult>?> startIsolate() async {
     try {
-      // compute
       final out = await getGlobalCoversDir();
-
-      final res = await compute(
-          (message) => ArchiveController.unpackCovers(message[0], message[1]),
-          [widget.selectedDir, out]);
-      // final res = await ArchiveController.unpackCovers(widget.selectedDir, out);
+      final res = await ArchiveController.unpackCovers(widget.selectedDir, out);
       return res;
     } catch (e) {
       if (!context.mounted) {

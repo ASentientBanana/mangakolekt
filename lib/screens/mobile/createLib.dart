@@ -44,13 +44,9 @@ class _CreateLibraryMobileState extends State<CreateLibraryMobile> {
       isLoadingCovers = true;
     });
     try {
-      final res = await compute((message) {
-        final path = message[0];
-        final out = message[1];
-        return ArchiveController.unpackCovers(path, out);
-      }, [widget.path, out]);
+      final res=  await ArchiveController.unpackCovers(widget.path, out);
 
-      if (res == null || res.isEmpty) {
+      if (res.isEmpty) {
         return;
       }
       await DatabaseMangaHelpers.addLibrary(
@@ -100,8 +96,7 @@ class _CreateLibraryMobileState extends State<CreateLibraryMobile> {
                 hintStyle: const TextStyle(color: Colors.white60),
                 enabledBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.zero,
-                  borderSide:
-                      BorderSide(width: 2, color: colorScheme.tertiary),
+                  borderSide: BorderSide(width: 2, color: colorScheme.tertiary),
                 ),
               ),
             ),
@@ -114,11 +109,11 @@ class _CreateLibraryMobileState extends State<CreateLibraryMobile> {
             width: double.infinity,
             child: ElevatedButton(
               style: ElevatedButton.styleFrom(
-                  elevation: 0,
-                  backgroundColor: colorScheme.tertiary,
-                  shape: const BeveledRectangleBorder(),
-                  // side: BorderSide(color: colorScheme.secondary),
-                ),
+                elevation: 0,
+                backgroundColor: colorScheme.tertiary,
+                shape: const BeveledRectangleBorder(),
+                // side: BorderSide(color: colorScheme.secondary),
+              ),
               onPressed: () => handleConfirm(),
               child: const Text(
                 "Add",
@@ -132,10 +127,10 @@ class _CreateLibraryMobileState extends State<CreateLibraryMobile> {
             width: double.infinity,
             child: ElevatedButton(
               style: ElevatedButton.styleFrom(
-                  elevation: 0,
-                  backgroundColor: Colors.white,
-                  shape: const BeveledRectangleBorder(),
-                  side: const BorderSide(color: Colors.white),
+                elevation: 0,
+                backgroundColor: Colors.white,
+                shape: const BeveledRectangleBorder(),
+                side: const BorderSide(color: Colors.white),
               ),
               onPressed: handleCancel,
               child: const Text(
