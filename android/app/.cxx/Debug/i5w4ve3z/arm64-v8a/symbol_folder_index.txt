@@ -1,0 +1,1 @@
+/home/petar/Projects/manga_kolekt_proj/mangakolekt/build/app/intermediates/cxx/Debug/i5w4ve3z/obj/arm64-v8a

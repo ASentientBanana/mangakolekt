@@ -25,8 +25,6 @@ FFI_PLUGIN_EXPORT intptr_t unzip_cover(char *zip_path, char *output) {
       if (size <= 0) {
         continue;
       }
-      printf("GETTING %s\n", filename);
-      printf("GETTING %u\n", size);
 
       zip_file_t *f = zip_fopen_index(archive, i, ZIP_FL_UNCHANGED);
       if (f == NULL) {

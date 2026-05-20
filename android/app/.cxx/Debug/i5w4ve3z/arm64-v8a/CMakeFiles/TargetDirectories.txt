@@ -1,0 +1,2 @@
+/home/petar/Projects/manga_kolekt_proj/mangakolekt/android/app/.cxx/Debug/i5w4ve3z/arm64-v8a/CMakeFiles/edit_cache.dir
+/home/petar/Projects/manga_kolekt_proj/mangakolekt/android/app/.cxx/Debug/i5w4ve3z/arm64-v8a/CMakeFiles/rebuild_cache.dir

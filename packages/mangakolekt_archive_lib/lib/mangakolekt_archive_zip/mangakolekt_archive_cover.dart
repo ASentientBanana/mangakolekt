@@ -1,4 +1,3 @@
-
 import 'package:mangakolekt_archive_lib/mangakolekt_archive_lib.dart';
 import 'package:mangakolekt_archive_lib/models/ffi_cover_output_result.dart';
 import 'package:mangakolekt_archive_lib/zip_bindings_generated.dart' as nb;
@@ -11,8 +10,6 @@ List<FFILibCoverOutputResult> mangakolektUnzipArchiveCover(
   //init native lib
   final dyLib = getDyLib();
   final nb.NativeLibrary bindings = nb.NativeLibrary(dyLib);
-
-  print('Start');
 
   String type = '';
   final zeroPtr = calloc.allocate<Int>(1)..value = 0;

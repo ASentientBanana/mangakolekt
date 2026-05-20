@@ -6,7 +6,6 @@ import 'package:mangakolekt/services/database/databaseHelpers.dart';
 import 'package:mangakolekt/util/platform.dart';
 import 'package:mangakolekt/util/reader.dart';
 import 'package:mangakolekt/widgets/appbar/readerbar.dart';
-import 'package:mangakolekt/widgets/reader/singleImage.dart';
 import 'package:mangakolekt/widgets/reader/list_preview.dart';
 import 'package:flutter/services.dart';
 
@@ -143,59 +142,19 @@ class _MangaReaderState extends State<MangaReader> {
     });
   }
 
-  List<Widget> renderPages(Size size) {
-    // A more verbose page rendering way.
-    final List<int> pageIndexes;
-
-    final List<Widget> pages = [];
-    // final List<Map<String, double>> aspects = [];
-
-    //check if double page view is toggled
-    if (readerController.isRightToLeftMode) {
-      pageIndexes = readerController.getCurrentPages();
-    } else {
-      pageIndexes = readerController.getCurrentPages().reversed.toList();
-    }
-
-    final isDouble = pageIndexes.length == 2;
-
-    final img = readerController.pages[pageIndexes[0]].entry.image;
-    final w = img.width ?? 1;
-    final h = img.height ?? 1;
-    final isWide = w > h;
-    final aspect = isWide ? w / h : h / w;
-
-    double imgWidth;
-    if (isWide) {
-      imgWidth = size.width;
-    } else {
-      imgWidth = size.width / 2;
-    }
-    final imgHeight = imgWidth * aspect;
-
-    for (var i = 0; i < pageIndexes.length; i++) {
-      final pageIndex = pageIndexes[i];
-      pages.add(
-        SingleImage(
-          isDouble: isDouble,
-          increment: handleMouseClick,
-          image: readerController.pages[pageIndex].entry.image,
-          imageIndex: i,
-          size: Size(imgWidth, imgHeight),
-          // size: Size(imgHeight, imgWidth),
-        ),
-      );
-    }
-    return pages;
-  }
-
+//
   Widget readerLayoutBuilder(
       BuildContext context, BoxConstraints constraints, double width) {
     return Center(
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         mainAxisSize: MainAxisSize.max,
-        children: renderPages(Size(width, constraints.maxHeight)),
+        children: wrapPagesDesktop(
+            renderPages(
+              readerController,
+              Size(width, constraints.maxHeight),
+            ),
+            handleMouseClick),
       ),
     );
   }

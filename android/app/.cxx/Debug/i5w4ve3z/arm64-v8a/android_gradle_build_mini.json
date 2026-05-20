@@ -1,0 +1,20 @@
+{
+  "buildFiles": [
+    "/home/petar/development/flutter/packages/flutter_tools/gradle/src/main/groovy/CMakeLists.txt"
+  ],
+  "cleanCommandsComponents": [
+    [
+      "/home/petar/Android/Sdk/cmake/3.22.1/bin/ninja",
+      "-C",
+      "/home/petar/Projects/manga_kolekt_proj/mangakolekt/android/app/.cxx/Debug/i5w4ve3z/arm64-v8a",
+      "clean"
+    ]
+  ],
+  "buildTargetsCommandComponents": [
+    "/home/petar/Android/Sdk/cmake/3.22.1/bin/ninja",
+    "-C",
+    "/home/petar/Projects/manga_kolekt_proj/mangakolekt/android/app/.cxx/Debug/i5w4ve3z/arm64-v8a",
+    "{LIST_OF_TARGETS_TO_BUILD}"
+  ],
+  "libraries": {}
+}

@@ -2,7 +2,6 @@ import 'dart:ffi';
 import 'package:ffi/ffi.dart';
 import 'dart:io';
 
-
 const String _libName = 'libzip';
 
 /// The dynamic library in which the symbols for [MangakolektArchiveLibBindings] can be found.

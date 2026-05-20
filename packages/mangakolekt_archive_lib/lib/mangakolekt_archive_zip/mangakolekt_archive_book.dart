@@ -30,10 +30,10 @@ List<Page> mangakolektUnzipArchiveBook(String bookPath) {
     }
 
     final fileName = statbuf.ref.name.cast<Utf8>().toDartString();
-    //size of the file, if its a dir its 0.
+    //Size of the file, if its a dir its 0.
     int size = statbuf.ref.size;
 
-    // as a test if its a file will be checking if zize > 0
+    // as a test if its a file will be checking if size > 0
     if (size <= 0) {
       calloc.free(statbuf);
       continue;

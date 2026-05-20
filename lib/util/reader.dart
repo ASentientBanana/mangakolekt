@@ -2,10 +2,13 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:mangakolekt/controllers/archive.dart';
+import 'package:mangakolekt/controllers/reader.dart';
 import 'package:mangakolekt/models/book.dart';
 import 'package:mangakolekt/util/files.dart';
+import 'package:mangakolekt/widgets/reader/singleImage.dart';
 import 'package:path/path.dart' as p;
 import 'package:collection/collection.dart';
+import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 
 Alignment getAliment(bool isDouble, int index) {
   if (!isDouble) {
@@ -31,6 +34,9 @@ Future<Book?> getBook(BuildContext context, String bookPath, int? id,
       book?.id = id;
     }
   } catch (e) {
+    if (!context.mounted) {
+      return null;
+    }
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(
@@ -84,4 +90,110 @@ Future<Map<String, String>> checkForNextBook(String path) async {
   }
 
   return map;
+}
+
+// List<Widget> renderPages(ReaderController readerController, Size size,
+// )  {
+//   // A more verbose page rendering way.
+//   final List<int> pageIndexes;
+//
+//   final List<Widget> pages = [];
+//   // final List<Map<String, double>> aspects = [];
+//
+//   //check if double page view is toggled
+//   if (readerController.isRightToLeftMode) {
+//     pageIndexes = readerController.getCurrentPages();
+//   } else {
+//     pageIndexes = readerController.getCurrentPages().reversed.toList();
+//   }
+//
+//   final isDouble = pageIndexes.length == 2;
+//
+//   final img = readerController.pages[pageIndexes[0]].entry.image;
+//   final w = img.width ?? 1;
+//   final h = img.height ?? 1;
+//   final isWide = w > h;
+//   final aspect = isWide ? w / h : h / w;
+//
+//   double imgWidth;
+//   if (isWide) {
+//     imgWidth = size.width;
+//   } else {
+//     imgWidth = size.width / 2;
+//   }
+//   final imgHeight = imgWidth * aspect;
+//
+//   for (var i = 0; i < pageIndexes.length; i++) {
+//     final pageIndex = pageIndexes[i];
+//     pages.add(
+//       SingleImage(
+//         isDouble: isDouble,
+//         // increment: onClick ?? onTap,
+//         image: readerController.pages[pageIndex].entry.image,
+//         imageIndex: i,
+//         size: Size(imgWidth, imgHeight),
+//         // size: Size(imgHeight, imgWidth),
+//       ),
+//     );
+//   }
+//   return pages;
+// }
+
+List<Widget> renderPages(ReaderController rc, Size size) {
+  // A more verbose page rendering way.
+  final List<Widget> pages = [];
+  final List<int> pageIndexes;
+  if (rc.isRightToLeftMode) {
+    pageIndexes = rc.getCurrentPages();
+  } else {
+    pageIndexes = rc.getCurrentPages().reversed.toList();
+  }
+
+  final img = rc.pages[pageIndexes[0]].entry.image;
+  final w = img.width ?? 1;
+  final h = img.height ?? 1;
+  final isWide = w > h;
+
+  // Calculate new aspect ratio
+  final aspect = isWide ? w / h : h / w;
+
+  double imgWidth;
+
+  if (isWide) {
+    imgWidth = size.width;
+  } else {
+    if (rc.isDoublePageView) {
+      imgWidth = size.width / 2;
+    } else {
+      imgWidth = size.width;
+    }
+  }
+
+  final imgHeight = imgWidth * aspect;
+
+  for (var i = 0; i < pageIndexes.length; i++) {
+    final pageIndex = pageIndexes[i];
+    pages.add(
+      Image(
+        width: imgWidth,
+        height: imgHeight,
+        // alignment: Alignment.centerRight,
+        alignment: getAliment(pageIndexes.length == 2, i),
+        image: rc.pages[pageIndex].entry.image.image,
+      ),
+    );
+  }
+  return pages;
+}
+
+List<Widget> wrapPagesDesktop(
+    List<Widget> pages, void Function(PointerDownEvent) onClick) {
+  return pages
+      .map(
+        (element) => Listener(
+          onPointerDown: onClick,
+          child: element,
+        ),
+      )
+      .toList();
 }
